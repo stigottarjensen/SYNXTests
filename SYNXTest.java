@@ -9,6 +9,7 @@ import javax.websocket.WebSocketContainer;
 
 import java.util.Properties;
 import java.util.concurrent.*;
+//java -cp .:javax.websocket.jar:tyrus-standalone-client-1.9.jar SYNXTest.java
 
 @ClientEndpoint
 public class SYNXTest implements Runnable {
@@ -67,7 +68,7 @@ public class SYNXTest implements Runnable {
             sy.msg = sy.msg.replace("---melding---", args[0]);
         }
         System.out.println(sy.msg);
-        ScheduledFuture sf = ses.scheduleWithFixedDelay(sy,5,10,TimeUnit.SECONDS);
+        ScheduledFuture sf = ses.scheduleWithFixedDelay(sy,3,5,TimeUnit.SECONDS);
         
         System.in.read();
         sf.cancel(true);
