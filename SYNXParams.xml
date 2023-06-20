@@ -5,7 +5,7 @@
 <entry key="address">{"url":"faciliate/swg/1"}</entry>
 <entry key="WebsocketUrl">wss://websocket.cioty.com/faciliate/swg/1/channel</entry>
 <entry key="httpUrl">https://faciliate.cioty.com/swg</entry>
-<entry key="tokenJson">{"token":"aToken_249df9c9a7fa8eac91bc21cad0208675b0d1539ff44cfe47bacf58100f5f4da1"}</entry>
+<entry key="tokenFaciliate">{"token":"aToken_249df9c9a7fa8eac91bc21cad0208675b0d1539ff44cfe47bacf58100f5f4da1"}</entry>
 <entry key="ServerName">Synx-Cat</entry>
 <entry key="ServerNo">1</entry>
 <entry key="token">aToken_3003b45b115695e0bfeef3bc124fce7d1efa98685a7ee091df62e479888dc3c1</entry>

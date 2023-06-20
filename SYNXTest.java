@@ -43,7 +43,7 @@ public class SYNXTest implements Runnable {
         this.session = session;
         System.out.println("startet");
          
-        sendMessage(props.getProperty("tokenJson"));
+        sendMessage(props.getProperty("tokenFaciliate"));
         sendMessage(props.getProperty("address"));
         sendMessage(msg);
     }
@@ -63,6 +63,10 @@ public class SYNXTest implements Runnable {
 
     public static void main(String[] args) throws Exception {
         SYNXTest sy = new SYNXTest();
+        if (args!=null && args.length>0) {
+            sy.msg = sy.msg.replace("---melding---", args[0]);
+        }
+        System.out.println(sy.msg);
         ScheduledFuture sf = ses.scheduleWithFixedDelay(sy,5,10,TimeUnit.SECONDS);
         
         System.in.read();
@@ -95,16 +99,6 @@ public class SYNXTest implements Runnable {
         } catch (Exception e) {e.printStackTrace();}
     }
 
-    // private String token = "{\"token\":\"aToken_249df9c9a7fa8eac91bc21cad0208675b0d1539ff44cfe47bacf58100f5f4da1\"}";
-    // // this is private token for faciliate/swg
-    // private String address = "{\"url\":\"faciliate/swg/1\"}";
-    private String msg = "{\"txt\":\"poiuytrewq\"}";
+    private String msg = "{\"txt\":\"---melding---\"}";
 
-    // private String httpUrl = "https://faciliate.cioty.com/swg";
-    // private String payLoad = "token=aToken_3003b45b115695e0bfeef3bc124fce7d1efa98685a7ee091df62e479888dc3c1&" +
-    //         "objectid=1&" +
-    //         "sender=qazxsw&" +
-    //         "receiver=bikkjaTilHenrik&" +
-    //         "topic=svarttjern&" +
-    //         "payload=jadadada";
 }
