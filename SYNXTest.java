@@ -4,6 +4,7 @@ import javax.websocket.ClientEndpoint;
 import javax.websocket.ContainerProvider;
 import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
+import javax.websocket.OnClose;
 import javax.websocket.Session;
 import javax.websocket.WebSocketContainer;
 
@@ -20,18 +21,19 @@ public class SYNXTest implements Runnable {
     private Properties props = new Properties();
     private String propFile = "SYNXParams.xml";
     private StringBuilder payload = new StringBuilder();
-    private static final ScheduledExecutorService ses = Executors.newSingleThreadScheduledExecutor();
+   // private static final ScheduledExecutorService ses = Executors.newSingleThreadScheduledExecutor();
+    private static final ExecutorService es = Executors.newSingleThreadExecutor();
 
     public SYNXTest() {
         try {
             props.loadFromXML(new FileInputStream(propFile));
             WebSocketContainer container = ContainerProvider.getWebSocketContainer();
-            payload.append("token="+props.getProperty("token")).append("&").
-                    append("objectid="+props.getProperty("objectid")).append("&").
-                    append("sender="+props.getProperty("sender")).append("&").
-                    append("receiver="+props.getProperty("receiver")).append("&").
-                    append("topic="+props.getProperty("topic")).append("&").
-                    append("payLoad="+props.getProperty("payLoad"));
+            payload.append("token=" + props.getProperty("token")).append("&")
+                    .append("objectid=" + props.getProperty("objectid")).append("&")
+                    .append("sender=" + props.getProperty("sender")).append("&")
+                    .append("receiver=" + props.getProperty("receiver")).append("&")
+                    .append("topic=" + props.getProperty("topic")).append("&")
+                    .append("payLoad=" + props.getProperty("payLoad"));
             container.connectToServer(this, new URI(props.getProperty("WebsocketUrl")));
             System.out.println("constructor");
         } catch (Exception ex) {
@@ -43,7 +45,7 @@ public class SYNXTest implements Runnable {
     public void onOpen(Session session) throws Exception {
         this.session = session;
         System.out.println("startet");
-         
+
         sendMessage(props.getProperty("tokenFaciliate"));
         sendMessage(props.getProperty("address"));
         sendMessage(msg);
@@ -62,18 +64,32 @@ public class SYNXTest implements Runnable {
         }
     }
 
+    @OnClose
+    public void onClose(Session session) throws Exception {
+        System.out.println("ferdigggg!!!!!!!!!!");
+    }
+
     public static void main(String[] args) throws Exception {
-        SYNXTest sy = new SYNXTest();
-        if (args!=null && args.length>0) {
-            sy.msg = sy.msg.replace("---melding---", args[0]);
+        SYNXTest synx = new SYNXTest();
+        if (args != null && args.length > 0) {
+            synx.msg = synx.msg.replace("---melding---", args[0]);
         }
-        System.out.println(sy.msg);
-        ScheduledFuture sf = ses.scheduleWithFixedDelay(sy,3,5,TimeUnit.SECONDS);
-        
-        System.in.read();
-        sf.cancel(true);
-        ses.shutdownNow();
-        ses.awaitTermination(5,TimeUnit.SECONDS);
+        System.out.println(synx.msg);
+        Console console = System.console();
+
+        String input = "";
+        while (!"q".equalsIgnoreCase(input)) {
+            es.submit(synx);
+            System.out.println("Enter something (q to quit): ");
+
+            input = console.readLine();
+            System.out.println("input : " + input);
+        }
+
+        System.out.println("bye bye!");
+     
+        es.shutdownNow();
+        es.awaitTermination(5, TimeUnit.SECONDS);
     }
 
     public void run() {
@@ -82,22 +98,26 @@ public class SYNXTest implements Runnable {
 
     private void PostUrl() {
         try {
-        URI uri = new URI(props.getProperty("httpUrl"));
-        URL url = uri.toURL();
-        URLConnection conn = url.openConnection();
-        conn.setDoOutput(true); 
-        conn.addRequestProperty(
-            props.getProperty("ServerName"), 
-            props.getProperty("ServerNo"));
-        OutputStreamWriter osw = new OutputStreamWriter(conn.getOutputStream());
-        osw.write(payload.toString());
-        osw.flush();
-        osw.close();
-        BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-        String line;
-        while ((line=br.readLine()) != null)
-            System.out.println(line);
-        } catch (Exception e) {e.printStackTrace();}
+            String u = props.getProperty("httpUrl");
+            URI uri = new URI(u);
+            URL url = uri.toURL();
+            URLConnection conn = url.openConnection();
+            conn.setDoOutput(true);
+            conn.addRequestProperty(
+                    props.getProperty("ServerName"),
+                    props.getProperty("ServerNo"));
+            OutputStreamWriter osw = new OutputStreamWriter(conn.getOutputStream());
+            osw.write(payload.toString());
+            osw.flush();
+            osw.close();
+            BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            String line;
+            while ((line = br.readLine()) != null)
+                System.out.println(line);
+            System.out.println("POST: "+u);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private String msg = "{\"txt\":\"---melding---\"}";
