@@ -21,7 +21,8 @@ public class SYNXTest implements Runnable {
     private Properties props = new Properties();
     private String propFile = "SYNXParams.xml";
     private StringBuilder payload = new StringBuilder();
-   // private static final ScheduledExecutorService ses = Executors.newSingleThreadScheduledExecutor();
+    // private static final ScheduledExecutorService ses =
+    // Executors.newSingleThreadScheduledExecutor();
     private static final ExecutorService es = Executors.newSingleThreadExecutor();
 
     public SYNXTest() {
@@ -57,7 +58,8 @@ public class SYNXTest implements Runnable {
     }
 
     public void sendMessage(String message) {
-        try {
+        try { 
+            System.out.println("wss: "+message);
             this.session.getBasicRemote().sendText(message);
         } catch (IOException ex) {
 
@@ -70,15 +72,18 @@ public class SYNXTest implements Runnable {
     }
 
     public static void main(String[] args) throws Exception {
+
+        Console console = System.console();
+
+        String input = "";
         SYNXTest synx = new SYNXTest();
         if (args != null && args.length > 0) {
             synx.msg = synx.msg.replace("---melding---", args[0]);
         }
         System.out.println(synx.msg);
-        Console console = System.console();
 
-        String input = "";
         while (!"q".equalsIgnoreCase(input)) {
+
             es.submit(synx);
             System.out.println("Enter something (q to quit): ");
 
@@ -87,7 +92,7 @@ public class SYNXTest implements Runnable {
         }
 
         System.out.println("bye bye!");
-     
+
         es.shutdownNow();
         es.awaitTermination(5, TimeUnit.SECONDS);
     }
@@ -114,7 +119,7 @@ public class SYNXTest implements Runnable {
             String line;
             while ((line = br.readLine()) != null)
                 System.out.println(line);
-            System.out.println("POST: "+u);
+            System.out.println("POST: " + u);
         } catch (Exception e) {
             e.printStackTrace();
         }
