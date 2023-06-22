@@ -23,18 +23,20 @@ public class SYNXTest implements Runnable {
     private StringBuilder payload = new StringBuilder();
     // private static final ScheduledExecutorService ses =
     // Executors.newSingleThreadScheduledExecutor();
-    private static final ExecutorService es = Executors.newSingleThreadExecutor();
+    private static final ExecutorService executor = Executors.newSingleThreadExecutor();
+    WebSocketContainer container;
 
     public SYNXTest() {
         try {
-            props.loadFromXML(new FileInputStream(propFile));
-            WebSocketContainer container = ContainerProvider.getWebSocketContainer();
+            props.loadFromXML(new FileInputStream(propFile));   
             payload.append("token=" + props.getProperty("token")).append("&")
                     .append("objectid=" + props.getProperty("objectid")).append("&")
                     .append("sender=" + props.getProperty("sender")).append("&")
                     .append("receiver=" + props.getProperty("receiver")).append("&")
                     .append("topic=" + props.getProperty("topic")).append("&")
                     .append("payLoad=" + props.getProperty("payLoad"));
+
+            container = ContainerProvider.getWebSocketContainer();
             container.connectToServer(this, new URI(props.getProperty("WebsocketUrl")));
             System.out.println("constructor");
         } catch (Exception ex) {
@@ -84,7 +86,7 @@ public class SYNXTest implements Runnable {
 
         while (!"q".equalsIgnoreCase(input)) {
 
-            es.submit(synx);
+            executor.submit(synx);
             System.out.println("Enter something (q to quit): ");
 
             input = console.readLine();
@@ -93,8 +95,8 @@ public class SYNXTest implements Runnable {
 
         System.out.println("bye bye!");
 
-        es.shutdownNow();
-        es.awaitTermination(5, TimeUnit.SECONDS);
+        executor.shutdownNow();
+        executor.awaitTermination(5, TimeUnit.SECONDS);
     }
 
     public void run() {
