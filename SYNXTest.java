@@ -8,11 +8,12 @@ import javax.websocket.OnClose;
 import javax.websocket.Session;
 import javax.websocket.WebSocketContainer;
 import org.json.*;
-
-import netscape.javascript.JSObject;
+import static javax.swing.JOptionPane.showMessageDialog;
+import javax.swing.JOptionPane;
 
 import java.util.Properties;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 //java -cp .:javax.websocket.jar:tyrus-standalone-client-1.9.jar:json.jar SYNXTest.java
 
 @ClientEndpoint
@@ -24,6 +25,7 @@ public class SYNXTest implements Runnable {
     private Properties props = new Properties();
     private String propFile = "SYNXParams.xml";
     private StringBuilder payload = new StringBuilder();
+    private AtomicBoolean notFinished = new AtomicBoolean(true);
     // private static final ScheduledExecutorService ses =
     // Executors.newSingleThreadScheduledExecutor();
     private static final ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -77,32 +79,34 @@ public class SYNXTest implements Runnable {
     @OnClose
     public void onClose(Session session) throws Exception {
         System.out.println("ferdigggg!!!!!!!!!!");
+        notFinished.set(false);
     }
 
     public static void main(String[] args) throws Exception {
 
-        Console console = System.console();
-
-        String input = "";
+        String ok = "";
         SYNXTest synx = new SYNXTest();
         if (args != null && args.length > 0) {
             synx.msg = synx.msg.replace("---melding---", args[0]);
         }
         System.out.println(synx.msg);
+        JOptionPane jop = new JOptionPane("Ok to continue, cancel to quit", JOptionPane.OK_CANCEL_OPTION);
 
-        while (!"q".equalsIgnoreCase(input)) {
+        while (ok=="" && synx.notFinished.get()) {
 
             executor.submit(synx);
             System.out.println("Enter something (q to quit): ");
-
-            input = console.readLine();
-            System.out.println("input : " + input);
+            ok =  JOptionPane.showInputDialog(null,
+                                "Ok to continue, cancel to quit","OkCancel",
+                                JOptionPane.OK_CANCEL_OPTION);
+            System.out.println("input : hjkhjh  " + ok);
+            if (ok!="") synx.session.close();
         }
 
         System.out.println("bye bye!");
 
         executor.shutdownNow();
-        executor.awaitTermination(5, TimeUnit.SECONDS);
+        executor.awaitTermination(9, TimeUnit.SECONDS);
     }
 
     public void run() {
