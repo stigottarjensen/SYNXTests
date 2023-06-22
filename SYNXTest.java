@@ -7,10 +7,13 @@ import javax.websocket.OnOpen;
 import javax.websocket.OnClose;
 import javax.websocket.Session;
 import javax.websocket.WebSocketContainer;
+import org.json.*;
+
+import netscape.javascript.JSObject;
 
 import java.util.Properties;
 import java.util.concurrent.*;
-//java -cp .:javax.websocket.jar:tyrus-standalone-client-1.9.jar SYNXTest.java
+//java -cp .:javax.websocket.jar:tyrus-standalone-client-1.9.jar:json.jar SYNXTest.java
 
 @ClientEndpoint
 public class SYNXTest implements Runnable {
@@ -57,6 +60,9 @@ public class SYNXTest implements Runnable {
     @OnMessage
     public void onMessage(String message, Session session) {
         System.out.println(message);
+    //     JSONObject rtw = new JSONObject(message);
+    //     JSONArray json = new JSONArray(rtw.get("RTW").toString());
+    //     System.out.println(json.toString());
     }
 
     public void sendMessage(String message) {
