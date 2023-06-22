@@ -104,7 +104,7 @@ public class SYNXTest implements Runnable {
     }
 
     private void PostUrl() {
-        try {
+        try { System.out.println("POST1");
             String u = props.getProperty("httpUrl");
             URI uri = new URI(u);
             URL url = uri.toURL();
@@ -117,6 +117,7 @@ public class SYNXTest implements Runnable {
             osw.write(payload.toString());
             osw.flush();
             osw.close();
+            System.out.println("POST2");
             BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
             String line;
             while ((line = br.readLine()) != null)
