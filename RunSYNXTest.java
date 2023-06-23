@@ -1,5 +1,3 @@
-package synx;
-
 import java.io.*;
 import java.net.*;
 import javax.websocket.ClientEndpoint;
