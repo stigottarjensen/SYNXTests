@@ -65,7 +65,7 @@ public class SYNXTest {
         // }
         // System.out.println(synx.msg);
 
-        while (ok != null /* && synx.notFinished.get() */) {
+        while (ok != null  && synx.notFinished.get() ) {
 
             executor.submit(new Runnable() {
                 public void run() {
