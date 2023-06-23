@@ -26,15 +26,22 @@ public class SYNXTest {
     public String msg = "{\"txt\":\"---melding---\"}";
     Session session;
     public Properties props = new Properties();
-    private String propFile = "SYNXParams.xml";
+    private static final String[] propFiles = {"SYNXParams.xml","SYNXParams2.xml"};
     private StringBuilder payload = new StringBuilder();
     AtomicBoolean notFinished = new AtomicBoolean(true);
     // private static final ScheduledExecutorService ses =
     // Executors.newSingleThreadScheduledExecutor();
     WebSocketContainer container;
 
-    public SYNXTest() {
+    public SYNXTest(String propFile) {
+        init(propFile);
+    }
+
+    private void init(String propFile) {
         try {
+            System.out.println("Propertis file = " + propFile);
+            if (session != null && session.isOpen())
+                session.close();
             props.loadFromXML(new FileInputStream(propFile));
             payload.append("token=" + props.getProperty("token")).append("&")
                     .append("objectid=" + props.getProperty("objectid")).append("&")
@@ -54,19 +61,10 @@ public class SYNXTest {
     public static void main(String[] args) throws Exception {
 
         String ok = "";
-        SYNXTest synx = new SYNXTest();
-
-        synx.Url = synx.props.getProperty("httpUrl");
-        synx.ServerName = synx.props.getProperty("ServerName");
-        synx.ServerNo = synx.props.getProperty("ServerNo");
-        synx.Payload = synx.getPayload();
-        // if (args != null && args.length > 0) {
-        // synx.msg = synx.msg.replace("---melding---", args[0]);
-        // }
-        // System.out.println(synx.msg);
-
-        while (ok != null  && synx.notFinished.get() ) {
-
+        final SYNXTest synx = new SYNXTest(propFiles[0]);
+        int pc =0;
+        while (ok != null  && (!ok.trim().equalsIgnoreCase("n") && synx.notFinished.get() )) {
+            pc++;
             executor.submit(new Runnable() {
                 public void run() {
                     synx.PostUrl();
@@ -77,7 +75,8 @@ public class SYNXTest {
                     "Ok to continue, cancel to quit", "OkCancel",
                     JOptionPane.OK_CANCEL_OPTION);
             System.out.println("input : " + ok);
-
+            if (ok.trim().equalsIgnoreCase("n"))
+                synx.init(propFiles[pc % 2]);
         }
         if (synx.session != null && synx.session.isOpen())
             synx.session.close();
@@ -90,14 +89,15 @@ public class SYNXTest {
     private void PostUrl() {
         try {
             System.out.println("POST1");
-            String u = Url;
+            String u = props.getProperty("httpUrl");
             URI uri = new URI(u);
             URL url = uri.toURL();
             URLConnection conn = url.openConnection();
             conn.setDoOutput(true);
-            conn.addRequestProperty(ServerName, ServerNo);
+            conn.addRequestProperty(props.getProperty("ServerName"), 
+                                    props.getProperty("ServerNo"));
             OutputStreamWriter osw = new OutputStreamWriter(conn.getOutputStream());
-            osw.write(Payload);
+            osw.write(getPayload());
             osw.flush();
             osw.close();
             System.out.println("POST2");
