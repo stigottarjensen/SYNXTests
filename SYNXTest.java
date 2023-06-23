@@ -16,7 +16,7 @@ import java.util.Properties;
 
 //java -cp .:javax.websocket.jar:tyrus-standalone-client-1.9.jar:json.jar SYNXTest.java
 @ClientEndpoint
-public class SYNXTest implements Runnable {
+public class SYNXTest {
 
     private static final ExecutorService executor = Executors.newSingleThreadExecutor();
     String Url, ServerName, ServerNo, Payload;
@@ -67,7 +67,11 @@ public class SYNXTest implements Runnable {
 
         while (ok != null /* && synx.notFinished.get() */) {
 
-            executor.submit(synx);
+            executor.submit(new Runnable() {
+                public void run() {
+                    synx.PostUrl();
+                }
+            });
             System.out.println("Enter something (q to quit): ");
             ok = JOptionPane.showInputDialog(null,
                     "Ok to continue, cancel to quit", "OkCancel",
@@ -81,10 +85,6 @@ public class SYNXTest implements Runnable {
 
         executor.shutdownNow();
         executor.awaitTermination(9, TimeUnit.SECONDS);
-    }
-
-    public void run() {
-        PostUrl();
     }
 
     private void PostUrl() {
