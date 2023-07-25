@@ -50,9 +50,12 @@ public class SYNXTest {
                     .append("topic=" + props.getProperty("topic")).append("&")
                     .append("payLoad=" + props.getProperty("payLoad"));
 
+            props.setProperty("payload", payload.toString());
+            props.store(new FileWriter("SynxProps.txt"),"");
             container = ContainerProvider.getWebSocketContainer();
             container.connectToServer(this, new URI(props.getProperty("WebsocketUrl")));
             System.out.println("constructor");
+          
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -75,7 +78,7 @@ public class SYNXTest {
                     "Ok to continue, cancel to quit", "OkCancel",
                     JOptionPane.OK_CANCEL_OPTION);
             System.out.println("input : " + ok);
-            if (ok.trim().equalsIgnoreCase("n"))
+            if (ok != null && ok.trim().equalsIgnoreCase("n"))
                 synx.init(propFiles[pc % 2]);
         }
         if (synx.session != null && synx.session.isOpen())
