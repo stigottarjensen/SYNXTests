@@ -26,7 +26,7 @@ public class SYNXTest {
     public String msg = "{\"txt\":\"---melding---\"}";
     Session session;
     public Properties props = new Properties();
-    private static final String[] propFiles = {"SYNXParams.xml","SYNXParams2.xml"};
+    private static final String[] propFiles = { "SYNXParams.xml", "SYNXParams2.xml" };
     private StringBuilder payload = new StringBuilder();
     AtomicBoolean notFinished = new AtomicBoolean(true);
     // private static final ScheduledExecutorService ses =
@@ -50,12 +50,15 @@ public class SYNXTest {
                     .append("topic=" + props.getProperty("topic")).append("&")
                     .append("payLoad=" + props.getProperty("payLoad"));
 
-            props.setProperty("payload", payload.toString());
-            props.store(new FileWriter("SynxProps.txt"),"");
+            // props.setProperty("payload", payload.toString());
+            // props.store(new FileWriter("SynxProps.txt"),"");
             container = ContainerProvider.getWebSocketContainer();
             container.connectToServer(this, new URI(props.getProperty("WebsocketUrl")));
             System.out.println("constructor");
-          
+            System.out.println("-----------------");
+            System.out.println(payload);
+            System.out.println("-----------------");
+
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -64,9 +67,9 @@ public class SYNXTest {
     public static void main(String[] args) throws Exception {
 
         String ok = "";
-        final SYNXTest synx = new SYNXTest(propFiles[0]);
-        int pc =0;
-        while (ok != null  && (!ok.trim().equalsIgnoreCase("n") && synx.notFinished.get() )) {
+        final SYNXTest synx = new SYNXTest(propFiles[1]);
+        int pc = 0;
+        while (ok != null && (!ok.trim().equalsIgnoreCase("n") && synx.notFinished.get())) {
             pc++;
             executor.submit(new Runnable() {
                 public void run() {
@@ -86,7 +89,7 @@ public class SYNXTest {
         System.out.println("bye bye!");
 
         executor.shutdownNow();
-        executor.awaitTermination(9, TimeUnit.SECONDS);
+        executor.awaitTermination(5, TimeUnit.SECONDS);
     }
 
     private void PostUrl() {
@@ -97,8 +100,8 @@ public class SYNXTest {
             URL url = uri.toURL();
             URLConnection conn = url.openConnection();
             conn.setDoOutput(true);
-            conn.addRequestProperty(props.getProperty("ServerName"), 
-                                    props.getProperty("ServerNo"));
+            conn.addRequestProperty(props.getProperty("ServerName"),
+                    props.getProperty("ServerNo"));
             OutputStreamWriter osw = new OutputStreamWriter(conn.getOutputStream());
             osw.write(getPayload());
             osw.flush();
