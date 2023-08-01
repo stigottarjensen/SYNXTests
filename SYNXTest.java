@@ -97,12 +97,16 @@ public class SYNXTest {
             System.out.println("POST1");
             String u = props.getProperty("httpUrl");
             URI uri = new URI(u);
-            URL url = uri.toURL();
-            URLConnection conn = url.openConnection();
-            conn.setDoOutput(true);
+            URL url = uri.toURL(); 
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+           
             conn.addRequestProperty(props.getProperty("ServerName"),
                     props.getProperty("ServerNo"));
+                     conn.setDoOutput(true);
             OutputStreamWriter osw = new OutputStreamWriter(conn.getOutputStream());
+            // System.out.println("@@@@@@@@@@@@@@");
+            // System.out.println(conn.getHeaderFields());
+            // System.out.println("@@@@@@@@@@@@@@");
             osw.write(getPayload());
             osw.flush();
             osw.close();
@@ -133,7 +137,7 @@ public class SYNXTest {
 
     @OnMessage
     public void onMessage(String message, Session session) {
-        System.out.println(message);
+        System.out.println("WSMessage = "+message);
         // JSONObject rtw = new JSONObject(message);
         // JSONArray json = new JSONArray(rtw.get("RTW").toString());
         // System.out.println(json.toString());
