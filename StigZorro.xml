@@ -1,0 +1,10 @@
+<properties>
+<entry key="address">{"url":"faciliate/swg/1"}</entry>
+<entry key="WebsocketUrl">wss://stig.cioty.com/faciliate/swg/1/channel</entry>
+<entry key="httpUrl">https://stig.cioty.com/zorro</entry>
+<entry key="tokenFaciliate">{"token":"aToken_124b34e931dd12fa57b28be8d56e6dff371cafe3570ab847e49f87012ff2eca0"}</entry>
+<entry key="token">aToken_124b34e931dd12fa57b28be8d56e6dff371cafe3570ab847e49f87012ff2eca0</entry>
+<entry key="objectid">2</entry>
+<entry key="txt">fraMegTilDeg</entry>
+<entry key="hei">schaeferhund</entry>
+</properties>

@@ -26,7 +26,7 @@ public class SYNXTest {
     public String msg = "{\"txt\":\"---melding---\"}";
     Session session;
     public Properties props = new Properties();
-    private static final String[] propFiles = { "SYNXParams.xml", "SYNXParams2.xml" };
+    private static final String[] propFiles = { "StigZorro.xml", "SYNXParams2.xml" };
     private StringBuilder payload = new StringBuilder();
     AtomicBoolean notFinished = new AtomicBoolean(true);
     // private static final ScheduledExecutorService ses =
@@ -104,13 +104,11 @@ public class SYNXTest {
                     props.getProperty("ServerNo"));
                      conn.setDoOutput(true);
             OutputStreamWriter osw = new OutputStreamWriter(conn.getOutputStream());
-            // System.out.println("@@@@@@@@@@@@@@");
-            // System.out.println(conn.getHeaderFields());
-            // System.out.println("@@@@@@@@@@@@@@");
+
             osw.write(getPayload());
             osw.flush();
             osw.close();
-            System.out.println("POST2");
+            System.out.println("HTTP respons kode "+ conn.getResponseCode());
             BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
             String line;
             while ((line = br.readLine()) != null)
