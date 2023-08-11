@@ -1,4 +1,6 @@
 import javax.swing.JOptionPane;
+//import javax.swing.text.html.HTMLDocument.Iterator;
+
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
@@ -12,18 +14,15 @@ import java.net.http.HttpRequest.BodyPublishers;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
-import java.nio.channels.SocketChannel;
-import java.nio.charset.Charset;
-import java.nio.charset.CharsetDecoder;
+import java.nio.channels.*;
+import java.nio.charset.*;
 import java.time.Duration;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 public class SYNXHTTPTest {
     public static Properties props = new Properties();
     private static final String[] propFiles = { "StigZorro.xml", "SYNXParams2.xml" };
-    private StringBuilder payload = new StringBuilder();
+    private static StringBuilder payload = new StringBuilder();
     private static final ExecutorService executor = Executors.newSingleThreadExecutor();
     AtomicBoolean notFinished = new AtomicBoolean(true);
 
@@ -31,7 +30,7 @@ public class SYNXHTTPTest {
         init(propFile);
     }
 
-    private void init(String propFile) {
+    private static void init(String propFile) {
         try {
             System.out.println("Propertis file = " + propFile);
             props.loadFromXML(new FileInputStream(propFile));
@@ -93,6 +92,67 @@ public class SYNXHTTPTest {
         }
     }
 
+    private static void NioHTTPSocket(String SynxCat, String objectID, String melding) {
+        try {
+            System.out.println("NioSocket1");
+            StringBuilder payLoad = new StringBuilder();
+            payLoad.append(payload).append("&objectid=" + objectID);
+            if (melding != null)
+                payLoad.append("&txt=" + melding + "&hei=" + melding);
+            StringBuilder sb = new StringBuilder();
+            sb.append("POST /zorro HTTP/1.1\r\n");
+            sb.append("Host: stig.cioty.com\r\n");
+            sb.append("Synx-Cat: 4\r\n");
+            sb.append("Content-Length: " + payLoad.length() + "\r\n");
+            sb.append("Content-Type: application/x-www-form-urlencoded\r\n\r\n");
+            sb.append(payLoad.toString());
+
+            System.out.println(SynxCat + " " + payLoad);
+            // SocketFactory sf = SSLSocketFactory.getDefault();
+            // Socket so = sf.createSocket(" https://stig.cioty.com", 443);
+            InetSocketAddress address = new InetSocketAddress("stig.cioty.com", 443);
+            ByteBuffer buffer = ByteBuffer.allocate(4096);
+            SocketChannel sChannel = SocketChannel.open();
+            sChannel.connect(address);
+            sChannel.configureBlocking(false);
+            Selector selector = Selector.open();
+            sChannel.register(selector, SelectionKey.OP_WRITE);
+            sChannel.open();
+            final SSLEngine engine = SSLContext.getDefault().createSSLEngine();
+            engine.setUseClientMode(true);
+            engine.beginHandshake();
+            Charset charset = Charset.forName("UTF-8");
+            CharsetDecoder decoder = charset.newDecoder();
+            CharBuffer charBuffer;
+            while (true) {
+                selector.select();
+                Set<SelectionKey> keys = selector.selectedKeys();
+                Iterator<SelectionKey> it = keys.iterator();
+                while (it.hasNext()) {
+                    SelectionKey sk = it.next();
+                    if (sk.isWritable()) {
+                        SocketChannel sc = (SocketChannel) sk.channel();
+                        buffer.clear();
+                        buffer.put(sb.toString().getBytes(charset));
+                        buffer.flip();
+                        while (buffer.hasRemaining())
+                            sc.write(buffer);
+                        sc.register(selector, SelectionKey.OP_READ);
+                    }
+                    if (sk.isReadable()) {
+                        SocketChannel sc = (SocketChannel) sk.channel();
+                        buffer.clear();
+                        sc.read(buffer);
+                        String res = new String(buffer.array(), charset);
+                        System.out.println(res);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     private void HTTPPostSocket(String SynxCat, String objectID, String melding) {
         Socket so;
         try {
@@ -123,56 +183,19 @@ public class SYNXHTTPTest {
             System.out.println(sb);
             bw.flush();
             // token=aToken_124b34e931dd12fa57b28be8d56e6dff371cafe3570ab847e49f87012ff2eca0&objectid=2&txt=jadamasa&hei=jadamasa
-            // ByteBuffer buffer = ByteBuffer.allocate(4096);
-            // SocketChannel sChannel = so.getChannel();
-            // // sChannel.configureBlocking(false);
-            // /* from w w w . jav a 2s.c o m */
-            // Charset charset = Charset.forName("UTF-8");
-            // CharsetDecoder decoder = charset.newDecoder();
-            // CharBuffer charBuffer;
 
             InputStream is = so.getInputStream();
             BufferedReader br = new BufferedReader(new InputStreamReader(is));
 
-            int big = Integer.MAX_VALUE;
             String input = null;
-            while (big > 0) {
-                // sChannel.read(buffer);
-                // buffer.flip();
-                // charBuffer = decoder.decode(buffer);
-                if (is.available() > 0)
-                    input = br.readLine();
-                big--;
-                if (big % 500000 == 0)
-                    System.out.print(input);
-               // Thread.sleep(1);
+            for (int i = 0; i < 10; i++) {
+                while ((input = br.readLine()) != null) {
+                    System.out.println(input);
+                }
+                Thread.sleep(2000);
             }
             so.close();
-            // conn.setRequestProperty("Synx-Cat", SynxCat);
-            // conn.setDoOutput(true);
-            // conn.setDoInput(true);
-
-            // OutputStreamWriter osw = new OutputStreamWriter(conn.getOutputStream());
-
-            // osw.write(payload.toString());
-            // osw.flush();
-            // osw.close();
-            // System.out.println("HTTP respons kode " + conn.getResponseCode());
-            // conn.setReadTimeout(0);
-            // System.out.println(conn.getContent().toString());
-            // BufferedReader br = new BufferedReader(new
-            // InputStreamReader(conn.getInputStream()));
-            // String line;
-            // int t = SynxCat.equals("4") ? 20 : 0;
-            // for (int i = 0; i <= t; i++) {
-            // while ((line = br.readLine()) != null)
-            // System.out.print("$4$" + line);
-            // Thread.sleep(15 * t);
-            // }
-            
-        // } catch (InterruptedException ie) {
-        //    System.out.println("Ferdig socket SynxCat " + SynxCat);
-        //     System.out.println("InterruptedException Ferdig socket SynxCat " + SynxCat);
+             System.out.println("Ferdig socket SynxCat " + SynxCat);
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("Exception Ferdig socket SynxCat " + SynxCat);
@@ -217,6 +240,7 @@ public class SYNXHTTPTest {
             public void run() {
                 try {
                     synx4.HTTPPostSocket("4", "2", "jadamasa");
+                    // SYNXHTTPTest.NioHTTPSocket("4", "2", "jadamasa");
                     // synx4.HTTPPostSocket("4", "2", "jadamasa");
                     // String urlen = props.getProperty("httpUrl");
                     // urlen = "http://localhost:3000";
