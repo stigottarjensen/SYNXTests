@@ -26,7 +26,7 @@ public class SYNXTest {
     public String msg = "{\"txt\":\"---melding---\"}";
     Session session;
     public Properties props = new Properties();
-    private static final String[] propFiles = { "StigZorro.xml", "SYNXParams2.xml" };
+    private static final String[] propFiles = { "StigZorro.xml"};//, "SYNXParams2.xml" };
     private StringBuilder payload = new StringBuilder();
     AtomicBoolean notFinished = new AtomicBoolean(true);
     // private static final ScheduledExecutorService ses =
@@ -67,7 +67,7 @@ public class SYNXTest {
     public static void main(String[] args) throws Exception {
 
         String ok = "";
-        final SYNXTest synx = new SYNXTest(propFiles[1]);
+        final SYNXTest synx = new SYNXTest(propFiles[0]);
         int pc = 0;
         while (ok != null && (!ok.trim().equalsIgnoreCase("n") && synx.notFinished.get())) {
             pc++;
@@ -100,9 +100,8 @@ public class SYNXTest {
             URL url = uri.toURL(); 
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
            
-            conn.addRequestProperty(props.getProperty("ServerName"),
-                    props.getProperty("ServerNo"));
-                     conn.setDoOutput(true);
+            conn.addRequestProperty("Synx-Cat","1");
+            conn.setDoOutput(true);
             OutputStreamWriter osw = new OutputStreamWriter(conn.getOutputStream());
 
             osw.write(getPayload());

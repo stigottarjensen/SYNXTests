@@ -63,7 +63,6 @@ public class SYNXHTTPTest {
             if (melding != null)
                 payLoad.append("&txt=" + melding + "&hei=" + melding);
             String urlEncoded = URLEncoder.encode(payload.toString(), "UTF-8");
-            System.out.println(SynxCat + " " + urlEncoded);
             conn.setRequestProperty("Synx-Cat", SynxCat);
             conn.setDoOutput(true);
             conn.setDoInput(true);
@@ -239,33 +238,41 @@ public class SYNXHTTPTest {
         executor.submit(new Runnable() {
             public void run() {
                 try {
-                    synx4.HTTPPostSocket("4", "2", "jadamasa");
+                    //synx4.HTTPPostSocket("4", "2", "jadamasa");
                     // SYNXHTTPTest.NioHTTPSocket("4", "2", "jadamasa");
                     // synx4.HTTPPostSocket("4", "2", "jadamasa");
-                    // String urlen = props.getProperty("httpUrl");
-                    // urlen = "http://localhost:3000";
-                    // HttpClient httpClient = HttpClient.newHttpClient();
-                    // HttpRequest request = HttpRequest.newBuilder()
-                    // .uri(URI.create(urlen))
+                    String urlen = props.getProperty("httpUrl");
+                    HttpClient httpClient = HttpClient.newHttpClient();
+                    HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(urlen))
                     // .GET()
-                    // // .timeout(Duration.ofSeconds(20))
-                    // // .header("Synx-Cat", "4")
-                    // // .POST(BodyPublishers.ofString(
-                    // //
-                    // "token=aToken_124b34e931dd12fa57b28be8d56e6dff371cafe3570ab847e49f87012ff2eca0&&objectid=1&txt=wsswsw&hei=wsswsw"))
-                    // .build();
+                    .timeout(Duration.ofSeconds(1))
+                    .header("Synx-Cat", "4")
+                    .POST(BodyPublishers.ofString("token=aToken_124b34e931dd12fa57b28be8d56e6dff371cafe3570ab847e49f87012ff2eca0&&objectid=1&txt=wsswsw&hei=wsswsw"))
+                    .build();
+                    HttpResponse<InputStream> response = httpClient.send(request, BodyHandlers.ofInputStream());
+                    InputStream iStream = response.body();
+                    byte[] b = new byte[8192];
+                    System.out.println("Synxcat4 httpclient"); 
+                    while (true){
+                        int size = iStream.read(b);
+                        if (size > 0)
+                            System.out.println(new String(b,0, size));
+                        Thread.sleep(20);
+                    }
+                    
                     // httpClient.sendAsync(request, BodyHandlers.ofString(), pushPromiseHandler())
                     // .thenApply(HttpResponse::body)
                     // .thenAccept((b) -> System.out.println("\nMain resource:\n" + b))
                     // .join();
                     // asyncPushRequests.forEach(CompletableFuture::join);
-                    // // try {
-                    // // Thread.sleep(Duration.ofSeconds(10));
-                    // System.out.println("\nFetched a total of " +
-                    // asyncPushRequests.size() + " push requests");
-                    // // } catch (InterruptedException ie) {
-                    // // ie.printStackTrace(System.out);
-                    // // }
+                    // try {
+                    // Thread.sleep(Duration.ofSeconds(10));
+                    //System.out.println("\nFetched a total of " +
+                    //asyncPushRequests.size() + " push requests");
+                    // } catch (InterruptedException ie) {
+                    // ie.printStackTrace(System.out);
+                    // }
                 } catch (Exception e) {
                     e.printStackTrace(System.out);
                 }
