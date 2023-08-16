@@ -18,6 +18,12 @@ import java.nio.channels.*;
 import java.nio.charset.*;
 import java.time.Duration;
 import java.util.*;
+import org.json.*;
+
+import netscape.javascript.JSObject;
+
+
+//java -cp .:json.jar:any_other.jar  someprog.java
 
 public class SYNXHTTPTest {
     public static Properties props = new Properties();
@@ -45,7 +51,7 @@ public class SYNXHTTPTest {
 
     private static SSLSocketFactory sslsf;
 
-    private void PostUrl(String SynxCat, String objectID, String melding) {
+    private void PostUrl(String SynxCat, String body, String melding) {
         try {
 
             System.out.println("POST1");
@@ -59,7 +65,7 @@ public class SYNXHTTPTest {
             // if (SynxCat.equals("4"))
             // payLoad.append(this.payload).append("&objectID=" + objectID);
             // else
-            payLoad.append(this.payload).append("&objectid=" + objectID);
+            payLoad.append(SYNXHTTPTest.payload).append(body);
             if (melding != null)
                 payLoad.append("&txt=" + melding + "&hei=" + melding);
             String urlEncoded = URLEncoder.encode(payload.toString(), "UTF-8");
@@ -241,25 +247,25 @@ public class SYNXHTTPTest {
                     //synx4.HTTPPostSocket("4", "2", "jadamasa");
                     // SYNXHTTPTest.NioHTTPSocket("4", "2", "jadamasa");
                     // synx4.HTTPPostSocket("4", "2", "jadamasa");
-                    String urlen = props.getProperty("httpUrl");
-                    HttpClient httpClient = HttpClient.newHttpClient();
-                    HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(urlen))
-                    // .GET()
-                    .timeout(Duration.ofSeconds(1))
-                    .header("Synx-Cat", "4")
-                    .POST(BodyPublishers.ofString("token=aToken_124b34e931dd12fa57b28be8d56e6dff371cafe3570ab847e49f87012ff2eca0&&objectid=1&txt=wsswsw&hei=wsswsw"))
-                    .build();
-                    HttpResponse<InputStream> response = httpClient.send(request, BodyHandlers.ofInputStream());
-                    InputStream iStream = response.body();
-                    byte[] b = new byte[8192];
-                    System.out.println("Synxcat4 httpclient"); 
-                    while (true){
-                        int size = iStream.read(b);
-                        if (size > 0)
-                            System.out.println(new String(b,0, size));
-                        Thread.sleep(20);
-                    }
+                    // String urlen = props.getProperty("httpUrl");
+                    // HttpClient httpClient = HttpClient.newHttpClient();
+                    // HttpRequest request = HttpRequest.newBuilder()
+                    // .uri(URI.create(urlen))
+                    // // .GET()
+                    // .timeout(Duration.ofSeconds(1))
+                    // .header("Synx-Cat", "4")
+                    // .POST(BodyPublishers.ofString("token=aToken_124b34e931dd12fa57b28be8d56e6dff371cafe3570ab847e49f87012ff2eca0&&objectid=1&txt=wsswsw&hei=wsswsw"))
+                    // .build();
+                    // HttpResponse<InputStream> response = httpClient.send(request, BodyHandlers.ofInputStream());
+                    // InputStream iStream = response.body();
+                    // byte[] b = new byte[8192];
+                    // System.out.println("Synxcat4 httpclient"); 
+                    // while (true){
+                    //     int size = iStream.read(b);
+                    //     if (size > 0)
+                    //         System.out.println(new String(b,0, size));
+                    //     Thread.sleep(20);
+                    // }
                     
                     // httpClient.sendAsync(request, BodyHandlers.ofString(), pushPromiseHandler())
                     // .thenApply(HttpResponse::body)
@@ -279,10 +285,13 @@ public class SYNXHTTPTest {
             }
         });
 
+        JSONArray jsoa = new JSONArray();
+        JSONObject jsob = new JSONObject();
+
         int pc = 0;
         while (ok != null && (!ok.trim().equalsIgnoreCase("n") && synx.notFinished.get())) {
             pc++;
-            synx.PostUrl("1", "1", ok);
+            synx.PostUrl("1", "&objectid=1", ok);
             // synx4.PostUrl("4", "2", "jadamasa");
             ok = JOptionPane.showInputDialog(null,
                     "Ok to continue, cancel to quit", "OkCancel",
