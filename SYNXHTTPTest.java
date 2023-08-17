@@ -19,11 +19,23 @@ import java.nio.charset.*;
 import java.time.Duration;
 import java.util.*;
 import org.json.*;
+import org.apache.poi.*;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.*;
+import org.apache.poi.openxml4j.opc.*;
+import org.apache.logging.log4j.*;
+import org.apache.commons.compress.archivers.zip.*;
+import org.apache.commons.io.output.*;
+import org.apache.xmlbeans.*;
+import org.apache.commons.collections4.*;
+import org.openxmlformats.schemas.drawingml.x2006.main.*;
 
-import netscape.javascript.JSObject;
 
 
 //java -cp .:json.jar:any_other.jar  someprog.java
+
+//java -cp .:json.jar:poi-5.2.3.jar:poi-ooxml-5.2.3.jar:poi-ooxml-full-5.2.3.jar:log4j-api-2.20.0.jar:log4j-core-2.20.0.jar:
+    //commons-compress-1.23.0.jar:commons-io-2.13.0.jar:xmlbeans-5.1.1.jar:commons-collections4-4.4.jar SYNXHTTPTest.java
 
 public class SYNXHTTPTest {
     public static Properties props = new Properties();
@@ -240,6 +252,13 @@ public class SYNXHTTPTest {
         final SYNXHTTPTest synx = new SYNXHTTPTest(propFiles[0]);
         final SYNXHTTPTest synx4 = new SYNXHTTPTest(propFiles[0]);
         sslsf = SSLContext.getDefault().getSocketFactory();
+
+        OPCPackage pkg = OPCPackage.open(new File("SynxCat_overview_matrix.xlsx"));
+        XSSFWorkbook wb = new XSSFWorkbook(pkg);
+
+       pkg.close();
+
+       //Workbook wb = WorkbookFactory.create(new File("SynxCat_overview_matrix.xlsx"));
 
         executor.submit(new Runnable() {
             public void run() {
