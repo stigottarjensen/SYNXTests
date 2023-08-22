@@ -38,13 +38,27 @@ import org.openxmlformats.schemas.drawingml.x2006.main.*;
 //full command -> java -cp .:json.jar:poi-5.2.3.jar:poi-ooxml-5.2.3.jar:poi-ooxml-full-5.2.3.jar:log4j-api-2.20.0.jar:log4j-core-2.20.0.jar:commons-compress-1.23.0.jar:commons-io-2.13.0.jar:xmlbeans-5.1.1.jar:commons-collections4-4.4.jar SYNXHTTPTest.java
 
 public class SYNXHTTPTest {
-    public static Properties props = new Properties();
+    public static final String RESET = "\u001B[0m";
+    public static final String BLACK = "\u001B[30m";
+    public static final String RED = "\u001B[31m";
+    public static final String GREEN = "\u001B[32m";
+    public static final String YELLOW = "\u001B[33m";
+    public static final String BLUE = "\u001B[34m";
+    public static final String PURPLE = "\u001B[35m";
+    public static final String CYAN = "\u001B[36m";
+    public static final String WHITE = "\u001B[37m";
 
-    // private static final String[] propFiles = { "StigZorro.xml",
-    // "SYNXParams2.xml" };
-    // private static final ExecutorService executor =
-    // Executors.newSingleThreadExecutor();
-    public record TestParams(String SynxCat, String Url, String RequestBody, String Test) {
+    public record TestParams(String SynxCat, String Url, String RequestBody, String Test, int Count, int Pause) { // Count
+                                                                                                                  // :
+                                                                                                                  // how
+                                                                                                                  // many
+                                                                                                                  // times
+                                                                                                                  // testing,
+                                                                                                                  // Pause
+                                                                                                                  // in
+                                                                                                                  // ms
+                                                                                                                  // between
+                                                                                                                  // them
     }
 
     private static final AtomicBoolean finished = new AtomicBoolean(false);
@@ -58,7 +72,7 @@ public class SYNXHTTPTest {
 
     private void PostUrl(TestParams tParams) {
         try {
-            // System.out.println("*********************");
+            System.out.println("******************SynxCat "+tParams.SynxCat);
             String uri = tParams.Url;
             if (!uri.toLowerCase().startsWith("https://"))
                 uri = "https://" + uri;
@@ -83,32 +97,24 @@ public class SYNXHTTPTest {
 
             osw.flush();
             osw.close();
-            // System.out.println("SynxCat: " + tParams.SynxCat);
-            // System.out.println("HTTP respons kode " + conn.getResponseCode() + " Test = "
-            // + tParams.Test);
+
             Logg.offer(new LoggParams(tParams.SynxCat,
                     "HTTP respons kode " + conn.getResponseCode() + " Test = " + tParams.Test));
-            // Thread.sleep(3000);
-            // System.out.println("Start respons-------------------------");
+
             Logg.offer(new LoggParams(tParams.SynxCat, "Start response...... "));
             InputStream is = conn.getInputStream();
             BufferedReader br = new BufferedReader(new InputStreamReader(is));
             String line;
 
             while ((line = br.readLine()) != null) {
-
-                if (line.trim().isEmpty())
-                    Logg.offer(new LoggParams(tParams.SynxCat, "Empty line with " + line.length() + " spaces"));
-                // System.out.println("Empty line with " + line.length() + " spaces");
-                else
-                    Logg.offer(new LoggParams(tParams.SynxCat, line));
-                // System.out.println(line);
+                // if (line.trim().isEmpty())
+                // Logg.offer(new LoggParams(tParams.SynxCat, "Empty line with " + line.length()
+                // + " spaces"));
+                // else
+                Logg.offer(new LoggParams(tParams.SynxCat, line));
             }
-            // System.out.println("Slutt respons-------------------------");
             conn.disconnect();
             Logg.offer(new LoggParams(tParams.SynxCat, "Ferdig SynxCat "));
-            // System.out.println("Ferdig SynxCat " + tParams.SynxCat);
-            // System.out.println();
 
         } catch (Exception e) {
             StringWriter sw = new StringWriter();
@@ -117,96 +123,126 @@ public class SYNXHTTPTest {
         }
     }
 
-    public static void zmain(String[] args) throws Exception {
-        System.out.println("Før ssl");
-        sslsf = SSLContext.getDefault().getSocketFactory();
-        System.out.println("Etter ssl");
-        (new SYNXHTTPTest()).PostUrl(new TestParams("4", "https://stig.cioty.com/zorro",
-                "token=aToken_124b34e931dd12fa57b28be8d56e6dff371cafe3570ab847e49f87012ff2eca0&objectid=2",
-                "Test"));
-    }
+    public static void main(String[] args) {
+        try {
+            System.out.println("Før ssl");
+            sslsf = SSLContext.getDefault().getSocketFactory();
+            System.out.println("Etter ssl");
 
-    public static void main(String[] args) throws Exception {
-        System.out.println("Før ssl");
-        sslsf = SSLContext.getDefault().getSocketFactory();
-        System.out.println("Etter ssl");
+            SYNXHTTPTest synxhttpTest = new SYNXHTTPTest();
+            OPCPackage pkg = OPCPackage.open(new File("SynxCat_test_sheet.xlsx"));
+            XSSFWorkbook wb = new XSSFWorkbook(pkg);
+            Sheet sheet1 = wb.getSheetAt(0);
+            DataFormatter formatter = new DataFormatter();
+            ExecutorService es = Executors.newSingleThreadExecutor();
 
-        SYNXHTTPTest synxhttpTest = new SYNXHTTPTest();
-        OPCPackage pkg = OPCPackage.open(new File("SynxCat_test_sheet.xlsx"));
-        XSSFWorkbook wb = new XSSFWorkbook(pkg);
-        Sheet sheet1 = wb.getSheetAt(0);
-        DataFormatter formatter = new DataFormatter();
-        ExecutorService es = Executors.newSingleThreadExecutor();
+            final List<TestParams> TestList = new ArrayList<>();
 
-        final List<TestParams> TestList = new ArrayList<>();
-
-        for (Row row : sheet1) {
-            int rowIndex = row.getRowNum();
-            if (rowIndex < 4)
-                continue;
-            String SynxCat = "", Url = "", Token = "", RequestBody = "", Test = "";
-            for (Cell cell : row) {
-                int colIndex = cell.getColumnIndex();
-                if (colIndex > 5)
+            for (Row row : sheet1) {
+                int rowIndex = row.getRowNum();
+                if (rowIndex < 4)
                     continue;
+                String SynxCat = "", Url = "", Token = "", RequestBody = "", Test = "";
+                int Count = 1, Pause = 0;
+                for (Cell cell : row) {
+                    int colIndex = cell.getColumnIndex();
+                    if (colIndex > 7)
+                        continue;
 
-                CellReference cellRef = new CellReference(rowIndex, colIndex);
+                    CellReference cellRef = new CellReference(rowIndex, colIndex);
 
-                String cellContent = formatter.formatCellValue(cell);
-                if (colIndex == 1 && !cellContent.equals("1"))
-                    break;
-                if (colIndex > 0 && colIndex < 5 && (cellContent == null || cellContent.length() < 1))
-                    continue;
+                    String cellContent = formatter.formatCellValue(cell);
+                    if (colIndex == 1 && !cellContent.equals("1"))
+                        break;
+                    if (colIndex > 0 && colIndex < 5 && (cellContent == null || cellContent.length() < 1))
+                        continue;
 
-                switch (colIndex) {
-                    case 0:
-                        SynxCat = cellContent;
-                        break;
-                    case 2:
-                        Url = cellContent;
-                        break;
-                    case 3:
-                        Token = cellContent;
-                        break;
-                    case 4:
-                        RequestBody = cellContent;
-                        break;
-                    case 5:
-                        Test = cellContent;
-                        break;
+                    switch (colIndex) {
+                        case 0:
+                            SynxCat = cellContent;
+                            break;
+                        case 2:
+                            Url = cellContent;
+                            break;
+                        case 3:
+                            Token = cellContent;
+                            break;
+                        case 4:
+                            RequestBody = cellContent;
+                            break;
+                        case 5:
+                            Test = cellContent;
+                            break;
+                        case 6:
+                        case 7: {
+                            int n;
+                            try {
+                                n = Integer.parseInt(cellContent);
+                            } catch (NumberFormatException nfe) {
+                                n = 1;
+                            }
+                            if (colIndex == 6)
+                                Count = n;
+                            else
+                                Pause = n;
+                        }
+                    }
+                }
+                RequestBody = (Token.length() > 0 ? "token=" + Token : "")
+                        + (RequestBody.length() > 0 ? "&" + RequestBody : "");
+                if (RequestBody.length() > 0 && RequestBody.charAt(0) == '&')
+                    RequestBody = RequestBody.substring(1);
+                if (Url.length() > 0) {
+                    final TestParams tParams = new TestParams(SynxCat, Url, RequestBody, Test, Count, Pause);
+                    if (SynxCat.equals("4"))
+                        es.execute(new Runnable() {
+                            public void run() {
+                                (new SYNXHTTPTest()).PostUrl(tParams);
+                            }
+                        });
+                    else
+                        TestList.add(tParams);
                 }
             }
-            RequestBody = (Token.length() > 0 ? "token=" + Token : "")
-                    + (RequestBody.length() > 0 ? "&" + RequestBody : "");
-            if (RequestBody.length() > 0 && RequestBody.charAt(0) == '&')
-                RequestBody = RequestBody.substring(1);
-            if (Url.length() > 0) {
-                final TestParams tParams = new TestParams(SynxCat, Url, RequestBody, Test);
-                if (SynxCat.equals("4"))
-                    es.execute(new Runnable() {
-                        public void run() {
-                            (new SYNXHTTPTest()).PostUrl(tParams);
-                        }
-                    });
+
+            pkg.close();
+
+            TestList.forEach((tp) -> {
+                for (int i = 0; i < tp.Count; i++) {
+                    try {
+                        Thread.sleep(tp.Pause);
+                    } catch (InterruptedException inter) {
+                    }
+                    synxhttpTest.PostUrl(tp);
+                }
+            });
+
+            es.shutdownNow();
+            es.awaitTermination(3, TimeUnit.SECONDS);
+            Logg.forEach((param) -> {
+                String COLOR;
+                if (param.SynxCat.equals("4"))
+                    COLOR = YELLOW + "     ";
                 else
-                    TestList.add(tParams);
-            }
+                    COLOR = WHITE;
+                System.out.println(COLOR + param.SynxCat + " -- " + param.LoggText + RESET);
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-
-        pkg.close();
-        // Thread.sleep(5000);
-        TestList.forEach((tp) -> {
-            synxhttpTest.PostUrl(tp);
-        });
-
-        es.shutdownNow();
-        es.awaitTermination(3, TimeUnit.SECONDS);
-        Logg.forEach((param) -> {
-            System.out.println(param.SynxCat + " -- " + param.LoggText);
-        });
         System.out.println("bye bye!");
         System.exit(0);
     }
+
+    // public static void zmain(String[] args) throws Exception {
+    // System.out.println("Før ssl");
+    // sslsf = SSLContext.getDefault().getSocketFactory();
+    // System.out.println("Etter ssl");
+    // (new SYNXHTTPTest()).PostUrl(new TestParams("4",
+    // "https://stig.cioty.com/zorro",
+    // "token=aToken_124b34e931dd12fa57b28be8d56e6dff371cafe3570ab847e49f87012ff2eca0&objectid=2",
+    // "Test"));
+    // }
 }
 
 // executor.submit(new Runnable() {
