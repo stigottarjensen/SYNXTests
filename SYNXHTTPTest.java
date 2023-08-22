@@ -39,61 +39,91 @@ import org.openxmlformats.schemas.drawingml.x2006.main.*;
 
 public class SYNXHTTPTest {
     public static Properties props = new Properties();
+
     // private static final String[] propFiles = { "StigZorro.xml",
     // "SYNXParams2.xml" };
     // private static final ExecutorService executor =
     // Executors.newSingleThreadExecutor();
-    AtomicBoolean notFinished = new AtomicBoolean(true);
+    public record TestParams(String SynxCat, String Url, String RequestBody, String Test) {
+    }
+
+    private static final AtomicBoolean finished = new AtomicBoolean(false);
 
     private static SSLSocketFactory sslsf;
 
-    private static void PostUrl(String SynxCat, String uri, String body, String test) {
+    public record LoggParams(String SynxCat, String LoggText) {
+    }
+
+    private static final BlockingQueue<LoggParams> Logg = new LinkedBlockingQueue<>();
+
+    private void PostUrl(TestParams tParams) {
         try {
-            // URI gUri = new URI(uri);
-            // URL gurl = gUri.toURL();
-            // BufferedReader gbr = new BufferedReader(new
-            // InputStreamReader(gurl.openStream()));
-            // String g;
-            // while ((g = gbr.readLine()) != null) {
-            // System.out.println(g);
-            // Thread.sleep(100);
-            // }
-            // gbr.close();
-            System.out.println("*********************");
+            // System.out.println("*********************");
+            String uri = tParams.Url;
+            if (!uri.toLowerCase().startsWith("https://"))
+                uri = "https://" + uri;
             URI Uri = new URI(uri);
             URL url = Uri.toURL();
             HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
             conn.setSSLSocketFactory(sslsf);
 
-            String urlEncoded = URLEncoder.encode(body, "UTF-8");
-            conn.setRequestProperty("Synx-Cat", SynxCat);
+            String urlEncoded = tParams.RequestBody;
+            conn.setRequestMethod("POST");
+            conn.setRequestProperty("Synx-Cat", tParams.SynxCat);
+            conn.setRequestProperty("Content-Length", urlEncoded.length() + "");
+            if (tParams.SynxCat.equals("4")) {
+                conn.setRequestProperty("Connection", "keep-alive");
+                conn.setRequestProperty("Keep-Alive", "timeout=1200,max=250");// 1200 sek, max 250 connections
+            }
             conn.setDoOutput(true);
             conn.setDoInput(true);
             OutputStreamWriter osw = new OutputStreamWriter(conn.getOutputStream());
 
             osw.write(urlEncoded);
+
             osw.flush();
             osw.close();
-            System.out.println("SynxCat: " + SynxCat);
-            System.out.println("HTTP respons kode " + conn.getResponseCode() + " Test = " + test);
-
-            System.out.println("Start respons-------------------------");
-            BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            // System.out.println("SynxCat: " + tParams.SynxCat);
+            // System.out.println("HTTP respons kode " + conn.getResponseCode() + " Test = "
+            // + tParams.Test);
+            Logg.offer(new LoggParams(tParams.SynxCat,
+                    "HTTP respons kode " + conn.getResponseCode() + " Test = " + tParams.Test));
+            // Thread.sleep(3000);
+            // System.out.println("Start respons-------------------------");
+            Logg.offer(new LoggParams(tParams.SynxCat, "Start response...... "));
+            InputStream is = conn.getInputStream();
+            BufferedReader br = new BufferedReader(new InputStreamReader(is));
             String line;
+
             while ((line = br.readLine()) != null) {
+
                 if (line.trim().isEmpty())
-                    System.out.println("Empty line with " + line.length() + " spaces");
+                    Logg.offer(new LoggParams(tParams.SynxCat, "Empty line with " + line.length() + " spaces"));
+                // System.out.println("Empty line with " + line.length() + " spaces");
                 else
-                    System.out.println(line);
+                    Logg.offer(new LoggParams(tParams.SynxCat, line));
+                // System.out.println(line);
             }
-            System.out.println("Slutt respons-------------------------");
+            // System.out.println("Slutt respons-------------------------");
             conn.disconnect();
-            System.out.println("Ferdig SynxCat " + SynxCat);
-            System.out.println();
+            Logg.offer(new LoggParams(tParams.SynxCat, "Ferdig SynxCat "));
+            // System.out.println("Ferdig SynxCat " + tParams.SynxCat);
+            // System.out.println();
 
         } catch (Exception e) {
-            e.printStackTrace();
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            Logg.offer(new LoggParams(tParams.SynxCat, sw.toString()));
         }
+    }
+
+    public static void zmain(String[] args) throws Exception {
+        System.out.println("Før ssl");
+        sslsf = SSLContext.getDefault().getSocketFactory();
+        System.out.println("Etter ssl");
+        (new SYNXHTTPTest()).PostUrl(new TestParams("4", "https://stig.cioty.com/zorro",
+                "token=aToken_124b34e931dd12fa57b28be8d56e6dff371cafe3570ab847e49f87012ff2eca0&objectid=2",
+                "Test"));
     }
 
     public static void main(String[] args) throws Exception {
@@ -101,10 +131,15 @@ public class SYNXHTTPTest {
         sslsf = SSLContext.getDefault().getSocketFactory();
         System.out.println("Etter ssl");
 
+        SYNXHTTPTest synxhttpTest = new SYNXHTTPTest();
         OPCPackage pkg = OPCPackage.open(new File("SynxCat_test_sheet.xlsx"));
         XSSFWorkbook wb = new XSSFWorkbook(pkg);
         Sheet sheet1 = wb.getSheetAt(0);
         DataFormatter formatter = new DataFormatter();
+        ExecutorService es = Executors.newSingleThreadExecutor();
+
+        final List<TestParams> TestList = new ArrayList<>();
+
         for (Row row : sheet1) {
             int rowIndex = row.getRowNum();
             if (rowIndex < 4)
@@ -146,13 +181,31 @@ public class SYNXHTTPTest {
             if (RequestBody.length() > 0 && RequestBody.charAt(0) == '&')
                 RequestBody = RequestBody.substring(1);
             if (Url.length() > 0) {
-                SYNXHTTPTest.PostUrl(SynxCat, "https://" + Url, RequestBody, Test);
+                final TestParams tParams = new TestParams(SynxCat, Url, RequestBody, Test);
+                if (SynxCat.equals("4"))
+                    es.execute(new Runnable() {
+                        public void run() {
+                            (new SYNXHTTPTest()).PostUrl(tParams);
+                        }
+                    });
+                else
+                    TestList.add(tParams);
             }
         }
 
         pkg.close();
+        // Thread.sleep(5000);
+        TestList.forEach((tp) -> {
+            synxhttpTest.PostUrl(tp);
+        });
 
+        es.shutdownNow();
+        es.awaitTermination(3, TimeUnit.SECONDS);
+        Logg.forEach((param) -> {
+            System.out.println(param.SynxCat + " -- " + param.LoggText);
+        });
         System.out.println("bye bye!");
+        System.exit(0);
     }
 }
 
