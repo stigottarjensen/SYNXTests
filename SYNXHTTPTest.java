@@ -61,18 +61,17 @@ public class SYNXHTTPTest {
                                                                                                                   // them
     }
 
-    private static final AtomicBoolean finished = new AtomicBoolean(false);
 
     private static SSLSocketFactory sslsf;
 
-    public record LoggParams(String SynxCat, String LoggText) {
+    public record LoggParams(int threadNo, String SynxCat, String LoggText) {
     }
 
     private static final BlockingQueue<LoggParams> Logg = new LinkedBlockingQueue<>();
 
     private void PostUrl(TestParams tParams) {
         try {
-            System.out.println("******************SynxCat "+tParams.SynxCat);
+            System.out.println("******************SynxCat " + tParams.SynxCat);
             String uri = tParams.Url;
             if (!uri.toLowerCase().startsWith("https://"))
                 uri = "https://" + uri;
@@ -124,6 +123,117 @@ public class SYNXHTTPTest {
     }
 
     public static void main(String[] args) {
+        try {
+            System.out.println("Før ssl");
+            sslsf = SSLContext.getDefault().getSocketFactory();
+            System.out.println("Etter ssl");
+
+            SYNXHTTPTest synxhttpTest = new SYNXHTTPTest();
+            OPCPackage pkg = OPCPackage.open(new File("SynxCat_test_sheet.xlsx"));
+            XSSFWorkbook wb = new XSSFWorkbook(pkg);
+            Sheet sheet1 = wb.getSheetAt(0);
+            DataFormatter formatter = new DataFormatter();
+            ExecutorService es = Executors.newCachedThreadPool();
+
+            final List<TestParams> TestList = new ArrayList<>();
+
+            for (Row row : sheet1) {
+                int rowIndex = row.getRowNum();
+                if (rowIndex < 4)
+                    continue;
+                String SynxCat = "", Url = "", Token = "", RequestBody = "", Test = "";
+                int Count = 1, Pause = 0;
+                for (Cell cell : row) {
+                    int colIndex = cell.getColumnIndex();
+                    if (colIndex > 7)
+                        continue;
+
+                    CellReference cellRef = new CellReference(rowIndex, colIndex);
+
+                    String cellContent = formatter.formatCellValue(cell);
+                    if (colIndex == 1 && !cellContent.equals("1"))
+                        break;
+                    if (colIndex > 0 && colIndex < 5 && (cellContent == null || cellContent.length() < 1))
+                        continue;
+
+                    switch (colIndex) {
+                        case 0:
+                            SynxCat = cellContent;
+                            break;
+                        case 2:
+                            Url = cellContent;
+                            break;
+                        case 3:
+                            Token = cellContent;
+                            break;
+                        case 4:
+                            RequestBody = cellContent;
+                            break;
+                        case 5:
+                            Test = cellContent;
+                            break;
+                        case 6: {
+                            try {
+                                Count = Integer.parseInt(cellContent);
+                            } catch (NumberFormatException nfe) {
+                                Count = -1;
+                            }
+                            break;
+                        }
+                        case 7: {
+                            try {
+                                Pause = Integer.parseInt(cellContent);
+                            } catch (NumberFormatException nfe) {
+                                Pause = 1;
+                            }
+                            break;
+                        }
+                    }
+                }
+                RequestBody = (Token.length() > 0 ? "token=" + Token : "")
+                        + (RequestBody.length() > 0 ? "&" + RequestBody : "");
+                if (RequestBody.length() > 0 && RequestBody.charAt(0) == '&')
+                    RequestBody = RequestBody.substring(1);
+                if (Url.length() > 0) {
+                    final TestParams tParams = new TestParams(SynxCat, Url, RequestBody, Test, Count, Pause);
+                    TestList.add(tParams);
+                }
+            }
+
+            pkg.close();
+
+            List<Callable<String>> senderList = new ArrayList<>();
+
+            TestList.forEach((tp) -> {
+                for (int i = 0; i < tp.Count; i++) {
+                    senderList.add(new Callable<String>() {
+                        public String call() {
+                            (new SYNXHTTPTest()).PostUrl(tp);
+                            return "1";
+                        }
+                    });
+                }
+
+            });
+            es.invokeAll(senderList);
+            es.shutdownNow();
+            es.awaitTermination(3, TimeUnit.SECONDS);
+            Logg.forEach((param) -> {
+                String COLOR;
+                if (param.SynxCat.equals("4"))
+                    COLOR = YELLOW + "     ";
+                else
+                    COLOR = WHITE;
+                System.out.println(COLOR + param.SynxCat + " -- " + param.LoggText + RESET);
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        System.out.println("bye bye!");
+        System.exit(0);
+    }
+
+    public static void _main(String[] args) {
         try {
             System.out.println("Før ssl");
             sslsf = SSLContext.getDefault().getSocketFactory();
