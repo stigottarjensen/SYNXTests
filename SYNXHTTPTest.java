@@ -77,7 +77,7 @@ public class SYNXHTTPTest {
             conn.setRequestMethod("POST");
             conn.setRequestProperty("Synx-Cat", tParams.SynxCat);
             conn.setRequestProperty("Content-Length", urlEncoded.length() + "");
-            if (tParams.SynxCat.equals("4")) {
+            if (tParams.Count ==0) {
                 conn.setRequestProperty("Connection", "keep-alive");
                 conn.setRequestProperty("Keep-Alive", "timeout=1200,max=250");// 1200 sek, max 250 connections
             }
