@@ -64,10 +64,11 @@ public class SYNXHTTPTest {
         if (tParams.Count == 0)
             textColor = YELLOW + "    ";
         try {
-            System.out.println("******************SynxCat " + tParams.SynxCat);
+            Logg.offer(new LoggParams(threadNo, tParams.SynxCat, "Start post...... ", textColor));
             String uri = tParams.Url;
             if (!uri.toLowerCase().startsWith("https://"))
                 uri = "https://" + uri;
+            
             URI Uri = new URI(uri);
             URL url = Uri.toURL();
             HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
@@ -77,7 +78,7 @@ public class SYNXHTTPTest {
             conn.setRequestMethod("POST");
             conn.setRequestProperty("Synx-Cat", tParams.SynxCat);
             conn.setRequestProperty("Content-Length", urlEncoded.length() + "");
-            if (tParams.Count ==0) {
+            if (tParams.Count == 0) {
                 conn.setRequestProperty("Connection", "keep-alive");
                 conn.setRequestProperty("Keep-Alive", "timeout=1200,max=250");// 1200 sek, max 250 connections
             }
@@ -89,7 +90,7 @@ public class SYNXHTTPTest {
 
             osw.flush();
             osw.close();
-
+        
             Logg.offer(new LoggParams(threadNo, tParams.SynxCat,
                     "HTTP respons kode " + conn.getResponseCode() + " Test = " + tParams.Test, textColor));
 
@@ -97,7 +98,7 @@ public class SYNXHTTPTest {
             InputStream is = conn.getInputStream();
             BufferedReader br = new BufferedReader(new InputStreamReader(is));
             String line;
-
+            
             while ((line = br.readLine()) != null) {
                 Logg.offer(new LoggParams(threadNo, tParams.SynxCat, line, textColor));
             }
@@ -127,6 +128,8 @@ public class SYNXHTTPTest {
             Sheet sheet1 = wb.getSheetAt(0);
             DataFormatter formatter = new DataFormatter();
             ExecutorService es = Executors.newCachedThreadPool();
+            LoggRunner lr = new LoggRunner(Logg);
+            es.execute(lr);
 
             final List<TestParams> TestList = new ArrayList<>();
 
@@ -206,12 +209,14 @@ public class SYNXHTTPTest {
                     }
                 }
             });
+            Thread.sleep(500);
             es.invokeAll(senderList);
-            es.shutdownNow();
-            es.awaitTermination(3, TimeUnit.SECONDS);
-            Logg.forEach((param) -> {
-                System.out.println(param.textColor + param.SynxCat + " -- " + param.LoggText + RESET);
-            });
+            es.shutdown();
+            es.awaitTermination(5, TimeUnit.SECONDS);
+            // Logg.forEach((param) -> {
+            // System.out.println(param.textColor + param.SynxCat + " -- " + param.LoggText
+            // + RESET);
+            // });
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -232,7 +237,26 @@ public class SYNXHTTPTest {
             (new SYNXHTTPTest()).PostUrl(threadNo, tp);
             return "";
         }
-
     }
 
+    private class LoggRunner implements Runnable {
+        BlockingQueue<LoggParams> bq;
+
+        public LoggRunner(BlockingQueue<LoggParams> bq) {
+            this.bq = bq;
+        }
+
+        public void run() {
+            try {
+                long timer = System.nanoTime();
+                while (true) {
+                    LoggParams param = bq.take();
+                    long t = (System.nanoTime()-timer)/1000000;
+                    System.out.println(RED+param.threadNo+RESET+"  "+ param.textColor + param.SynxCat + " -- " + param.LoggText +CYAN+", "+t+"ms"+ RESET);
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 }
