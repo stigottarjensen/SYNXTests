@@ -213,10 +213,6 @@ public class SYNXHTTPTest {
             es.invokeAll(senderList);
             es.shutdown();
             es.awaitTermination(5, TimeUnit.SECONDS);
-            // Logg.forEach((param) -> {
-            // System.out.println(param.textColor + param.SynxCat + " -- " + param.LoggText
-            // + RESET);
-            // });
         } catch (Exception e) {
             e.printStackTrace();
         }
