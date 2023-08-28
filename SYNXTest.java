@@ -101,6 +101,7 @@ public class SYNXTest {
             StringBuilder sb = new StringBuilder();
             while ((line = br.readLine()) != null) {
                 sb.append(line + "\n");
+                System.out.println(line);
             }
             line = sb.toString();
             if (line == null || line.trim().length() < 1)
@@ -227,16 +228,21 @@ public class SYNXTest {
             es.execute(loggRunner);
 
             if (testParamsListener != null)
-                es.submit(new PostUrlRunner(0, testParamsListener));
+                es.submit(new PostUrlRunner(0, testParamsListener, writeRow));
 
             for (int i = 1; i <= testParamsSender.Count; i++) {
-                senderList.add(new PostUrlRunner(i, testParamsSender));
+                senderList.add(new PostUrlRunner(i, testParamsSender, writeRow));
             }
 
             Thread.sleep(500);
             es.invokeAll(senderList);
+            Thread.sleep(500);
             es.shutdown();
             es.awaitTermination(5, TimeUnit.SECONDS);
+            FileOutputStream fos = new FileOutputStream("mcqaz.xlsx");
+            pkg.save(fos);
+           // wb.write(fos);
+            wb.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -247,14 +253,16 @@ public class SYNXTest {
     private class PostUrlRunner implements Callable<String> {
         private int threadNo;
         private TestParams tp;
+        private int writeRow;
 
-        public PostUrlRunner(int threadNo, TestParams tp) {
+        public PostUrlRunner(int threadNo, TestParams tp, int writeRow) {
             this.threadNo = threadNo;
             this.tp = tp;
+            this.writeRow = writeRow;
         }
 
         public String call() {
-            (new SYNXTest()).PostUrl(threadNo, tp);
+            (new SYNXTest()).PostUrl(threadNo, tp, writeRow);
             return "";
         }
     }
@@ -279,9 +287,14 @@ public class SYNXTest {
                     System.out.println(RED + param.threadNo + RESET + "  " + param.textColor + param.SynxCat + " -- "
                             + param.LoggText + CYAN + ", " + t + "ms" + RESET);
                     Row row = sheet1.getRow(param.rowIndex);
-                    if (row == null) row = sheet1.createRow(param.rowIndex);
-                   Cell cell = row.createCell(0);
-                   if (cell == null)
+                    if (row == null)
+                        row = sheet1.createRow(param.rowIndex);
+                    int cellNo = param.threadNo == 0 ? 2 : 0;
+                    Cell cell0 = row.createCell(cellNo);
+                    cell0.setCellValue(param.threadNo);
+                    Cell cell1 = row.createCell(cellNo + 1);
+                    cell1.setCellValue(param.LoggText);
+
                 }
             } catch (InterruptedException e) {
                 e.printStackTrace();
