@@ -53,17 +53,18 @@ public class SYNXTest {
 
     private static SSLSocketFactory sslsf;
 
-    public record LoggParams(int threadNo, int SynxCat, String LoggText, String textColor) {
+    public record LoggParams(int threadNo, int SynxCat, String LoggText, String textColor, int rowIndex) {
     }
 
     private static final BlockingQueue<LoggParams> Logg = new LinkedBlockingQueue<>();
 
-    private void PostUrl(int threadNo, TestParams tParams) {
+    private void PostUrl(int threadNo, TestParams tParams, int rowIndex) {
         String textColor = WHITE;
+        int rowNum = threadNo + rowIndex;
         if (tParams.Count == 0)
             textColor = YELLOW + "    ";
         try {
-            Logg.offer(new LoggParams(threadNo, tParams.SynxCat, "Start post...... ", textColor));
+            Logg.offer(new LoggParams(threadNo, tParams.SynxCat, "Start post...... ", textColor, rowNum));
             String uri = tParams.Url;
             if (!uri.toLowerCase().startsWith("https://"))
                 uri = "https://" + uri;
@@ -91,23 +92,27 @@ public class SYNXTest {
             osw.close();
 
             Logg.offer(new LoggParams(threadNo, tParams.SynxCat,
-                    "HTTP respons kode " + conn.getResponseCode(), textColor));
+                    "HTTP respons kode " + conn.getResponseCode(), textColor, rowNum));
 
-            Logg.offer(new LoggParams(threadNo, tParams.SynxCat, "Start response...... ", textColor));
+            Logg.offer(new LoggParams(threadNo, tParams.SynxCat, "Start response...... ", textColor, rowNum));
             InputStream is = conn.getInputStream();
             BufferedReader br = new BufferedReader(new InputStreamReader(is));
-            String line;
-
+            String line = null;
+            StringBuilder sb = new StringBuilder();
             while ((line = br.readLine()) != null) {
-                Logg.offer(new LoggParams(threadNo, tParams.SynxCat, line, textColor));
+                sb.append(line + "\n");
             }
+            line = sb.toString();
+            if (line == null || line.trim().length() < 1)
+                line = "***Empty response***";
+            Logg.offer(new LoggParams(threadNo, tParams.SynxCat, line, textColor, rowNum));
             conn.disconnect();
-            Logg.offer(new LoggParams(threadNo, tParams.SynxCat, "Ferdig SynxCat ", textColor));
+            Logg.offer(new LoggParams(threadNo, tParams.SynxCat, "Ferdig SynxCat ", textColor, rowNum));
 
         } catch (Exception e) {
             StringWriter sw = new StringWriter();
             e.printStackTrace(new PrintWriter(sw));
-            Logg.offer(new LoggParams(threadNo, tParams.SynxCat, sw.toString(), textColor));
+            Logg.offer(new LoggParams(threadNo, tParams.SynxCat, sw.toString(), textColor, rowNum));
         }
     }
 
@@ -133,9 +138,10 @@ public class SYNXTest {
             OPCPackage pkg = OPCPackage.open(new File("SynxCat_test_sheet v2.xlsx"));
             XSSFWorkbook wb = new XSSFWorkbook(pkg);
             Sheet sheet1 = wb.getSheetAt(0);
+            int writeRow = sheet1.getLastRowNum() + 2;
             DataFormatter formatter = new DataFormatter();
 
-            LoggRunner lr = new LoggRunner(Logg);
+            LoggRunner loggRunner = new LoggRunner(Logg, wb);
             TestParams testParamsSender = null, testParamsListener = null;
 
             final List<TestParams> TestList = new ArrayList<>();
@@ -149,7 +155,7 @@ public class SYNXTest {
 
                 Cell cell = row.getCell(0);
                 String cellValue = cell.getStringCellValue().toLowerCase();
-                System.out.println(cellValue);
+                // System.out.println(cellValue);
                 if (cellValue == null)
                     cellValue = "";
                 switch (cellValue) {
@@ -218,7 +224,7 @@ public class SYNXTest {
 
             List<Callable<String>> senderList = new ArrayList<>();
             ExecutorService es = Executors.newCachedThreadPool();
-            es.execute(lr);
+            es.execute(loggRunner);
 
             if (testParamsListener != null)
                 es.submit(new PostUrlRunner(0, testParamsListener));
@@ -255,9 +261,13 @@ public class SYNXTest {
 
     private class LoggRunner implements Runnable {
         BlockingQueue<LoggParams> bq;
+        XSSFWorkbook wb;
+        Sheet sheet1;
 
-        public LoggRunner(BlockingQueue<LoggParams> bq) {
+        public LoggRunner(BlockingQueue<LoggParams> bq, XSSFWorkbook wb) {
             this.bq = bq;
+            this.wb = wb;
+            sheet1 = wb.getSheetAt(0);
         }
 
         public void run() {
@@ -268,6 +278,10 @@ public class SYNXTest {
                     long t = (System.nanoTime() - timer) / 1000000;
                     System.out.println(RED + param.threadNo + RESET + "  " + param.textColor + param.SynxCat + " -- "
                             + param.LoggText + CYAN + ", " + t + "ms" + RESET);
+                    Row row = sheet1.getRow(param.rowIndex);
+                    if (row == null) row = sheet1.createRow(param.rowIndex);
+                   Cell cell = row.createCell(0);
+                   if (cell == null)
                 }
             } catch (InterruptedException e) {
                 e.printStackTrace();
