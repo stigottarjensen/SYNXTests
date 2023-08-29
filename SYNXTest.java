@@ -48,12 +48,18 @@ public class SYNXTest {
     public static final String CYAN = "\u001B[36m";
     public static final String WHITE = "\u001B[37m";
 
-    public record TestParams(int SynxCat, String Url, String RequestBody, int Count) {
+    private record TestParams(int SynxCat, String Url, String RequestBody, int Count) {
     }
+
+    private record ReportRow(String SenderKey, String SenderValue, String ListenerKey, String ListenerValue) {
+    }
+
+    private static final List<ReportRow> ReportTable = new ArrayList<>();
 
     private static SSLSocketFactory sslsf;
 
-    public record LoggParams(int threadNo, int SynxCat, String LoggText, String textColor, int rowIndex) {
+    public record LoggParams(int threadNo, int SynxCat, String keyText, String LoggText, String textColor,
+            int rowIndex) {
     }
 
     private static final BlockingQueue<LoggParams> Logg = new LinkedBlockingQueue<>();
@@ -64,7 +70,7 @@ public class SYNXTest {
         if (tParams.Count == 0)
             textColor = YELLOW + "    ";
         try {
-            Logg.offer(new LoggParams(threadNo, tParams.SynxCat, "Start post...... ", textColor, rowNum));
+            Logg.offer(new LoggParams(threadNo, tParams.SynxCat, "", "Start post...... ", textColor, rowNum));
             String uri = tParams.Url;
             if (!uri.toLowerCase().startsWith("https://"))
                 uri = "https://" + uri;
@@ -92,28 +98,31 @@ public class SYNXTest {
             osw.close();
 
             Logg.offer(new LoggParams(threadNo, tParams.SynxCat,
-                    "HTTP respons kode " + conn.getResponseCode(), textColor, rowNum));
+                    "HTTP respons kode ", "" + conn.getResponseCode(), textColor, rowNum));
 
-            Logg.offer(new LoggParams(threadNo, tParams.SynxCat, "Start response...... ", textColor, rowNum));
+            Logg.offer(new LoggParams(threadNo, tParams.SynxCat, "", "Start response...... ", textColor, rowNum));
             InputStream is = conn.getInputStream();
             BufferedReader br = new BufferedReader(new InputStreamReader(is));
             String line = null;
             StringBuilder sb = new StringBuilder();
             while ((line = br.readLine()) != null) {
+
+                if (threadNo == 0)
+                    Logg.offer(new LoggParams(threadNo, tParams.SynxCat, "", line, textColor, rowNum));
+
                 sb.append(line + "\n");
-                System.out.println(line);
             }
             line = sb.toString();
             if (line == null || line.trim().length() < 1)
                 line = "***Empty response***";
-            Logg.offer(new LoggParams(threadNo, tParams.SynxCat, line, textColor, rowNum));
+            Logg.offer(new LoggParams(threadNo, tParams.SynxCat, "", line, textColor, rowNum));
             conn.disconnect();
-            Logg.offer(new LoggParams(threadNo, tParams.SynxCat, "Ferdig SynxCat ", textColor, rowNum));
+            Logg.offer(new LoggParams(threadNo, tParams.SynxCat, "", "Ferdig SynxCat ", textColor, rowNum));
 
         } catch (Exception e) {
             StringWriter sw = new StringWriter();
             e.printStackTrace(new PrintWriter(sw));
-            Logg.offer(new LoggParams(threadNo, tParams.SynxCat, sw.toString(), textColor, rowNum));
+            Logg.offer(new LoggParams(threadNo, tParams.SynxCat, "Error", sw.toString(), textColor, rowNum));
         }
     }
 
@@ -129,6 +138,16 @@ public class SYNXTest {
         (new SYNXTest()).mainRunner();
     }
 
+    private String getCellValue(Row row, int index) {
+        Cell c = row.getCell(index);
+        if (c == null)
+            return "";
+        else {
+            String val = c.getStringCellValue();
+            return val == null ? "" : val;
+        }
+    }
+
     private void mainRunner() {
         try {
             System.out.println("Før ssl");
@@ -142,7 +161,7 @@ public class SYNXTest {
             int writeRow = sheet1.getLastRowNum() + 2;
             DataFormatter formatter = new DataFormatter();
 
-            LoggRunner loggRunner = new LoggRunner(Logg, wb);
+            LoggRunner loggRunner = new LoggRunner(Logg);
             TestParams testParamsSender = null, testParamsListener = null;
 
             final List<TestParams> TestList = new ArrayList<>();
@@ -155,8 +174,13 @@ public class SYNXTest {
                 int rowIndex = row.getRowNum();
 
                 Cell cell = row.getCell(0);
+                ReportRow rr = new ReportRow(getCellValue(row, 0),
+                        getCellValue(row, 1),
+                        getCellValue(row, 2),
+                        getCellValue(row, 3));
+                ReportTable.add(rr);
+
                 String cellValue = cell.getStringCellValue().toLowerCase();
-                // System.out.println(cellValue);
                 if (cellValue == null)
                     cellValue = "";
                 switch (cellValue) {
@@ -213,6 +237,8 @@ public class SYNXTest {
                     }
                 }
             }
+            ReportTable.add(new ReportRow("", "", "", ""));
+
             testParamsSender = new TestParams(SynxCatSender, UrlSender, RequestBodySender.toString(),
                     CountSender);
             testParamsListener = SynxCatListener > 0
@@ -225,24 +251,41 @@ public class SYNXTest {
 
             List<Callable<String>> senderList = new ArrayList<>();
             ExecutorService es = Executors.newCachedThreadPool();
+
+            rowCounter[0] = rowCounter[1] = ReportTable.size() + 1;
+
             es.execute(loggRunner);
 
             if (testParamsListener != null)
-                es.submit(new PostUrlRunner(0, testParamsListener, writeRow));
+                es.submit(new PostUrlRunner(0, testParamsListener, ReportTable.size()));
 
             for (int i = 1; i <= testParamsSender.Count; i++) {
-                senderList.add(new PostUrlRunner(i, testParamsSender, writeRow));
+                senderList.add(new PostUrlRunner(i, testParamsSender, ReportTable.size()));
             }
 
             Thread.sleep(500);
             es.invokeAll(senderList);
             Thread.sleep(500);
             es.shutdown();
-            es.awaitTermination(5, TimeUnit.SECONDS);
-            FileOutputStream fos = new FileOutputStream("mcqaz.xlsx");
-            pkg.save(fos);
-           // wb.write(fos);
-            wb.close();
+            es.awaitTermination(3, TimeUnit.SECONDS);
+            PrintWriter pw = new PrintWriter(new File("wsx.html"));
+            pw.println(
+                    "<DOCTYPE html><html><head><style>table, td {border-style:solid; border-width:1px; padding: 2px; font-size:20px;} </style></head><body><table><tbody>");
+            pw.println("<style>table, td {border-style:solid; border-width:1px; padding: 2px;}</style>");
+            pw.println("</head><body><table><tbody>");
+            ReportTable.forEach((row) -> {
+                pw.print("<tr><td>" + row.SenderKey + "</td>");
+                pw.print("<td>" + row.SenderValue + "</td>");
+                pw.print("<td>" + row.ListenerKey + "</td>");
+                pw.println("<td>" + row.ListenerValue + "</td></tr>");
+            });
+            pw.println("</tbody></table></body></html>");
+            pw.flush();
+            pw.close();
+            // FileOutputStream fos = new FileOutputStream("mcqaz.xlsx");
+            // pkg.save(fos);
+            // // wb.write(fos);
+            // wb.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -267,15 +310,14 @@ public class SYNXTest {
         }
     }
 
+    private static final int[] rowCounter = new int[2];
+
     private class LoggRunner implements Runnable {
         BlockingQueue<LoggParams> bq;
-        XSSFWorkbook wb;
-        Sheet sheet1;
 
-        public LoggRunner(BlockingQueue<LoggParams> bq, XSSFWorkbook wb) {
+        public LoggRunner(BlockingQueue<LoggParams> bq) {
             this.bq = bq;
-            this.wb = wb;
-            sheet1 = wb.getSheetAt(0);
+
         }
 
         public void run() {
@@ -283,17 +325,29 @@ public class SYNXTest {
                 long timer = System.nanoTime();
                 while (true) {
                     LoggParams param = bq.take();
+                    boolean threadZero = param.threadNo == 0;
+                    int ind = ++rowCounter[threadZero ? 0 : 1];
                     long t = (System.nanoTime() - timer) / 1000000;
+
+                    String oldSenderKey = "", oldSenderValue = "", oldListenerKey = "", oldListenerValue = "";
+                    ReportRow oldRR = ind < ReportTable.size() ? ReportTable.get(ind) : null;
+                    if (oldRR != null) {
+                        oldSenderKey = oldRR.SenderKey != null ? oldRR.SenderKey : "";
+                        oldSenderValue = oldRR.SenderValue != null ? oldRR.SenderValue : "";
+                        oldListenerKey = oldRR.ListenerKey != null ? oldRR.ListenerKey : "";
+                        oldListenerValue = oldRR.ListenerValue != null ? oldRR.ListenerValue : "";
+                    }
+                    ReportRow rr = new ReportRow(!threadZero ? "Thread:" + param.threadNo : oldSenderKey,
+                            !threadZero ? param.LoggText : oldSenderValue, oldListenerKey,
+                            threadZero ? param.LoggText : oldListenerValue);
+                    ;
+                    if (ind >= ReportTable.size()) {
+                        ReportTable.add(rr);
+                    } else {
+                        ReportTable.set(ind, rr);
+                    }
                     System.out.println(RED + param.threadNo + RESET + "  " + param.textColor + param.SynxCat + " -- "
                             + param.LoggText + CYAN + ", " + t + "ms" + RESET);
-                    Row row = sheet1.getRow(param.rowIndex);
-                    if (row == null)
-                        row = sheet1.createRow(param.rowIndex);
-                    int cellNo = param.threadNo == 0 ? 2 : 0;
-                    Cell cell0 = row.createCell(cellNo);
-                    cell0.setCellValue(param.threadNo);
-                    Cell cell1 = row.createCell(cellNo + 1);
-                    cell1.setCellValue(param.LoggText);
 
                 }
             } catch (InterruptedException e) {
@@ -302,3 +356,12 @@ public class SYNXTest {
         }
     }
 }
+
+// Row row = sheet1.getRow(param.rowIndex);
+// if (row == null)
+// row = sheet1.createRow(param.rowIndex);
+// int cellNo = param.threadNo == 0 ? 2 : 0;
+// Cell cell0 = row.createCell(cellNo);
+// cell0.setCellValue(param.threadNo);
+// Cell cell1 = row.createCell(cellNo + 1);
+// cell1.setCellValue(param.LoggText);
