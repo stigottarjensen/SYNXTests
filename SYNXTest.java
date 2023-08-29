@@ -282,10 +282,6 @@ public class SYNXTest {
             pw.println("</tbody></table></body></html>");
             pw.flush();
             pw.close();
-            // FileOutputStream fos = new FileOutputStream("mcqaz.xlsx");
-            // pkg.save(fos);
-            // // wb.write(fos);
-            // wb.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
