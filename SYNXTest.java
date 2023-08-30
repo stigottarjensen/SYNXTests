@@ -48,10 +48,14 @@ public class SYNXTest {
     public static final String CYAN = "\u001B[36m";
     public static final String WHITE = "\u001B[37m";
 
+    public static final String[] ColorList = new String[] { "#B388FF", "#18FFFF", "#64FFDA",
+            "#B2FF59", "#EEFF41", "#FFAB40", "#FF6E40", "#BCAAA4", "#E0E0E0", "#B0BEC5" };
+
     private record TestParams(int SynxCat, String Url, String RequestBody, int Count) {
     }
 
-    private record ReportRow(String SenderKey, String SenderValue, String ListenerKey, String ListenerValue) {
+    private record ReportRow(String SenderKey, String SenderValue, String SenderTS,
+            String ListenerKey, String ListenerValue, String ListenerTS) {
     }
 
     private static final List<ReportRow> ReportTable = new ArrayList<>();
@@ -175,9 +179,9 @@ public class SYNXTest {
 
                 Cell cell = row.getCell(0);
                 ReportRow rr = new ReportRow(getCellValue(row, 0),
-                        getCellValue(row, 1),
+                        getCellValue(row, 1), "",
                         getCellValue(row, 2),
-                        getCellValue(row, 3));
+                        getCellValue(row, 3), "");
                 ReportTable.add(rr);
 
                 String cellValue = cell.getStringCellValue().toLowerCase();
@@ -237,7 +241,7 @@ public class SYNXTest {
                     }
                 }
             }
-            ReportTable.add(new ReportRow("", "", "", ""));
+            ReportTable.add(new ReportRow("", "", "", "", "", ""));
 
             testParamsSender = new TestParams(SynxCatSender, UrlSender, RequestBodySender.toString(),
                     CountSender);
@@ -268,16 +272,24 @@ public class SYNXTest {
             Thread.sleep(500);
             es.shutdown();
             es.awaitTermination(3, TimeUnit.SECONDS);
-            PrintWriter pw = new PrintWriter(new File("wsx.html"));
-            pw.println(
-                    "<DOCTYPE html><html><head><style>table, td {border-style:solid; border-width:1px; padding: 2px; font-size:20px;} </style></head><body><table><tbody>");
+            PrintWriter pw = new PrintWriter(new File("aaaaaaaaaaaaa.html"));
+            pw.println("<DOCTYPE html><html><head>");
             pw.println("<style>table, td {border-style:solid; border-width:1px; padding: 2px;}</style>");
             pw.println("</head><body><table><tbody>");
+
             ReportTable.forEach((row) -> {
-                pw.print("<tr><td>" + row.SenderKey + "</td>");
-                pw.print("<td>" + row.SenderValue + "</td>");
-                pw.print("<td>" + row.ListenerKey + "</td>");
-                pw.println("<td>" + row.ListenerValue + "</td></tr>");
+                String color;
+                if (row.SenderKey.contains("Thread"))
+                    color = ColorList[row.SenderKey.hashCode() % 10];
+                else
+                    color = "#f4f4f4";
+                color = " style='background:" + color;
+                pw.print("<tr><td " + color + "'>" + htmlEncode(row.SenderKey) + "</td>");
+                pw.print("<td " + color + "'>" + htmlEncode(row.SenderValue) + "</td>");
+                pw.print("<td " + color + "'>" + (row.SenderTS) + "</td>");
+                pw.print("<td>" + htmlEncode(row.ListenerKey) + "</td>");
+                pw.println("<td>" + htmlEncode(row.ListenerValue) + "</td>");
+                pw.print("<td>" + (row.ListenerTS) + "</td></tr>");
             });
             pw.println("</tbody></table></body></html>");
             pw.flush();
@@ -287,6 +299,27 @@ public class SYNXTest {
         }
         System.out.println("bye bye!");
         System.exit(0);
+    }
+
+    private String htmlEncode(String input) {
+        input = input.replace("<", "&lt;");
+        input = input.replace(">", "&gt;");
+        input = input.replace("\u00C3\u00A6", "&aelig;");
+        input = input.replace("\u00C3\u00B8", "&oslash;");
+        input = input.replace("\u00C3\u00A5", "&aring;");
+        input = input.replace("\u00C3\u2020", "&AElig;");
+        input = input.replace("\u00C3\u02DC", "&Oslash;");
+        input = input.replace("\u00C3\u2026", "&Aring;");
+        input = input.replace("\u00C3&#134;", "&AElig;");
+        input = input.replace("\u00C3&#152;", "&Oslash;");
+        input = input.replace("\u00C3&#133;", "&Aring;");
+        input = input.replace("Æ", "&AElig;");
+        input = input.replace("æ", "&aelig;");
+        input = input.replace("Ø", "&Oslash;");
+        input = input.replace("ø", "&oslash;");
+        input = input.replace("Å", "&Aring;");
+        input = input.replace("å", "&aring;");
+        return input;
     }
 
     private class PostUrlRunner implements Callable<String> {
@@ -310,32 +343,52 @@ public class SYNXTest {
 
     private class LoggRunner implements Runnable {
         BlockingQueue<LoggParams> bq;
+        long startTime, diffTime;
+        int count = 0;
 
         public LoggRunner(BlockingQueue<LoggParams> bq) {
             this.bq = bq;
+            startTime = System.nanoTime();
+            diffTime = startTime;
+        }
 
+        private String timeStamp() {
+            long ts = (System.nanoTime() - startTime) / 1000;
+            return ts + " &micro;s";
+        }
+
+        private String diffTimeStamp() {
+            long st = System.nanoTime();
+            long dt = (st - diffTime) / 1000;
+            long ts = (st - startTime) / 1000;
+            diffTime = st;
+            return (++count) + ": " + dt + " &micro;s - " + ts + " &micro;s";
         }
 
         public void run() {
             try {
-                long timer = System.nanoTime();
                 while (true) {
                     LoggParams param = bq.take();
                     boolean threadZero = param.threadNo == 0;
                     int ind = ++rowCounter[threadZero ? 0 : 1];
-                    long t = (System.nanoTime() - timer) / 1000000;
 
-                    String oldSenderKey = "", oldSenderValue = "", oldListenerKey = "", oldListenerValue = "";
+                    String oldSenderKey = "", oldSenderValue = "", oldSenderTS = "", oldListenerKey = "",
+                            oldListenerValue = "", oldListenerTS = "";
                     ReportRow oldRR = ind < ReportTable.size() ? ReportTable.get(ind) : null;
                     if (oldRR != null) {
                         oldSenderKey = oldRR.SenderKey != null ? oldRR.SenderKey : "";
                         oldSenderValue = oldRR.SenderValue != null ? oldRR.SenderValue : "";
+                        oldSenderTS = oldRR.SenderTS != null ? oldRR.SenderTS : "";
                         oldListenerKey = oldRR.ListenerKey != null ? oldRR.ListenerKey : "";
                         oldListenerValue = oldRR.ListenerValue != null ? oldRR.ListenerValue : "";
+                        oldListenerTS = oldRR.ListenerTS != null ? oldRR.ListenerTS : "";
                     }
+
                     ReportRow rr = new ReportRow(!threadZero ? "Thread:" + param.threadNo : oldSenderKey,
-                            !threadZero ? param.LoggText : oldSenderValue, oldListenerKey,
-                            threadZero ? param.LoggText : oldListenerValue);
+                            !threadZero ? param.LoggText : oldSenderValue,
+                            !threadZero ? diffTimeStamp() : oldSenderTS, oldListenerKey,
+                            threadZero ? param.LoggText : oldListenerValue,
+                            threadZero ? diffTimeStamp() : oldListenerTS);
                     ;
                     if (ind >= ReportTable.size()) {
                         ReportTable.add(rr);
@@ -343,7 +396,7 @@ public class SYNXTest {
                         ReportTable.set(ind, rr);
                     }
                     System.out.println(RED + param.threadNo + RESET + "  " + param.textColor + param.SynxCat + " -- "
-                            + param.LoggText + CYAN + ", " + t + "ms" + RESET);
+                            + param.LoggText + CYAN + ", " + timeStamp() + RESET);
 
                 }
             } catch (InterruptedException e) {
