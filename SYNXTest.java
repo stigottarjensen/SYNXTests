@@ -149,7 +149,7 @@ public class SYNXTest {
         String fileName = "SynxCat_test_sheet" + input + ".xlsx";
         File file = new File(fileName);
         if (file.exists())
-            (new SYNXTest()).mainRunner("SynxCat_test_sheet1.xlsx");
+            (new SYNXTest()).mainRunner(fileName);
         else
             System.out.println(fileName + " do not exist");
         System.exit(0);
