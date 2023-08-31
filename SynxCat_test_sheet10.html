@@ -1,0 +1,42 @@
+<DOCTYPE html><html><head>
+<style>table, td {border-style:solid; border-width:1px; border-spacing:0px; padding: 3px; font-size:18px; font-weight:600; }</style>
+</head><body><table><tbody>
+<tr><td  style='background:#f4f4f4'>Sender</td><td  style='background:#f4f4f4'></td><td  style='background:#f4f4f4'></td><td></td><td></td>
+<td></td></tr><tr><td  style='background:#f4f4f4'>Parameter</td><td  style='background:#f4f4f4'>Value</td><td  style='background:#f4f4f4'></td><td></td><td></td>
+<td></td></tr><tr><td  style='background:#f4f4f4'>Count</td><td  style='background:#f4f4f4'>1</td><td  style='background:#f4f4f4'></td><td></td><td></td>
+<td></td></tr><tr><td  style='background:#f4f4f4'>Synx-Cat</td><td  style='background:#f4f4f4'>10</td><td  style='background:#f4f4f4'></td><td></td><td></td>
+<td></td></tr><tr><td  style='background:#f4f4f4'>Url</td><td  style='background:#f4f4f4'>stig.cioty.com/diddi</td><td  style='background:#f4f4f4'></td><td></td><td></td>
+<td></td></tr><tr><td  style='background:#f4f4f4'>Token</td><td  style='background:#f4f4f4'>aToken_124b34e931dd12fa57b28be8d56e6dff371cafe3570ab847e49f87012ff2eca0</td><td  style='background:#f4f4f4'></td><td></td><td></td>
+<td></td></tr><tr><td  style='background:#f4f4f4'>xml</td><td  style='background:#f4f4f4'>&lt;rtw&gt;&lt;tja&gt;&lt;/tja&gt;&lt;hallo&gt;&lt;/hallo&gt;&lt;bjeff&gt;&lt;/bjeff&gt;&lt;/rtw&gt;</td><td  style='background:#f4f4f4'></td><td></td><td></td>
+<td></td></tr><tr><td  style='background:#f4f4f4'>masterScript </td><td  style='background:#f4f4f4'>aGVplGjDpQ==</td><td  style='background:#f4f4f4'></td><td></td><td></td>
+<td></td></tr><tr><td  style='background:#f4f4f4'></td><td  style='background:#f4f4f4'></td><td  style='background:#f4f4f4'></td><td></td><td></td>
+<td></td></tr><tr><td  style='background:#64FFDA'>Thread:1</td><td  style='background:#64FFDA'>Start post...... </td><td  style='background:#64FFDA'>1: 549144 &micro;s - 549144 &micro;s</td><td></td><td></td>
+<td></td></tr><tr><td  style='background:#64FFDA'>Thread:1</td><td  style='background:#64FFDA'>406</td><td  style='background:#64FFDA'>2: 169772 &micro;s - 718917 &micro;s</td><td></td><td></td>
+<td></td></tr><tr><td  style='background:#64FFDA'>Thread:1</td><td  style='background:#64FFDA'>Start response...... </td><td  style='background:#64FFDA'>3: 66 &micro;s - 718984 &micro;s</td><td></td><td></td>
+<td></td></tr><tr><td  style='background:#64FFDA'>Thread:1</td><td  style='background:#64FFDA'>java.io.IOException: Server returned HTTP response code: 406 for URL: https://stig.cioty.com/diddi
+	at java.base/jdk.internal.reflect.DirectConstructorHandleAccessor.newInstance(DirectConstructorHandleAccessor.java:67)
+	at java.base/java.lang.reflect.Constructor.newInstanceWithCaller(Constructor.java:500)
+	at java.base/java.lang.reflect.Constructor.newInstance(Constructor.java:484)
+	at java.base/sun.net.www.protocol.http.HttpURLConnection$10.run(HttpURLConnection.java:2031)
+	at java.base/sun.net.www.protocol.http.HttpURLConnection$10.run(HttpURLConnection.java:2026)
+	at java.base/java.security.AccessController.doPrivileged(AccessController.java:571)
+	at java.base/sun.net.www.protocol.http.HttpURLConnection.getChainedException(HttpURLConnection.java:2025)
+	at java.base/sun.net.www.protocol.http.HttpURLConnection.getInputStream0(HttpURLConnection.java:1601)
+	at java.base/sun.net.www.protocol.http.HttpURLConnection.getInputStream(HttpURLConnection.java:1581)
+	at java.base/sun.net.www.protocol.https.HttpsURLConnectionImpl.getInputStream(HttpsURLConnectionImpl.java:224)
+	at SYNXTest.PostUrl(SYNXTest.java:108)
+	at SYNXTest$PostUrlRunner.call(SYNXTest.java:350)
+	at SYNXTest$PostUrlRunner.call(SYNXTest.java:338)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+	at java.base/java.lang.Thread.run(Thread.java:1623)
+Caused by: java.io.IOException: Server returned HTTP response code: 406 for URL: https://stig.cioty.com/diddi
+	at java.base/sun.net.www.protocol.http.HttpURLConnection.getInputStream0(HttpURLConnection.java:1980)
+	at java.base/sun.net.www.protocol.http.HttpURLConnection.getInputStream(HttpURLConnection.java:1581)
+	at java.base/java.net.HttpURLConnection.getResponseCode(HttpURLConnection.java:529)
+	at java.base/sun.net.www.protocol.https.HttpsURLConnectionImpl.getResponseCode(HttpsURLConnectionImpl.java:308)
+	at SYNXTest.PostUrl(SYNXTest.java:105)
+	... 6 more
+</td><td  style='background:#64FFDA'>4: 223 &micro;s - 719207 &micro;s</td><td></td><td></td>
+<td></td></tr></tbody></table></body></html>

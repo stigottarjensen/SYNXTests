@@ -48,8 +48,8 @@ public class SYNXTest {
     public static final String CYAN = "\u001B[36m";
     public static final String WHITE = "\u001B[37m";
 
-    public static final String[] ColorList = new String[] { "#B388FF", "#18FFFF", "#64FFDA",
-            "#B2FF59", "#EEFF41", "#FFAB40", "#FF6E40", "#BCAAA4", "#E0E0E0", "#B0BEC5" };
+    public static final String[] ColorList = new String[] { "#FFCDD2", "#F8BBD0",
+            "#EEEEEE", "#D1C4E9", "#C5CAE9", "#C5CAE9", "#C8E6C9", "#FFF9C4", "#FFCCBC" };
 
     private record TestParams(int SynxCat, String Url, String RequestBody, int Count) {
     }
@@ -104,7 +104,6 @@ public class SYNXTest {
             Logg.offer(new LoggParams(threadNo, tParams.SynxCat,
                     "HTTP respons kode ", "" + conn.getResponseCode(), textColor, rowNum));
 
-            Logg.offer(new LoggParams(threadNo, tParams.SynxCat, "", "Start response...... ", textColor, rowNum));
             InputStream is = conn.getInputStream();
             BufferedReader br = new BufferedReader(new InputStreamReader(is));
             String line = null;
@@ -121,7 +120,6 @@ public class SYNXTest {
                 line = "***Empty response***";
             Logg.offer(new LoggParams(threadNo, tParams.SynxCat, "", line, textColor, rowNum));
             conn.disconnect();
-            Logg.offer(new LoggParams(threadNo, tParams.SynxCat, "", "Ferdig SynxCat ", textColor, rowNum));
 
         } catch (Exception e) {
             StringWriter sw = new StringWriter();
@@ -138,8 +136,23 @@ public class SYNXTest {
         }
     }
 
-    public static void main(String[] args) {
-        (new SYNXTest()).mainRunner();
+    static final FilenameFilter fnf = new FilenameFilter() {
+        public boolean accept(File f, String name) {
+            return name.startsWith("SynxCat") && name.endsWith("xlsx");
+        }
+    };
+
+    public static void main(String[] args) throws Exception {
+        System.out.print("ENTER SynxCat #: ");
+        Scanner sc = new Scanner(System.in, "UTF-8");
+        int input = sc.nextInt();
+        String fileName = "SynxCat_test_sheet" + input + ".xlsx";
+        File file = new File(fileName);
+        if (file.exists())
+            (new SYNXTest()).mainRunner("SynxCat_test_sheet1.xlsx");
+        else
+            System.out.println(fileName + " do not exist");
+        System.exit(0);
     }
 
     private String getCellValue(Row row, int index) {
@@ -152,14 +165,14 @@ public class SYNXTest {
         }
     }
 
-    private void mainRunner() {
+    private void mainRunner(String fileName) {
         try {
-            System.out.println("Før ssl");
+            ReportTable.clear();
+
             sslsf = SSLContext.getDefault().getSocketFactory();
-            System.out.println("Etter ssl");
 
             SYNXTest synxTest = new SYNXTest();
-            OPCPackage pkg = OPCPackage.open(new File("SynxCat_test_sheet v2.xlsx"));
+            OPCPackage pkg = OPCPackage.open(new File(fileName));
             XSSFWorkbook wb = new XSSFWorkbook(pkg);
             Sheet sheet1 = wb.getSheetAt(0);
             int writeRow = sheet1.getLastRowNum() + 2;
@@ -249,7 +262,6 @@ public class SYNXTest {
                     ? new TestParams(SynxCatListener, UrlListener, RequestBodyListener.toString(),
                             CountListener)
                     : null;
-            System.out.println(testParamsListener.RequestBody);
 
             pkg.close();
 
@@ -272,15 +284,17 @@ public class SYNXTest {
             Thread.sleep(500);
             es.shutdown();
             es.awaitTermination(3, TimeUnit.SECONDS);
-            PrintWriter pw = new PrintWriter(new File("aaaaaaaaaaaaa.html"));
+            String htmlFile = fileName.substring(0, fileName.indexOf(".")) + ".html";
+            PrintWriter pw = new PrintWriter(new File(htmlFile));
             pw.println("<DOCTYPE html><html><head>");
-            pw.println("<style>table, td {border-style:solid; border-width:1px; padding: 2px;}</style>");
+            pw.println(
+                    "<style>table, td {border-style:solid; border-width:1px; border-spacing:0px; padding: 3px; font-size:18px; font-weight:600; }</style>");
             pw.println("</head><body><table><tbody>");
 
             ReportTable.forEach((row) -> {
                 String color;
                 if (row.SenderKey.contains("Thread"))
-                    color = ColorList[row.SenderKey.hashCode() % 10];
+                    color = ColorList[strToInt(row.SenderKey.substring(row.SenderKey.length() - 1)) % ColorList.length];
                 else
                     color = "#f4f4f4";
                 color = " style='background:" + color;
@@ -297,8 +311,6 @@ public class SYNXTest {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        System.out.println("bye bye!");
-        System.exit(0);
     }
 
     private String htmlEncode(String input) {
@@ -405,12 +417,3 @@ public class SYNXTest {
         }
     }
 }
-
-// Row row = sheet1.getRow(param.rowIndex);
-// if (row == null)
-// row = sheet1.createRow(param.rowIndex);
-// int cellNo = param.threadNo == 0 ? 2 : 0;
-// Cell cell0 = row.createCell(cellNo);
-// cell0.setCellValue(param.threadNo);
-// Cell cell1 = row.createCell(cellNo + 1);
-// cell1.setCellValue(param.LoggText);
