@@ -18,7 +18,7 @@ import java.nio.channels.*;
 import java.nio.charset.*;
 import java.time.Duration;
 import java.util.*;
-import org.json.*;
+//import org.json.*;
 import org.apache.poi.*;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.*;
@@ -102,7 +102,8 @@ public class SYNXTest {
             osw.close();
 
             Logg.offer(new LoggParams(threadNo, tParams.SynxCat,
-                    "HTTP respons kode ", "" + conn.getResponseCode(), textColor, rowNum));
+                    "HTTP respons kode ", "HTTP RESPONSE " + conn.getResponseCode() + " " + conn.getResponseMessage(),
+                    textColor, rowNum));
 
             InputStream is = conn.getInputStream();
             BufferedReader br = new BufferedReader(new InputStreamReader(is));
@@ -147,9 +148,10 @@ public class SYNXTest {
         Scanner sc = new Scanner(System.in, "UTF-8");
         int input = sc.nextInt();
         String fileName = "SynxCat_test_sheet" + input + ".xlsx";
-        File file = new File(fileName);
+        String path = "./ExcelFiles/";
+        File file = new File(path + fileName);
         if (file.exists())
-            (new SYNXTest()).mainRunner(fileName);
+            (new SYNXTest()).mainRunner(path, fileName);
         else
             System.out.println(fileName + " do not exist");
         System.exit(0);
@@ -165,14 +167,14 @@ public class SYNXTest {
         }
     }
 
-    private void mainRunner(String fileName) {
+    private void mainRunner(String path, String fileName) {
         try {
             ReportTable.clear();
 
             sslsf = SSLContext.getDefault().getSocketFactory();
 
             SYNXTest synxTest = new SYNXTest();
-            OPCPackage pkg = OPCPackage.open(new File(fileName));
+            OPCPackage pkg = OPCPackage.open(new File(path + fileName));
             XSSFWorkbook wb = new XSSFWorkbook(pkg);
             Sheet sheet1 = wb.getSheetAt(0);
             int writeRow = sheet1.getLastRowNum() + 2;
@@ -215,24 +217,6 @@ public class SYNXTest {
                             SynxCatListener = strToInt(row.getCell(3).getStringCellValue());
                         break;
                     }
-                    case "objectid": {
-                        int objectid = strToInt(row.getCell(1).getStringCellValue());
-                        RequestBodySender.append("&objectid=" + objectid);
-                        Cell c3 = row.getCell(2);
-                        if (c3 != null && c3.getStringCellValue().toLowerCase().equals("objectid"))
-                            objectid = strToInt(row.getCell(3).getStringCellValue());
-                        RequestBodyListener.append("&objectid=" + objectid);
-                        break;
-                    }
-                    case "token": {
-                        String token = row.getCell(1).getStringCellValue();
-                        RequestBodySender.append("token=" + token);
-                        Cell c3 = row.getCell(2);
-                        if (c3 != null && c3.getStringCellValue().toLowerCase().equals("token"))
-                            token = row.getCell(3).getStringCellValue();
-                        RequestBodyListener.append("token=" + token);
-                        break;
-                    }
                     case "url": {
                         UrlSender = row.getCell(1).getStringCellValue();
                         Cell c3 = row.getCell(2);
@@ -249,7 +233,21 @@ public class SYNXTest {
                         if (c != null) {
                             String val = c.getStringCellValue();
                             val = URLEncoder.encode(val, "UTF-8");
-                            RequestBodySender.append("&" + cellValue + "=" + val);
+                            if (RequestBodySender.length() > 0)
+                                RequestBodySender.append("&");
+                            RequestBodySender.append(cellValue + "=" + val);
+                            Cell c3 = row.getCell(2);
+                            String c3val = "";
+                            if (c3 != null) {
+                                c3val = c3.getStringCellValue();
+                                if (row.getCell(3) != null) {
+                                    val = row.getCell(3).getStringCellValue();
+                                    val = URLEncoder.encode(val, "UTF-8");
+                                    if (RequestBodyListener.length() > 0)
+                                        RequestBodyListener.append("&");
+                                    RequestBodyListener.append(c3val + "=" + val);
+                                }
+                            }
                         }
                     }
                 }
@@ -284,7 +282,7 @@ public class SYNXTest {
             Thread.sleep(500);
             es.shutdown();
             es.awaitTermination(3, TimeUnit.SECONDS);
-            String htmlFile = fileName.substring(0, fileName.indexOf(".")) + ".html";
+            String htmlFile = "./HtmlFiles/" + fileName.substring(0, fileName.indexOf(".")) + ".html";
             PrintWriter pw = new PrintWriter(new File(htmlFile));
             pw.println("<DOCTYPE html><html><head>");
             pw.println(
