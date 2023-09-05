@@ -1,0 +1,4 @@
+wish  han hadde ei einaste ku
+address  alle de som æ ø å Æ Ø Å spelle kan de hører hjemme i spelleland
+name  Per Spellmann
+id  123
