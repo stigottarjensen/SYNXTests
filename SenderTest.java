@@ -20,6 +20,7 @@ import java.time.Duration;
 import java.util.*;
 import org.json.*;
 import org.w3c.dom.*;
+import org.xml.sax.InputSource;
 
 import javax.xml.parsers.*;
 
@@ -42,31 +43,51 @@ public class SenderTest {
 
     private static SSLSocketFactory sslsf;
 
-    private void Write2File(String val) throws IOException {
+    private String norwayChar(String s) {
+        s = s.replace("\u00C3\u00A6", "æ");
+        s = s.replace("\u00C3\u00B8", "ø");
+        s = s.replace("\u00C3\u00A5", "å");
+        s = s.replace("\u00C3&#134;", "Æ");
+        s = s.replace("\u00C3&#152;", "Ø");
+        s = s.replace("\u00C3&#133;", "Å");
+        return s.trim();
+    }
+
+    private void Write2File(String val, Writer writer) throws IOException {
         JSONObject jso = new JSONObject(val);
-        String js2 = jso.get("RTW").toString();
-        JSONObject jsobj = new JSONObject(js2);
-        String js3 = jsobj.get("PAYLOAD").toString();
-        JSONObject jsobj2 = new JSONObject(js3);
-        Properties p = Property.toProperties(jsobj2);
-        PrintWriter pw = new PrintWriter(new FileWriter("./output/db.txt"));
+        Properties p = Property.toProperties(jso);
+        PrintWriter pw = new PrintWriter(writer);
         p.forEach((k, v) -> {
             String s = (String) v;
-            s = s.replace("\u00C3\u00A6", "æ");
-            s = s.replace("\u00C3\u00B8", "ø");
-            s = s.replace("\u00C3\u00A5", "å");
-            s = s.replace("\u00C3&#134;", "Æ");
-            s = s.replace("\u00C3&#152;", "Ø");
-            s = s.replace("\u00C3&#133;", "Å");
-            pw.println(k + "  " + s);
+            s = norwayChar(s);
+            String t = (String) k;
+            if (t.trim().length() > 0)
+                pw.println(k + " :  " + s);
         });
         pw.close();
     }
 
+    private Map<String, String> parseXML(InputSource xml) throws Exception {
+        Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder()
+                .parse(xml);
+        Node rtw = doc.getElementsByTagName("RTW").item(0);
+        NodeList nl = rtw.getChildNodes();
+        Map<String, String> map = new HashMap<>();
+        for (int i = 0; i < nl.getLength(); i++) {
+            Node el = nl.item(i);
+            if (!(el instanceof Element))
+                continue;
+            String name = el.getNodeName();
+            String content = URLDecoder.decode(el.getTextContent(), "UTF-8");
+            map.put(name, content);
+        }
+        return map;
+    }
+
     private void PostUrl(Properties prop, String synxcat) {
-      
+
         try {
-            String key = synxcat.equals("4")?"receiver_":"sender_";
+            String key = synxcat.equals("4") ? "receiver_" : "sender_";
 
             String uri = prop.getProperty("httpUrl");
             if (!uri.toLowerCase().startsWith("https://"))
@@ -76,20 +97,24 @@ public class SenderTest {
             URL url = Uri.toURL();
             HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
             conn.setSSLSocketFactory(sslsf);
-            Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(prop.getProperty("inputFilename"));
-            NodeList nl = doc.getChildNodes();
-            for (int i=0; i< nl.getLength(); i++) {
-               Element el = (Element) nl.item(i);
-               String name= el.getNodeName();
-               String content = el.getTextContent();
-               System.out.println(name+"  "+content);
+            StringBuilder sb = new StringBuilder();
+            if (synxcat.equals("1")) {
+                Map<String, String> map = parseXML(new InputSource(new FileReader(prop.getProperty("inputFilename"))));
+
+                for (Map.Entry<String, String> me : map.entrySet()) {
+                    String name = me.getKey();
+                    String content = me.getValue();
+                    sb.append("&" + name + "=" + URLEncoder.encode(content, "UTF-8"));
+                    System.out.println(name + " | " + content);
+                }
             }
-            String urlEncoded = "token="+ prop.getProperty(key+"token")+"&objectid="+prop.getProperty(key+"objectid");
+            String urlEncoded = "token=" + prop.getProperty(key + "token") + "&objectid="
+                    + prop.getProperty(key + "objectid") + sb;
             conn.setRequestMethod("POST");
-            conn.setRequestProperty("Synx-Cat",synxcat);
+            conn.setRequestProperty("Synx-Cat", synxcat);
             conn.setRequestProperty("Content-Length", urlEncoded.length() + "");
             if (synxcat.equals("4")) {
-                conn.setRequestProperty("Connection", "keep-alive");
+                conn.setRequestProperty("Connection", "Keep-Alive");
                 conn.setRequestProperty("Keep-Alive", "timeout=1200,max=250");// 1200 sek, max 250 connections
             }
             conn.setDoOutput(true);
@@ -101,15 +126,27 @@ public class SenderTest {
             osw.flush();
             osw.close();
 
-
             InputStream is = conn.getInputStream();
             BufferedReader br = new BufferedReader(new InputStreamReader(is));
             String line = null;
-            StringBuilder sb = new StringBuilder();
+            int packetCounter = 0;
+            sb.setLength(0);
             while ((line = br.readLine()) != null) {
-                if (line.trim().length()>2)
-                sb.append(line + "\n");
-               // else 
+                if (line.trim().length() > 2) {
+                    sb.append(line + "\n");
+                    line = line.trim();
+                    System.out.println("......");
+                    System.out.println(line);
+                    packetCounter++;
+                    Map<String, String> map = parseXML(new InputSource(new StringReader(line)));
+                    for (Map.Entry<String, String> me : map.entrySet()) {
+                        String name = me.getKey();
+                        String content = me.getValue();
+                        if (name.toLowerCase().equals("payload"))
+                            Write2File(content,
+                                    new PrintWriter(new FileWriter("./testfiles/db" + packetCounter + ".txt")));
+                    }
+                }
             }
             line = sb.toString();
             if (line == null || line.trim().length() < 1)
@@ -118,16 +155,9 @@ public class SenderTest {
             conn.disconnect();
 
         } catch (Exception e) {
+            e.printStackTrace();
             StringWriter sw = new StringWriter();
             e.printStackTrace(new PrintWriter(sw));
-        }
-    }
-
-    private int strToInt(String input) {
-        try {
-            return Integer.parseInt(input);
-        } catch (Exception e) {
-            return 0;
         }
     }
 
