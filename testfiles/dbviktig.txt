@@ -1,0 +1,3 @@
+kjempeviktig :  veldig viktige data
+hemmelig :  krypterte data
+viktig :  seriøse data

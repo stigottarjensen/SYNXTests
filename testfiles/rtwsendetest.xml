@@ -2,6 +2,6 @@
 <TIMESTAMP>2023-05-17 12:34:56</TIMESTAMP>
 <SENTFROM>The Stig</SENTFROM>
 <MOTTAKER>Chessmaster Levang</MOTTAKER>
-<TEMA>noe prat for å sjekke om hiven e frisk</TEMA>
-<PAYLOAD>{"jada":"det betyr ja og slutt å mas","spellmann":"Per, hadde ei ku, men ville heller ha fele","klyver":"ville heller spille fiolin enn å gifte seg"}</PAYLOAD>
+<TEMA>viktig</TEMA>
+<PAYLOAD>{"viktig":"seriøse data", "kjempeviktig":"veldig viktige data","hemmelig":"krypterte data"}</PAYLOAD>
 </RTW>

@@ -22,7 +22,7 @@ import org.w3c.dom.*;
 import org.xml.sax.InputSource;
 import javax.xml.parsers.*;
 
-public class SenderTest {
+public class SenderTestJson {
 
     private static SSLSocketFactory sslsf;
 
@@ -154,7 +154,7 @@ public class SenderTest {
 
             sslsf = SSLContext.getDefault().getSocketFactory();
 
-            SenderTest senderTest = new SenderTest();
+            SenderTestJson senderTest = new SenderTestJson();
 
             senderTest.PostUrl(prop, SynxCat);
 
