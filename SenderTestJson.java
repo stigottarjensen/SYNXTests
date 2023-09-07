@@ -70,7 +70,6 @@ public class SenderTestJson {
                     String name = it.next();
                     String content = rtw.get(name).toString();
                     sb.append("&" + name + "=" + URLEncoder.encode(content, "UTF-8"));
-                    System.out.println(name + " | " + content);
                 }
             }
             if (synxcat.equals("4"))
@@ -105,7 +104,6 @@ public class SenderTestJson {
                     System.out.println(line);
                     parseJSON(JSONText);
                     String tema = rtw.get("TEMA").toString();
-                    System.out.println(tema);
                     Write2File(
                             new PrintWriter(new FileWriter("./testfiles/db" + tema + ".txt")));
                 }
