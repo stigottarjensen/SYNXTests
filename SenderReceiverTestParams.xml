@@ -8,5 +8,6 @@
 <entry key="receiver_token">aToken_124b34e931dd12fa57b28be8d56e6dff371cafe3570ab847e49f87012ff2eca0</entry>
 <entry key="receiver_objectid">1</entry>
 <entry key="inputFilename">./testfiles/rtwsendetest.xml</entry>
+<entry key="inputFilenameJson">./testfiles/rtwsendetest.json</entry>
 <entry key="outputFilename">./testfiles/output.txt</entry>
 </properties>

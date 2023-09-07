@@ -1,1 +1,1 @@
-java -cp .:./jar/json.jar:./jar/json2.jar SenderTest.java 4
+java -cp .:./jar/json.jar:./jar/json2.jar SenderTestJson.java 4

@@ -3,9 +3,9 @@
         "TIMESTAMP": "2023-05-17 12:34:56",
         "SENTFROM": "The Stig",
         "MOTTAKER": "Chessmaster Levang",
-        "TEMA": "viktig",
+        "TEMA": "håÆØÅ",
         "PAYLOAD": {
-            "viktig": "seriøse data",
+            "viktig": "seriøse äüïæøåÆØÅ data",
             "kjempeviktig": "veldig viktige data",
             "hemmelig": "krypterte data"
         }

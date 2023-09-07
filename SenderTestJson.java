@@ -26,23 +26,15 @@ public class SenderTestJson {
 
     private static SSLSocketFactory sslsf;
 
-    private String norwayChar(String s) {
-        s = s.replace("\u00C3\u00A6", "æ");
-        s = s.replace("\u00C3\u00B8", "ø");
-        s = s.replace("\u00C3\u00A5", "å");
-        s = s.replace("\u00C3&#134;", "Æ");
-        s = s.replace("\u00C3&#152;", "Ø");
-        s = s.replace("\u00C3&#133;", "Å");
-        return s.trim();
-    }
+    private String JSONText = "";
+    private JSONObject rtw;
+    private JSONObject payload;
 
-    private void Write2File(String val, Writer writer) throws IOException {
-        JSONObject jso = new JSONObject(val);
-        Properties p = Property.toProperties(jso);
+    private void Write2File(Writer writer) throws IOException {
+        Properties p = Property.toProperties(payload);
         PrintWriter pw = new PrintWriter(writer);
         p.forEach((k, v) -> {
             String s = (String) v;
-            s = norwayChar(s);
             String t = (String) k;
             if (t.trim().length() > 0)
                 pw.println(k + " :  " + s);
@@ -50,21 +42,10 @@ public class SenderTestJson {
         pw.close();
     }
 
-    private Map<String, String> parseXML(InputSource xml) throws Exception {
-        Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder()
-                .parse(xml);
-        Node rtw = doc.getElementsByTagName("RTW").item(0);
-        NodeList nl = rtw.getChildNodes();
-        Map<String, String> map = new HashMap<>();
-        for (int i = 0; i < nl.getLength(); i++) {
-            Node el = nl.item(i);
-            if (!(el instanceof Element))
-                continue;
-            String name = el.getNodeName();
-            String content = URLDecoder.decode(el.getTextContent(), "UTF-8");
-            map.put(name, content);
-        }
-        return map;
+    private void parseJSON(String jsonText) throws Exception {    
+        JSONObject jso = new JSONObject(jsonText);
+        rtw = new JSONObject(jso.get("RTW").toString());
+        payload = new JSONObject(rtw.get("PAYLOAD").toString());
     }
 
     private void PostUrl(Properties prop, String synxcat) {
@@ -82,11 +63,12 @@ public class SenderTestJson {
             conn.setSSLSocketFactory(sslsf);
             StringBuilder sb = new StringBuilder();
             if (synxcat.equals("1")) {
-                Map<String, String> map = parseXML(new InputSource(new FileReader(prop.getProperty("inputFilename"))));
+                parseJSON(JSONText);
 
-                for (Map.Entry<String, String> me : map.entrySet()) {
-                    String name = me.getKey();
-                    String content = me.getValue();
+                Iterator<String> it = rtw.keys(); 
+                while (it.hasNext()) {
+                    String name = it.next();
+                    String content = rtw.get(name).toString();
                     sb.append("&" + name + "=" + URLEncoder.encode(content, "UTF-8"));
                     System.out.println(name + " | " + content);
                 }
@@ -121,11 +103,10 @@ public class SenderTestJson {
                     line = line.trim();
                     System.out.println("......");
                     System.out.println(line);
-                    Map<String, String> map = parseXML(new InputSource(new StringReader(line)));
-                    String tema = map.get("TEMA");
-                    String payload = map.get("PAYLOAD");
+                    parseJSON(JSONText);
+                    String tema = rtw.get("TEMA").toString();
                     System.out.println(tema);
-                    Write2File(payload,
+                    Write2File(
                             new PrintWriter(new FileWriter("./testfiles/db" + tema + ".txt")));
                 }
             }
@@ -144,18 +125,26 @@ public class SenderTestJson {
 
     public static void main(String[] args) throws Exception {
         try {
+
             String fileName = "./SenderReceiverTestParams.xml";
             String SynxCat = args != null && args.length > 0 ? args[0] : "1";
             if (!SynxCat.equals("1"))
                 SynxCat = "4";
-            FileInputStream file = new FileInputStream(fileName);
+            FileInputStream fInput = new FileInputStream(fileName);
             Properties prop = new Properties();
-            prop.loadFromXML(file);
+            prop.loadFromXML(fInput);
 
             sslsf = SSLContext.getDefault().getSocketFactory();
 
             SenderTestJson senderTest = new SenderTestJson();
-
+            FileReader file = new FileReader(prop.getProperty("inputFilenameJson"));
+            BufferedReader br = new BufferedReader(file);
+            StringBuilder sb = new StringBuilder();
+            String line;
+            while ((line = br.readLine()) != null) {
+                sb.append(line.trim());
+            }
+            senderTest.JSONText = sb.toString();
             senderTest.PostUrl(prop, SynxCat);
 
         } catch (Exception e) {
