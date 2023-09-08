@@ -110,7 +110,7 @@ public class SenderTestJson {
                     long t = System.currentTimeMillis();
                     t = (t/1000)%1000;
                     Write2File(
-                            new PrintWriter(new FileWriter("./outputjava/db" + tema +t+ ".txt")));
+                            new PrintWriter(new FileWriter("./outputjava/" + tema +t+ ".txt")));
                 }
             }
             line = sb.toString();
