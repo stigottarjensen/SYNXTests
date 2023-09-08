@@ -42,7 +42,7 @@ public class SenderTestJson {
         pw.close();
     }
 
-    private void parseJSON(String jsonText) throws Exception {    
+    private void parseJSON(String jsonText) throws Exception {
         JSONObject jso = new JSONObject(jsonText);
         rtw = new JSONObject(jso.get("RTW").toString());
         payload = new JSONObject(rtw.get("PAYLOAD").toString());
@@ -53,7 +53,8 @@ public class SenderTestJson {
         try {
             String key = synxcat.equals("4") ? "receiver_" : "sender_";
 
-            String uri = prop.getProperty("httpUrl");
+            String uri = prop.getProperty("httpUrl") 
+                + prop.getProperty("path");
             if (!uri.toLowerCase().startsWith("https://"))
                 uri = "https://" + uri;
 
@@ -65,12 +66,13 @@ public class SenderTestJson {
             if (synxcat.equals("1")) {
                 parseJSON(JSONText);
 
-                Iterator<String> it = rtw.keys(); 
+                Iterator<String> it = rtw.keys();
                 while (it.hasNext()) {
                     String name = it.next();
                     String content = rtw.get(name).toString();
                     sb.append("&" + name + "=" + URLEncoder.encode(content, "UTF-8"));
                 }
+                System.out.println(sb);
             }
             if (synxcat.equals("4"))
                 sb.append("&format=json");
@@ -124,13 +126,13 @@ public class SenderTestJson {
     public static void main(String[] args) throws Exception {
         try {
 
-            String fileName = "./SenderReceiverTestParams.xml";
+            String fileName = "./SenderReceiverTestParams.properties";
             String SynxCat = args != null && args.length > 0 ? args[0] : "1";
             if (!SynxCat.equals("1"))
                 SynxCat = "4";
             FileInputStream fInput = new FileInputStream(fileName);
             Properties prop = new Properties();
-            prop.loadFromXML(fInput);
+            prop.load(fInput);
 
             sslsf = SSLContext.getDefault().getSocketFactory();
 
