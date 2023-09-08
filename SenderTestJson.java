@@ -1,26 +1,12 @@
-import javax.swing.JOptionPane;
-//import javax.swing.text.html.HTMLDocument.Iterator;
 
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Function;
 import java.io.*;
 import java.net.*;
 import javax.net.SocketFactory;
 import javax.net.ssl.*;
 import java.net.http.*;
-import java.net.http.HttpRequest.BodyPublishers;
-import java.net.http.HttpResponse.BodyHandlers;
-import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
-import java.nio.channels.*;
-import java.nio.charset.*;
 import java.time.Duration;
 import java.util.*;
 import org.json.*;
-import org.w3c.dom.*;
-import org.xml.sax.InputSource;
-import javax.xml.parsers.*;
 
 public class SenderTestJson {
 
@@ -154,5 +140,4 @@ public class SenderTestJson {
             e.printStackTrace();
         }
     }
-
 }
