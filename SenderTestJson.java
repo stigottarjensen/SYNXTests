@@ -79,6 +79,7 @@ public class SenderTestJson {
             String urlEncoded = "token=" + prop.getProperty(key + "token") + "&objectid="
                     + prop.getProperty(key + "objectid") + sb;
             conn.setRequestMethod("POST");
+            conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
             conn.setRequestProperty("Synx-Cat", synxcat);
             conn.setRequestProperty("Content-Length", urlEncoded.length() + "");
             if (synxcat.equals("4")) {
@@ -106,8 +107,10 @@ public class SenderTestJson {
                     System.out.println(line);
                     parseJSON(JSONText);
                     String tema = rtw.get("TEMA").toString();
+                    long t = System.currentTimeMillis();
+                    t = (t/1000)%1000;
                     Write2File(
-                            new PrintWriter(new FileWriter("./testfiles/db" + tema + ".txt")));
+                            new PrintWriter(new FileWriter("./outputjava/db" + tema +t+ ".txt")));
                 }
             }
             line = sb.toString();
