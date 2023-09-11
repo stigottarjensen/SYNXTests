@@ -33,7 +33,6 @@ public class SenderTestJson {
     }
 
     private void parseJSON(String jsonText) throws Exception {
-       // xml = jsonText.startsWith("<");
         JSONObject jso = xml ? XML.toJSONObject(jsonText) : new JSONObject(jsonText);
         String xml = XML.toString(jso);
         System.out.println(xml);
