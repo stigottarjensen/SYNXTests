@@ -17,6 +17,7 @@ public class SenderTestJson {
     private String JSONText = "";
     private JSONObject rtw;
     private JSONObject payload;
+    private boolean xml = false;
 
     private void Write2File(String path) throws IOException {
         PrintWriter writer = new PrintWriter(new FileWriter(path));
@@ -32,12 +33,17 @@ public class SenderTestJson {
     }
 
     private void parseJSON(String jsonText) throws Exception {
-        JSONObject jso = new JSONObject(jsonText);
+       // xml = jsonText.startsWith("<");
+        JSONObject jso = xml ? XML.toJSONObject(jsonText) : new JSONObject(jsonText);
+        String xml = XML.toString(jso);
+        System.out.println(xml);
+        JSONObject jason = XML.toJSONObject(xml);
+        System.out.println(jason.toString());
         rtw = new JSONObject(jso.get("RTW").toString());
         payload = new JSONObject(rtw.get("PAYLOAD").toString());
     }
 
-    private String PostUrl(int threadNo, Properties prop, String synxcat) {
+    private String PostUrl(Properties prop, String synxcat) {
 
         StringBuilder ret = new StringBuilder();
         try {
@@ -62,9 +68,9 @@ public class SenderTestJson {
                     String content = rtw.get(name).toString();
                     sb.append("&" + name + "=" + URLEncoder.encode(content, "UTF-8"));
                 }
-                // System.out.println(sb);
+                System.out.println(sb);
             }
-            if (synxcat.equals("4"))
+            if (synxcat.equals("4") && !xml)
                 sb.append("&format=json");
             String urlEncoded = "token=" + prop.getProperty(key + "token") + "&objectid="
                     + prop.getProperty(key + "objectid") + sb;
@@ -95,11 +101,12 @@ public class SenderTestJson {
                     line = line.trim();
                     ret.append("......");
                     ret.append(line);
+                    System.out.println("..... " + line);
                     parseJSON(JSONText);
                     String tema = rtw.get("TEMA").toString();
                     long t = System.currentTimeMillis();
                     t = (t / 1000) % 1000;
-                    Write2File("./outputjava/Tno" + threadNo + tema + t + ".txt");
+                    Write2File("./outputjava/" + tema + t + ".txt");
                 }
             }
             line = sb.toString();
@@ -136,14 +143,19 @@ public class SenderTestJson {
             int threads = args != null && args.length > 1 && SynxCat.equals("1")
                     ? strToInt(args[1], 1)
                     : 1;
+
+            SenderTestJson senderTest = new SenderTestJson();
+            senderTest.xml = args!= null && args.length>2;
+
             FileInputStream fInput = new FileInputStream(fileName);
             Properties prop = new Properties();
             prop.load(fInput);
 
             sslsf = SSLContext.getDefault().getSocketFactory();
 
-            SenderTestJson senderTest = new SenderTestJson();
-            FileReader file = new FileReader(prop.getProperty("inputFilenameJson"));
+            
+            FileReader file = 
+                new FileReader(prop.getProperty(senderTest.xml?"inputFilename":"inputFilenameJson"));
             BufferedReader br = new BufferedReader(file);
             StringBuilder sb = new StringBuilder();
             String line;
@@ -153,13 +165,13 @@ public class SenderTestJson {
             senderTest.JSONText = sb.toString();
 
             if (threads == 1)
-                senderTest.PostUrl(0, prop, SynxCat);
+                senderTest.PostUrl(prop, SynxCat);
             else {
                 int cpus = Runtime.getRuntime().availableProcessors();
                 ExecutorService es = Executors.newFixedThreadPool(threads < cpus ? threads : cpus);
                 CountDownLatch cdl = new CountDownLatch(threads);
                 for (int i = 1; i <= threads; i++) {
-                    es.submit(senderTest.runPost(i, prop, SynxCat, cdl));
+                    es.submit(senderTest.runPost(prop, SynxCat, cdl));
                 }
                 cdl.await(threads * 2, TimeUnit.SECONDS);
                 es.shutdown();
@@ -171,25 +183,23 @@ public class SenderTestJson {
         }
     }
 
-    private PostRunner runPost(int threadNo, Properties p, String synxcat, CountDownLatch cdl) {
-        return new PostRunner(threadNo, p, synxcat, cdl);
+    private PostRunner runPost(Properties p, String synxcat, CountDownLatch cdl) {
+        return new PostRunner(p, synxcat, cdl);
     }
 
     class PostRunner implements Runnable {
-        private int threadNo;
         private Properties prop;
         private String synxcat;
         private CountDownLatch cdl;
 
-        public PostRunner(int threadNo, Properties p, String synxcat, CountDownLatch cdl) {
-            this.threadNo = threadNo;
+        public PostRunner(Properties p, String synxcat, CountDownLatch cdl) {
             this.prop = p;
             this.synxcat = synxcat;
             this.cdl = cdl;
         }
 
         public void run() {
-            String s = PostUrl(this.threadNo, this.prop, this.synxcat);
+            String s = PostUrl(this.prop, this.synxcat);
             System.out.println(s);
             cdl.countDown();
         }
