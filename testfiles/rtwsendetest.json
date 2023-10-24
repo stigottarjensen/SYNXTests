@@ -4,6 +4,7 @@
         "SENTFROM": "The Stig",
         "MOTTAKER": "Chessmaster Levang",
         "TEMA": "ThisIsIt",
+        "REFID": "uuid",
         "PAYLOAD": {
             "viktig": "seriøse äüïæøåÆØÅ data",
             "kjempeviktig": "veldig viktige data",

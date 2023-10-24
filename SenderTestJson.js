@@ -58,8 +58,9 @@ const request = https.request(options, (res) => {
   let data = '';
   res.on('data', (chunk) => { 
     data = chunk; 
-    console.log(data);
+
     const rtw = JSON.parse(data)['RTW'];
+    console.log(rtw);
     const payload = rtw['PAYLOAD'];
     const jsonpay = JSON.parse(payload);
     writefile(jsonpay, rtw['TEMA']);
