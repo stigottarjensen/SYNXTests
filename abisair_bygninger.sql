@@ -1,4 +1,4 @@
-SELECT TOP (3) [BBY_Nr]
+SELECT [BBY_Nr]
       ,[BBO_Nr]
       ,trim([BBY_Navn]) as Bygningsnavn
       ,trim([BBY_Gate]) as Bygningsadresse
@@ -19,4 +19,3 @@ SELECT TOP (3) [BBY_Nr]
       ,trim([BBY_Verneverdig]) as Verneverdig
       ,[BBY_Rehabilitert_ar]
   FROM [Abisair].[dbo].[BBY_Bygning] 
-for JSON path
