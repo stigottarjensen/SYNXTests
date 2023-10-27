@@ -8,8 +8,6 @@ import java.time.Duration;
 import java.util.*;
 import org.json.*;
 
-import com.apple.laf.ClientPropertyApplicator.Property;
-
 import java.sql.*;
 
 import java.util.concurrent.*;
@@ -24,7 +22,7 @@ public class HiveAbisairBygninger {
     private boolean xml = false;
     private Properties pr = new Properties();
 
-    private void Write2File(String path) throws IOException {
+    private void Write2File(String path, JSONObject payload) throws IOException {
         PrintWriter writer = new PrintWriter(new FileWriter(path));
         Properties p = Property.toProperties(payload);
         PrintWriter pw = new PrintWriter(writer);
@@ -67,34 +65,16 @@ public class HiveAbisairBygninger {
             System.out.println(js);
             PostUrl(prop, "1", js);
         }
-        String s = "ss";
-        // sb.setLength(0);
-        // BufferedReader br = new BufferedReader(rs.getCharacterStream(1));
-        // System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
-        // while ((s = br.readLine()) != null) {
-        // // sb.append(s);
-        // System.out.println(s);
-        // }
-        // // s = sb.toString();
-        // System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
-        // rs.close();
-        if (s != "")
-            System.exit(23);
-        return s;
     }
 
     private JSONObject parseJSON(String jsonText) throws Exception {
         JSONObject jso = xml ? XML.toJSONObject(jsonText) : new JSONObject(jsonText);
-        // String xml = XML.toString(jso);
-        // System.out.println(xml);
-        // JSONObject jason = XML.toJSONObject(xml);
-        // System.out.println(jason.toString());
         rtw = new JSONObject(jso.get("RTW").toString());
         return rtw;
-        // payload = new JSONObject(rtw.get("PAYLOAD").toString());
     }
 
-    // curl -k https://stig.cioty.com -H "Synx-Cat: 4" -d "token=aToken_124b34e931dd12fa57b28be8d56e6dff371cafe3570ab847e49f87012ff2eca0&objectid=1&payload=hello"
+    // curl -k https://stig.cioty.com -H "Synx-Cat: 4" -d
+    // "token=aToken_124b34e931dd12fa57b28be8d56e6dff371cafe3570ab847e49f87012ff2eca0&objectid=1&payload=hello"
     private String PostUrl(Properties prop, String synxcat, JSONObject queryresult) {
 
         StringBuilder ret = new StringBuilder();
@@ -114,7 +94,6 @@ public class HiveAbisairBygninger {
             if (synxcat.equals("1")) {
                 JSONObject rtw = parseJSON(JSONText);
                 rtw.put("PAYLOAD", queryresult);
-                // rtw.put("PAYLOAD", "WWWWWWWWWWWWWWWWWWWWWWWWWWWW");
                 Iterator<String> it = rtw.keys();
                 while (it.hasNext()) {
                     String name = it.next();
@@ -122,7 +101,7 @@ public class HiveAbisairBygninger {
                     sb.append("&" + name + "=" + URLEncoder.encode(content, "UTF-8"));
                 }
             }
-            if (synxcat.equals("4") && !xml)
+            if (synxcat.equals("4"))
                 sb.append("&format=json");
             String urlEncoded = "token=" + prop.getProperty(key + "token") + "&objectid="
                     + prop.getProperty(key + "objectid") + sb;
@@ -192,23 +171,14 @@ public class HiveAbisairBygninger {
 
             if (!SynxCat.equals("1"))
                 SynxCat = "4";
-            int threads = args != null && args.length > 1 && SynxCat.equals("1")
-                    ? strToInt(args[1], 1)
-                    : 1;
 
             HiveAbisairBygninger hiveAbis = new HiveAbisairBygninger();
-                FileInputStream fInput = new FileInputStream(fileName);
+            FileInputStream fInput = new FileInputStream(fileName);
             Properties prop = new Properties();
             prop.load(fInput);
-
-            String s = hiveAbis.GetBygninger(prop);
-            hiveAbis.payload = new JSONObject("{\"resultlist\":" + s + "}");
-            hiveAbis.xml = args != null && args.length > 2;
-
-        
             sslsf = SSLContext.getDefault().getSocketFactory();
 
-            FileReader file = new FileReader(prop.getProperty(hiveAbis.xml ? "inputFilename" : "inputFilenameJson"));
+            FileReader file = new FileReader(prop.getProperty("inputFilenameJson"));
             BufferedReader br = new BufferedReader(file);
             StringBuilder sb = new StringBuilder();
             String line;
@@ -216,45 +186,12 @@ public class HiveAbisairBygninger {
                 sb.append(line.trim());
             }
             hiveAbis.JSONText = sb.toString();
+            String s = hiveAbis.GetBygninger(prop);
 
-            if (threads == 1)
-                hiveAbis.PostUrl(prop, SynxCat, hiveAbis.payload);
-            else {
-                int cpus = Runtime.getRuntime().availableProcessors();
-                ExecutorService es = Executors.newFixedThreadPool(threads < cpus ? threads : cpus);
-                CountDownLatch cdl = new CountDownLatch(threads);
-                for (int i = 1; i <= threads; i++) {
-                    es.submit(hiveAbis.runPost(prop, SynxCat, cdl));
-                }
-                cdl.await(threads * 2, TimeUnit.SECONDS);
-                es.shutdown();
-                es.awaitTermination(3, TimeUnit.SECONDS);
-            }
 
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private PostRunner runPost(Properties p, String synxcat, CountDownLatch cdl) {
-        return new PostRunner(p, synxcat, cdl);
-    }
-
-    class PostRunner implements Runnable {
-        private Properties prop;
-        private String synxcat;
-        private CountDownLatch cdl;
-
-        public PostRunner(Properties p, String synxcat, CountDownLatch cdl) {
-            this.prop = p;
-            this.synxcat = synxcat;
-            this.cdl = cdl;
-        }
-
-        public void run() {
-            //String s = PostUrl(this.prop, this.synxcat);
-            //System.out.println(s);
-            cdl.countDown();
-        }
-    }
 }

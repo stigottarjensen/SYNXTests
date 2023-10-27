@@ -5,10 +5,6 @@
         "MOTTAKER": "Chessmaster Levang",
         "TEMA": "ThisIsIt",
         "REFID": "uuid",
-        "PAYLOAD": {
-            "viktig": "seriøse äüïæøåÆØÅ data",
-            "kjempeviktig": "veldig viktige data",
-            "hemmelig": "krypterte data"
-        }
+        "PAYLOAD": {}
     }
 }
