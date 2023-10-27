@@ -17,9 +17,9 @@ public class HiveAbisairBygninger {
     private static SSLSocketFactory sslsf;
 
     private String JSONText = "";
-    private JSONObject rtw;
-    private JSONObject payload;
-    private boolean xml = false;
+    // private JSONObject rtw;
+    // private JSONObject payload;
+    // private boolean xml = false;
     private Properties pr = new Properties();
 
     private void Write2File(String path, JSONObject payload) throws IOException {
@@ -35,7 +35,7 @@ public class HiveAbisairBygninger {
         pw.close();
     }
 
-    private String GetBygninger(Properties prop) throws Exception {
+    private String GetBygninger(Properties prop, String jsonPackage) throws Exception {
         BufferedReader fr = new BufferedReader(new FileReader("abisair_bygninger.sql"));
         StringBuilder sb = new StringBuilder();
         String l;
@@ -63,19 +63,18 @@ public class HiveAbisairBygninger {
                 js.put(columns[i], rs.getString(i + 1));
             }
             System.out.println(js);
-            PostUrl(prop, "1", js);
+            PostUrl(prop, "1", js, jsonPackage);
         }
     }
 
     private JSONObject parseJSON(String jsonText) throws Exception {
-        JSONObject jso = xml ? XML.toJSONObject(jsonText) : new JSONObject(jsonText);
-        rtw = new JSONObject(jso.get("RTW").toString());
-        return rtw;
+        JSONObject jso = new JSONObject(jsonText);
+        return JSONObject(jso.get("RTW").toString());
     }
 
     // curl -k https://stig.cioty.com -H "Synx-Cat: 4" -d
     // "token=aToken_124b34e931dd12fa57b28be8d56e6dff371cafe3570ab847e49f87012ff2eca0&objectid=1&payload=hello"
-    private String PostUrl(Properties prop, String synxcat, JSONObject queryresult) {
+    private String PostUrl(Properties prop, String synxcat, JSONObject queryresult, String jsonPackage) {
 
         StringBuilder ret = new StringBuilder();
         try {
@@ -92,7 +91,7 @@ public class HiveAbisairBygninger {
             conn.setSSLSocketFactory(sslsf);
             StringBuilder sb = new StringBuilder();
             if (synxcat.equals("1")) {
-                JSONObject rtw = parseJSON(JSONText);
+                JSONObject rtw = parseJSON(jsonPackage);
                 rtw.put("PAYLOAD", queryresult);
                 Iterator<String> it = rtw.keys();
                 while (it.hasNext()) {
@@ -133,11 +132,6 @@ public class HiveAbisairBygninger {
                     ret.append("......");
                     ret.append(line);
                     System.out.println("..... " + line);
-                    parseJSON(JSONText);
-                    String tema = rtw.get("TEMA").toString();
-                    long t = System.currentTimeMillis();
-                    t = (t / 1000) % 1000;
-                    Write2File("./outputjava/" + tema + t + ".txt");
                 }
             }
             line = sb.toString();
@@ -177,17 +171,19 @@ public class HiveAbisairBygninger {
             Properties prop = new Properties();
             prop.load(fInput);
             sslsf = SSLContext.getDefault().getSocketFactory();
-
-            FileReader file = new FileReader(prop.getProperty("inputFilenameJson"));
-            BufferedReader br = new BufferedReader(file);
-            StringBuilder sb = new StringBuilder();
-            String line;
-            while ((line = br.readLine()) != null) {
-                sb.append(line.trim());
+            if (SynxCat.equals("4"))
+                hiveAbis.PostUrl(prop, "4", null, null);
+            else {
+                FileReader file = new FileReader(prop.getProperty("inputFilenameJson"));
+                BufferedReader br = new BufferedReader(file);
+                StringBuilder sb = new StringBuilder();
+                String line;
+                while ((line = br.readLine()) != null) {
+                    sb.append(line.trim());
+                }
+                // hiveAbis.JSONText = sb.toString();
+                String s = hiveAbis.GetBygninger(prop, sb.toString());
             }
-            hiveAbis.JSONText = sb.toString();
-            String s = hiveAbis.GetBygninger(prop);
-
 
         } catch (Exception e) {
             e.printStackTrace();
