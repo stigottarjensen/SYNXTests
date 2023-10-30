@@ -1,0 +1,650 @@
+Pabygg :  
+BBY_Nr :  2
+BBY_Grunnflate :  0.0
+Konstruksjon :  Mur/Tre
+Verneverdig :  
+BBY_Byggear :  0
+BBY_Sarskilt_brannobjekt :  1
+BBY_Ref_Nr :  TEST TEST 
+BBO_Nr :  800103
+BBY_Bruttoareal :  0.0
+KjellerLoftUnder :  1 / 1 / 0
+Bygningsadresse :  
+GardBrSNr :  0 / 0 / 0
+Bygningsnavn :  TEST
+Kommune :  Oslo
+Bygningstype :  Skole
+BBY_Ferdigattest :  1753-01-01 00:00:00.0
+BBY_Etasjer :  1.0
+BBY_Rehabilitert_ar :  0
+BBY_Rehabilitert :  0
+Pabygg :  
+BBY_Nr :  3
+BBY_Grunnflate :  777.0
+Konstruksjon :  Betong
+Verneverdig :  0
+BBY_Byggear :  1982
+BBY_Sarskilt_brannobjekt :  1
+BBY_Ref_Nr :            
+BBO_Nr :  15
+BBY_Bruttoareal :  4999.0
+KjellerLoftUnder :  1 / 0 / 0
+Bygningsadresse :  Skøyen Terrasse 1
+GardBrSNr :  3 / 493 / 0
+Bygningsnavn :  Skøyen Terrasse 1. Trygdeboliger
+Kommune :  Oslo
+Bygningstype :  Trygdebolig / HVPU-bol.
+BBY_Ferdigattest :  1982-03-01 00:00:00.0
+BBY_Etasjer :  6.0
+BBY_Rehabilitert_ar :  0
+BBY_Rehabilitert :  0
+Pabygg :  
+BBY_Nr :  11
+BBY_Grunnflate :  2000.0
+Konstruksjon :  Betong/Brannisolert Stål
+Verneverdig :  0
+BBY_Byggear :  2016
+BBY_Sarskilt_brannobjekt :  0
+BBY_Ref_Nr :  90000601  
+BBO_Nr :  800109
+BBY_Bruttoareal :  9750.0
+KjellerLoftUnder :  1 / 0 / 0
+Bygningsadresse :  Sandakerveien 112
+GardBrSNr :  77 / 111 / 0
+Bygningsnavn :  Fernanda Nissen skole
+Kommune :  Oslo
+Bygningstype :  Grunnskole
+BBY_Ferdigattest :  1753-01-01 00:00:00.0
+BBY_Etasjer :  4.0
+BBY_Rehabilitert_ar :  0
+BBY_Rehabilitert :  0
+Pabygg :  
+BBY_Nr :  5
+BBY_Grunnflate :  1634.0
+Konstruksjon :  Stål. Ikke brannisolert
+Verneverdig :  0
+BBY_Byggear :  1998
+BBY_Sarskilt_brannobjekt :  1
+BBY_Ref_Nr :  80087701  
+BBO_Nr :  1789
+BBY_Bruttoareal :  1738.0
+KjellerLoftUnder :  0 / 0 / 0
+Bygningsadresse :  Monolitveien 6
+GardBrSNr :  3 / 622 / 0
+Bygningsnavn :  Skøyen idrettshall
+Kommune :  Oslo
+Bygningstype :  Idrettshall/-bygg
+BBY_Ferdigattest :  1999-02-26 00:00:00.0
+BBY_Etasjer :  2.0
+BBY_Rehabilitert_ar :  0
+BBY_Rehabilitert :  0
+Pabygg :  
+BBY_Nr :  4
+BBY_Grunnflate :  700.0
+Konstruksjon :  Mur/Tre
+Verneverdig :  0
+BBY_Byggear :  1989
+BBY_Sarskilt_brannobjekt :  1
+BBY_Ref_Nr :            
+BBO_Nr :  14
+BBY_Bruttoareal :  1700.0
+KjellerLoftUnder :  0 / 0 / 1
+Bygningsadresse :  Skøyenveien 43
+GardBrSNr :  3 / 481 / 0
+Bygningsnavn :  Skøyen kirke
+Kommune :  Oslo
+Bygningstype :  Kirke
+BBY_Ferdigattest :  1989-01-18 00:00:00.0
+BBY_Etasjer :  1.0
+BBY_Rehabilitert_ar :  0
+BBY_Rehabilitert :  0
+Pabygg :  
+BBY_Nr :  9
+BBY_Grunnflate :  0.0
+Konstruksjon :  
+Verneverdig :  0
+BBY_Byggear :  0
+BBY_Sarskilt_brannobjekt :  0
+BBY_Ref_Nr :  20044204  
+BBO_Nr :  800107
+BBY_Bruttoareal :  0.0
+KjellerLoftUnder :  0 / 0 / 0
+Bygningsadresse :  Blindernvn. 12
+GardBrSNr :  46 / 106 / 999999
+Bygningsnavn :  Tusentrippen Barnehage
+Kommune :  Oslo
+Bygningstype :  
+BBY_Ferdigattest :  1753-01-01 00:00:00.0
+BBY_Etasjer :  0.0
+BBY_Rehabilitert_ar :  0
+BBY_Rehabilitert :  0
+Pabygg :  
+BBY_Nr :  7
+BBY_Grunnflate :  0.0
+Konstruksjon :  
+Verneverdig :  0
+BBY_Byggear :  1975
+BBY_Sarskilt_brannobjekt :  0
+BBY_Ref_Nr :  20031904  
+BBO_Nr :  800105
+BBY_Bruttoareal :  0.0
+KjellerLoftUnder :  0 / 0 / 0
+Bygningsadresse :  Odvar Solbergs vei 224
+GardBrSNr :  96 / 89 / 999999
+Bygningsnavn :  Bjøråsen H42
+Kommune :  Oslo
+Bygningstype :  
+BBY_Ferdigattest :  1753-01-01 00:00:00.0
+BBY_Etasjer :  0.0
+BBY_Rehabilitert_ar :  0
+BBY_Rehabilitert :  0
+Pabygg :  
+BBY_Nr :  6
+BBY_Grunnflate :  0.0
+Konstruksjon :  
+Verneverdig :  0
+BBY_Byggear :  1898
+BBY_Sarskilt_brannobjekt :  0
+BBY_Ref_Nr :  20054303  
+BBO_Nr :  800104
+BBY_Bruttoareal :  0.0
+KjellerLoftUnder :  0 / 0 / 0
+Bygningsadresse :  Herslebsgt 26
+GardBrSNr :  229 / 42 / 999999
+Bygningsnavn :  Rektorboligen
+Kommune :  Oslo
+Bygningstype :  
+BBY_Ferdigattest :  1753-01-01 00:00:00.0
+BBY_Etasjer :  0.0
+BBY_Rehabilitert_ar :  0
+BBY_Rehabilitert :  0
+Pabygg :  
+BBY_Nr :  10
+BBY_Grunnflate :  0.0
+Konstruksjon :  
+Verneverdig :  0
+BBY_Byggear :  1953
+BBY_Sarskilt_brannobjekt :  0
+BBY_Ref_Nr :  80085901  
+BBO_Nr :  800108
+BBY_Bruttoareal :  0.0
+KjellerLoftUnder :  0 / 0 / 0
+Bygningsadresse :  Tusentrippen 5
+GardBrSNr :  46 / 106 / 999999
+Bygningsnavn :  Marienlyst Flerbrukshall
+Kommune :  Oslo
+Bygningstype :  
+BBY_Ferdigattest :  1753-01-01 00:00:00.0
+BBY_Etasjer :  0.0
+BBY_Rehabilitert_ar :  0
+BBY_Rehabilitert :  0
+Pabygg :  
+BBY_Nr :  8
+BBY_Grunnflate :  0.0
+Konstruksjon :  
+Verneverdig :  0
+BBY_Byggear :  2014
+BBY_Sarskilt_brannobjekt :  0
+BBY_Ref_Nr :            
+BBO_Nr :  800106
+BBY_Bruttoareal :  0.0
+KjellerLoftUnder :  0 / 0 / 0
+Bygningsadresse :  test 200 A
+GardBrSNr :  183 / 12 / 999999
+Bygningsnavn :  Oslobygg KF
+Kommune :  Oslo
+Bygningstype :  
+BBY_Ferdigattest :  1753-01-01 00:00:00.0
+BBY_Etasjer :  0.0
+BBY_Rehabilitert_ar :  0
+BBY_Rehabilitert :  0
+{"Pabygg":"","BBY_Nr":"4","BBY_Grunnflate":"700.0","Konstruksjon":"Mur/Tre","Verneverdig":"0","BBY_Byggear":"1989","BBY_Sarskilt_brannobjekt":"1","BBY_Ref_Nr":"          ","BBO_Nr":"14","BBY_Bruttoareal":"1700.0","KjellerLoftUnder":"0 / 0 / 1","Bygningsadresse":"Skøyenveien 43","GardBrSNr":"3 / 481 / 0","Bygningsnavn":"Skøyen kirke","Kommune":"Oslo","Bygningstype":"Kirke","BBY_Ferdigattest":"1989-01-18 00:00:00.0","BBY_Etasjer":"1.0","BBY_Rehabilitert_ar":"0","BBY_Rehabilitert":"0"}
+{"Pabygg":"","BBY_Nr":"3","BBY_Grunnflate":"777.0","Konstruksjon":"Betong","Verneverdig":"0","BBY_Byggear":"1982","BBY_Sarskilt_brannobjekt":"1","BBY_Ref_Nr":"          ","BBO_Nr":"15","BBY_Bruttoareal":"4999.0","KjellerLoftUnder":"1 / 0 / 0","Bygningsadresse":"Skøyen Terrasse 1","GardBrSNr":"3 / 493 / 0","Bygningsnavn":"Skøyen Terrasse 1. Trygdeboliger","Kommune":"Oslo","Bygningstype":"Trygdebolig / HVPU-bol.","BBY_Ferdigattest":"1982-03-01 00:00:00.0","BBY_Etasjer":"6.0","BBY_Rehabilitert_ar":"0","BBY_Rehabilitert":"0"}
+{"Pabygg":"","BBY_Nr":"2","BBY_Grunnflate":"0.0","Konstruksjon":"Mur/Tre","Verneverdig":"","BBY_Byggear":"0","BBY_Sarskilt_brannobjekt":"1","BBY_Ref_Nr":"TEST TEST ","BBO_Nr":"800103","BBY_Bruttoareal":"0.0","KjellerLoftUnder":"1 / 1 / 0","Bygningsadresse":"","GardBrSNr":"0 / 0 / 0","Bygningsnavn":"TEST","Kommune":"Oslo","Bygningstype":"Skole","BBY_Ferdigattest":"1753-01-01 00:00:00.0","BBY_Etasjer":"1.0","BBY_Rehabilitert_ar":"0","BBY_Rehabilitert":"0"}
+{"Pabygg":"","BBY_Nr":"11","BBY_Grunnflate":"2000.0","Konstruksjon":"Betong/Brannisolert Stål","Verneverdig":"0","BBY_Byggear":"2016","BBY_Sarskilt_brannobjekt":"0","BBY_Ref_Nr":"90000601  ","BBO_Nr":"800109","BBY_Bruttoareal":"9750.0","KjellerLoftUnder":"1 / 0 / 0","Bygningsadresse":"Sandakerveien 112","GardBrSNr":"77 / 111 / 0","Bygningsnavn":"Fernanda Nissen skole","Kommune":"Oslo","Bygningstype":"Grunnskole","BBY_Ferdigattest":"1753-01-01 00:00:00.0","BBY_Etasjer":"4.0","BBY_Rehabilitert_ar":"0","BBY_Rehabilitert":"0"}
+{"Pabygg":"","BBY_Nr":"10","BBY_Grunnflate":"0.0","Konstruksjon":"","Verneverdig":"0","BBY_Byggear":"1953","BBY_Sarskilt_brannobjekt":"0","BBY_Ref_Nr":"80085901  ","BBO_Nr":"800108","BBY_Bruttoareal":"0.0","KjellerLoftUnder":"0 / 0 / 0","Bygningsadresse":"Tusentrippen 5","GardBrSNr":"46 / 106 / 999999","Bygningsnavn":"Marienlyst Flerbrukshall","Kommune":"Oslo","Bygningstype":"","BBY_Ferdigattest":"1753-01-01 00:00:00.0","BBY_Etasjer":"0.0","BBY_Rehabilitert_ar":"0","BBY_Rehabilitert":"0"}
+{"Pabygg":"","BBY_Nr":"5","BBY_Grunnflate":"1634.0","Konstruksjon":"Stål. Ikke brannisolert","Verneverdig":"0","BBY_Byggear":"1998","BBY_Sarskilt_brannobjekt":"1","BBY_Ref_Nr":"80087701  ","BBO_Nr":"1789","BBY_Bruttoareal":"1738.0","KjellerLoftUnder":"0 / 0 / 0","Bygningsadresse":"Monolitveien 6","GardBrSNr":"3 / 622 / 0","Bygningsnavn":"Skøyen idrettshall","Kommune":"Oslo","Bygningstype":"Idrettshall/-bygg","BBY_Ferdigattest":"1999-02-26 00:00:00.0","BBY_Etasjer":"2.0","BBY_Rehabilitert_ar":"0","BBY_Rehabilitert":"0"}
+{"Pabygg":"","BBY_Nr":"6","BBY_Grunnflate":"0.0","Konstruksjon":"","Verneverdig":"0","BBY_Byggear":"1898","BBY_Sarskilt_brannobjekt":"0","BBY_Ref_Nr":"20054303  ","BBO_Nr":"800104","BBY_Bruttoareal":"0.0","KjellerLoftUnder":"0 / 0 / 0","Bygningsadresse":"Herslebsgt 26","GardBrSNr":"229 / 42 / 999999","Bygningsnavn":"Rektorboligen","Kommune":"Oslo","Bygningstype":"","BBY_Ferdigattest":"1753-01-01 00:00:00.0","BBY_Etasjer":"0.0","BBY_Rehabilitert_ar":"0","BBY_Rehabilitert":"0"}
+{"Pabygg":"","BBY_Nr":"8","BBY_Grunnflate":"0.0","Konstruksjon":"","Verneverdig":"0","BBY_Byggear":"2014","BBY_Sarskilt_brannobjekt":"0","BBY_Ref_Nr":"          ","BBO_Nr":"800106","BBY_Bruttoareal":"0.0","KjellerLoftUnder":"0 / 0 / 0","Bygningsadresse":"test 200 A","GardBrSNr":"183 / 12 / 999999","Bygningsnavn":"Oslobygg KF","Kommune":"Oslo","Bygningstype":"","BBY_Ferdigattest":"1753-01-01 00:00:00.0","BBY_Etasjer":"0.0","BBY_Rehabilitert_ar":"0","BBY_Rehabilitert":"0"}
+{"Pabygg":"","BBY_Nr":"9","BBY_Grunnflate":"0.0","Konstruksjon":"","Verneverdig":"0","BBY_Byggear":"0","BBY_Sarskilt_brannobjekt":"0","BBY_Ref_Nr":"20044204  ","BBO_Nr":"800107","BBY_Bruttoareal":"0.0","KjellerLoftUnder":"0 / 0 / 0","Bygningsadresse":"Blindernvn. 12","GardBrSNr":"46 / 106 / 999999","Bygningsnavn":"Tusentrippen Barnehage","Kommune":"Oslo","Bygningstype":"","BBY_Ferdigattest":"1753-01-01 00:00:00.0","BBY_Etasjer":"0.0","BBY_Rehabilitert_ar":"0","BBY_Rehabilitert":"0"}
+{"Pabygg":"","BBY_Nr":"7","BBY_Grunnflate":"0.0","Konstruksjon":"","Verneverdig":"0","BBY_Byggear":"1975","BBY_Sarskilt_brannobjekt":"0","BBY_Ref_Nr":"20031904  ","BBO_Nr":"800105","BBY_Bruttoareal":"0.0","KjellerLoftUnder":"0 / 0 / 0","Bygningsadresse":"Odvar Solbergs vei 224","GardBrSNr":"96 / 89 / 999999","Bygningsnavn":"Bjøråsen H42","Kommune":"Oslo","Bygningstype":"","BBY_Ferdigattest":"1753-01-01 00:00:00.0","BBY_Etasjer":"0.0","BBY_Rehabilitert_ar":"0","BBY_Rehabilitert":"0"}
+{
+    "Pabygg": "",
+    "BBY_Nr": "10",
+    "BBY_Grunnflate": "0.0",
+    "Konstruksjon": "",
+    "Verneverdig": "0",
+    "BBY_Byggear": "1953",
+    "BBY_Sarskilt_brannobjekt": "0",
+    "BBY_Ref_Nr": "80085901  ",
+    "BBO_Nr": "800108",
+    "BBY_Bruttoareal": "0.0",
+    "KjellerLoftUnder": "0 / 0 / 0",
+    "Bygningsadresse": "Tusentrippen 5",
+    "GardBrSNr": "46 / 106 / 999999",
+    "Bygningsnavn": "Marienlyst Flerbrukshall",
+    "Kommune": "Oslo",
+    "Bygningstype": "",
+    "BBY_Ferdigattest": "1753-01-01 00:00:00.0",
+    "BBY_Etasjer": "0.0",
+    "BBY_Rehabilitert_ar": "0",
+    "BBY_Rehabilitert": "0"
+}
+{
+    "Pabygg": "",
+    "BBY_Nr": "7",
+    "BBY_Grunnflate": "0.0",
+    "Konstruksjon": "",
+    "Verneverdig": "0",
+    "BBY_Byggear": "1975",
+    "BBY_Sarskilt_brannobjekt": "0",
+    "BBY_Ref_Nr": "20031904  ",
+    "BBO_Nr": "800105",
+    "BBY_Bruttoareal": "0.0",
+    "KjellerLoftUnder": "0 / 0 / 0",
+    "Bygningsadresse": "Odvar Solbergs vei 224",
+    "GardBrSNr": "96 / 89 / 999999",
+    "Bygningsnavn": "Bjøråsen H42",
+    "Kommune": "Oslo",
+    "Bygningstype": "",
+    "BBY_Ferdigattest": "1753-01-01 00:00:00.0",
+    "BBY_Etasjer": "0.0",
+    "BBY_Rehabilitert_ar": "0",
+    "BBY_Rehabilitert": "0"
+}
+{
+    "Pabygg": "",
+    "BBY_Nr": "11",
+    "BBY_Grunnflate": "2000.0",
+    "Konstruksjon": "Betong/Brannisolert Stål",
+    "Verneverdig": "0",
+    "BBY_Byggear": "2016",
+    "BBY_Sarskilt_brannobjekt": "0",
+    "BBY_Ref_Nr": "90000601  ",
+    "BBO_Nr": "800109",
+    "BBY_Bruttoareal": "9750.0",
+    "KjellerLoftUnder": "1 / 0 / 0",
+    "Bygningsadresse": "Sandakerveien 112",
+    "GardBrSNr": "77 / 111 / 0",
+    "Bygningsnavn": "Fernanda Nissen skole",
+    "Kommune": "Oslo",
+    "Bygningstype": "Grunnskole",
+    "BBY_Ferdigattest": "1753-01-01 00:00:00.0",
+    "BBY_Etasjer": "4.0",
+    "BBY_Rehabilitert_ar": "0",
+    "BBY_Rehabilitert": "0"
+}
+{
+    "Pabygg": "",
+    "BBY_Nr": "3",
+    "BBY_Grunnflate": "777.0",
+    "Konstruksjon": "Betong",
+    "Verneverdig": "0",
+    "BBY_Byggear": "1982",
+    "BBY_Sarskilt_brannobjekt": "1",
+    "BBY_Ref_Nr": "          ",
+    "BBO_Nr": "15",
+    "BBY_Bruttoareal": "4999.0",
+    "KjellerLoftUnder": "1 / 0 / 0",
+    "Bygningsadresse": "Skøyen Terrasse 1",
+    "GardBrSNr": "3 / 493 / 0",
+    "Bygningsnavn": "Skøyen Terrasse 1. Trygdeboliger",
+    "Kommune": "Oslo",
+    "Bygningstype": "Trygdebolig / HVPU-bol.",
+    "BBY_Ferdigattest": "1982-03-01 00:00:00.0",
+    "BBY_Etasjer": "6.0",
+    "BBY_Rehabilitert_ar": "0",
+    "BBY_Rehabilitert": "0"
+}
+{
+    "Pabygg": "",
+    "BBY_Nr": "8",
+    "BBY_Grunnflate": "0.0",
+    "Konstruksjon": "",
+    "Verneverdig": "0",
+    "BBY_Byggear": "2014",
+    "BBY_Sarskilt_brannobjekt": "0",
+    "BBY_Ref_Nr": "          ",
+    "BBO_Nr": "800106",
+    "BBY_Bruttoareal": "0.0",
+    "KjellerLoftUnder": "0 / 0 / 0",
+    "Bygningsadresse": "test 200 A",
+    "GardBrSNr": "183 / 12 / 999999",
+    "Bygningsnavn": "Oslobygg KF",
+    "Kommune": "Oslo",
+    "Bygningstype": "",
+    "BBY_Ferdigattest": "1753-01-01 00:00:00.0",
+    "BBY_Etasjer": "0.0",
+    "BBY_Rehabilitert_ar": "0",
+    "BBY_Rehabilitert": "0"
+}
+{
+    "Pabygg": "",
+    "BBY_Nr": "4",
+    "BBY_Grunnflate": "700.0",
+    "Konstruksjon": "Mur/Tre",
+    "Verneverdig": "0",
+    "BBY_Byggear": "1989",
+    "BBY_Sarskilt_brannobjekt": "1",
+    "BBY_Ref_Nr": "          ",
+    "BBO_Nr": "14",
+    "BBY_Bruttoareal": "1700.0",
+    "KjellerLoftUnder": "0 / 0 / 1",
+    "Bygningsadresse": "Skøyenveien 43",
+    "GardBrSNr": "3 / 481 / 0",
+    "Bygningsnavn": "Skøyen kirke",
+    "Kommune": "Oslo",
+    "Bygningstype": "Kirke",
+    "BBY_Ferdigattest": "1989-01-18 00:00:00.0",
+    "BBY_Etasjer": "1.0",
+    "BBY_Rehabilitert_ar": "0",
+    "BBY_Rehabilitert": "0"
+}
+{
+    "Pabygg": "",
+    "BBY_Nr": "2",
+    "BBY_Grunnflate": "0.0",
+    "Konstruksjon": "Mur/Tre",
+    "Verneverdig": "",
+    "BBY_Byggear": "0",
+    "BBY_Sarskilt_brannobjekt": "1",
+    "BBY_Ref_Nr": "TEST TEST ",
+    "BBO_Nr": "800103",
+    "BBY_Bruttoareal": "0.0",
+    "KjellerLoftUnder": "1 / 1 / 0",
+    "Bygningsadresse": "",
+    "GardBrSNr": "0 / 0 / 0",
+    "Bygningsnavn": "TEST",
+    "Kommune": "Oslo",
+    "Bygningstype": "Skole",
+    "BBY_Ferdigattest": "1753-01-01 00:00:00.0",
+    "BBY_Etasjer": "1.0",
+    "BBY_Rehabilitert_ar": "0",
+    "BBY_Rehabilitert": "0"
+}
+{
+    "Pabygg": "",
+    "BBY_Nr": "6",
+    "BBY_Grunnflate": "0.0",
+    "Konstruksjon": "",
+    "Verneverdig": "0",
+    "BBY_Byggear": "1898",
+    "BBY_Sarskilt_brannobjekt": "0",
+    "BBY_Ref_Nr": "20054303  ",
+    "BBO_Nr": "800104",
+    "BBY_Bruttoareal": "0.0",
+    "KjellerLoftUnder": "0 / 0 / 0",
+    "Bygningsadresse": "Herslebsgt 26",
+    "GardBrSNr": "229 / 42 / 999999",
+    "Bygningsnavn": "Rektorboligen",
+    "Kommune": "Oslo",
+    "Bygningstype": "",
+    "BBY_Ferdigattest": "1753-01-01 00:00:00.0",
+    "BBY_Etasjer": "0.0",
+    "BBY_Rehabilitert_ar": "0",
+    "BBY_Rehabilitert": "0"
+}
+{
+    "Pabygg": "",
+    "BBY_Nr": "5",
+    "BBY_Grunnflate": "1634.0",
+    "Konstruksjon": "Stål. Ikke brannisolert",
+    "Verneverdig": "0",
+    "BBY_Byggear": "1998",
+    "BBY_Sarskilt_brannobjekt": "1",
+    "BBY_Ref_Nr": "80087701  ",
+    "BBO_Nr": "1789",
+    "BBY_Bruttoareal": "1738.0",
+    "KjellerLoftUnder": "0 / 0 / 0",
+    "Bygningsadresse": "Monolitveien 6",
+    "GardBrSNr": "3 / 622 / 0",
+    "Bygningsnavn": "Skøyen idrettshall",
+    "Kommune": "Oslo",
+    "Bygningstype": "Idrettshall/-bygg",
+    "BBY_Ferdigattest": "1999-02-26 00:00:00.0",
+    "BBY_Etasjer": "2.0",
+    "BBY_Rehabilitert_ar": "0",
+    "BBY_Rehabilitert": "0"
+}
+{
+    "Pabygg": "",
+    "BBY_Nr": "9",
+    "BBY_Grunnflate": "0.0",
+    "Konstruksjon": "",
+    "Verneverdig": "0",
+    "BBY_Byggear": "0",
+    "BBY_Sarskilt_brannobjekt": "0",
+    "BBY_Ref_Nr": "20044204  ",
+    "BBO_Nr": "800107",
+    "BBY_Bruttoareal": "0.0",
+    "KjellerLoftUnder": "0 / 0 / 0",
+    "Bygningsadresse": "Blindernvn. 12",
+    "GardBrSNr": "46 / 106 / 999999",
+    "Bygningsnavn": "Tusentrippen Barnehage",
+    "Kommune": "Oslo",
+    "Bygningstype": "",
+    "BBY_Ferdigattest": "1753-01-01 00:00:00.0",
+    "BBY_Etasjer": "0.0",
+    "BBY_Rehabilitert_ar": "0",
+    "BBY_Rehabilitert": "0"
+}
+{
+    "Pabygg": "",
+    "BBY_Nr": "8",
+    "BBY_Grunnflate": "0.0",
+    "Konstruksjon": "",
+    "Verneverdig": "0",
+    "BBY_Byggear": "2014",
+    "BBY_Sarskilt_brannobjekt": "0",
+    "BBY_Ref_Nr": "          ",
+    "BBO_Nr": "800106",
+    "BBY_Bruttoareal": "0.0",
+    "KjellerLoftUnder": "0 / 0 / 0",
+    "Bygningsadresse": "test 200 A",
+    "GardBrSNr": "183 / 12 / 999999",
+    "Bygningsnavn": "Oslobygg KF",
+    "Kommune": "Oslo",
+    "Bygningstype": "",
+    "BBY_Ferdigattest": "1753-01-01 00:00:00.0",
+    "BBY_Etasjer": "0.0",
+    "BBY_Rehabilitert_ar": "0",
+    "BBY_Rehabilitert": "0"
+}
+{
+    "Pabygg": "",
+    "BBY_Nr": "6",
+    "BBY_Grunnflate": "0.0",
+    "Konstruksjon": "",
+    "Verneverdig": "0",
+    "BBY_Byggear": "1898",
+    "BBY_Sarskilt_brannobjekt": "0",
+    "BBY_Ref_Nr": "20054303  ",
+    "BBO_Nr": "800104",
+    "BBY_Bruttoareal": "0.0",
+    "KjellerLoftUnder": "0 / 0 / 0",
+    "Bygningsadresse": "Herslebsgt 26",
+    "GardBrSNr": "229 / 42 / 999999",
+    "Bygningsnavn": "Rektorboligen",
+    "Kommune": "Oslo",
+    "Bygningstype": "",
+    "BBY_Ferdigattest": "1753-01-01 00:00:00.0",
+    "BBY_Etasjer": "0.0",
+    "BBY_Rehabilitert_ar": "0",
+    "BBY_Rehabilitert": "0"
+}
+{
+    "Pabygg": "",
+    "BBY_Nr": "5",
+    "BBY_Grunnflate": "1634.0",
+    "Konstruksjon": "Stål. Ikke brannisolert",
+    "Verneverdig": "0",
+    "BBY_Byggear": "1998",
+    "BBY_Sarskilt_brannobjekt": "1",
+    "BBY_Ref_Nr": "80087701  ",
+    "BBO_Nr": "1789",
+    "BBY_Bruttoareal": "1738.0",
+    "KjellerLoftUnder": "0 / 0 / 0",
+    "Bygningsadresse": "Monolitveien 6",
+    "GardBrSNr": "3 / 622 / 0",
+    "Bygningsnavn": "Skøyen idrettshall",
+    "Kommune": "Oslo",
+    "Bygningstype": "Idrettshall/-bygg",
+    "BBY_Ferdigattest": "1999-02-26 00:00:00.0",
+    "BBY_Etasjer": "2.0",
+    "BBY_Rehabilitert_ar": "0",
+    "BBY_Rehabilitert": "0"
+}
+{
+    "Pabygg": "",
+    "BBY_Nr": "11",
+    "BBY_Grunnflate": "2000.0",
+    "Konstruksjon": "Betong/Brannisolert Stål",
+    "Verneverdig": "0",
+    "BBY_Byggear": "2016",
+    "BBY_Sarskilt_brannobjekt": "0",
+    "BBY_Ref_Nr": "90000601  ",
+    "BBO_Nr": "800109",
+    "BBY_Bruttoareal": "9750.0",
+    "KjellerLoftUnder": "1 / 0 / 0",
+    "Bygningsadresse": "Sandakerveien 112",
+    "GardBrSNr": "77 / 111 / 0",
+    "Bygningsnavn": "Fernanda Nissen skole",
+    "Kommune": "Oslo",
+    "Bygningstype": "Grunnskole",
+    "BBY_Ferdigattest": "1753-01-01 00:00:00.0",
+    "BBY_Etasjer": "4.0",
+    "BBY_Rehabilitert_ar": "0",
+    "BBY_Rehabilitert": "0"
+}
+{
+    "Pabygg": "",
+    "BBY_Nr": "7",
+    "BBY_Grunnflate": "0.0",
+    "Konstruksjon": "",
+    "Verneverdig": "0",
+    "BBY_Byggear": "1975",
+    "BBY_Sarskilt_brannobjekt": "0",
+    "BBY_Ref_Nr": "20031904  ",
+    "BBO_Nr": "800105",
+    "BBY_Bruttoareal": "0.0",
+    "KjellerLoftUnder": "0 / 0 / 0",
+    "Bygningsadresse": "Odvar Solbergs vei 224",
+    "GardBrSNr": "96 / 89 / 999999",
+    "Bygningsnavn": "Bjøråsen H42",
+    "Kommune": "Oslo",
+    "Bygningstype": "",
+    "BBY_Ferdigattest": "1753-01-01 00:00:00.0",
+    "BBY_Etasjer": "0.0",
+    "BBY_Rehabilitert_ar": "0",
+    "BBY_Rehabilitert": "0"
+}
+{
+    "Pabygg": "",
+    "BBY_Nr": "3",
+    "BBY_Grunnflate": "777.0",
+    "Konstruksjon": "Betong",
+    "Verneverdig": "0",
+    "BBY_Byggear": "1982",
+    "BBY_Sarskilt_brannobjekt": "1",
+    "BBY_Ref_Nr": "          ",
+    "BBO_Nr": "15",
+    "BBY_Bruttoareal": "4999.0",
+    "KjellerLoftUnder": "1 / 0 / 0",
+    "Bygningsadresse": "Skøyen Terrasse 1",
+    "GardBrSNr": "3 / 493 / 0",
+    "Bygningsnavn": "Skøyen Terrasse 1. Trygdeboliger",
+    "Kommune": "Oslo",
+    "Bygningstype": "Trygdebolig / HVPU-bol.",
+    "BBY_Ferdigattest": "1982-03-01 00:00:00.0",
+    "BBY_Etasjer": "6.0",
+    "BBY_Rehabilitert_ar": "0",
+    "BBY_Rehabilitert": "0"
+}
+{
+    "Pabygg": "",
+    "BBY_Nr": "4",
+    "BBY_Grunnflate": "700.0",
+    "Konstruksjon": "Mur/Tre",
+    "Verneverdig": "0",
+    "BBY_Byggear": "1989",
+    "BBY_Sarskilt_brannobjekt": "1",
+    "BBY_Ref_Nr": "          ",
+    "BBO_Nr": "14",
+    "BBY_Bruttoareal": "1700.0",
+    "KjellerLoftUnder": "0 / 0 / 1",
+    "Bygningsadresse": "Skøyenveien 43",
+    "GardBrSNr": "3 / 481 / 0",
+    "Bygningsnavn": "Skøyen kirke",
+    "Kommune": "Oslo",
+    "Bygningstype": "Kirke",
+    "BBY_Ferdigattest": "1989-01-18 00:00:00.0",
+    "BBY_Etasjer": "1.0",
+    "BBY_Rehabilitert_ar": "0",
+    "BBY_Rehabilitert": "0"
+}
+{
+    "Pabygg": "",
+    "BBY_Nr": "2",
+    "BBY_Grunnflate": "0.0",
+    "Konstruksjon": "Mur/Tre",
+    "Verneverdig": "",
+    "BBY_Byggear": "0",
+    "BBY_Sarskilt_brannobjekt": "1",
+    "BBY_Ref_Nr": "TEST TEST ",
+    "BBO_Nr": "800103",
+    "BBY_Bruttoareal": "0.0",
+    "KjellerLoftUnder": "1 / 1 / 0",
+    "Bygningsadresse": "",
+    "GardBrSNr": "0 / 0 / 0",
+    "Bygningsnavn": "TEST",
+    "Kommune": "Oslo",
+    "Bygningstype": "Skole",
+    "BBY_Ferdigattest": "1753-01-01 00:00:00.0",
+    "BBY_Etasjer": "1.0",
+    "BBY_Rehabilitert_ar": "0",
+    "BBY_Rehabilitert": "0"
+}
+{
+    "Pabygg": "",
+    "BBY_Nr": "9",
+    "BBY_Grunnflate": "0.0",
+    "Konstruksjon": "",
+    "Verneverdig": "0",
+    "BBY_Byggear": "0",
+    "BBY_Sarskilt_brannobjekt": "0",
+    "BBY_Ref_Nr": "20044204  ",
+    "BBO_Nr": "800107",
+    "BBY_Bruttoareal": "0.0",
+    "KjellerLoftUnder": "0 / 0 / 0",
+    "Bygningsadresse": "Blindernvn. 12",
+    "GardBrSNr": "46 / 106 / 999999",
+    "Bygningsnavn": "Tusentrippen Barnehage",
+    "Kommune": "Oslo",
+    "Bygningstype": "",
+    "BBY_Ferdigattest": "1753-01-01 00:00:00.0",
+    "BBY_Etasjer": "0.0",
+    "BBY_Rehabilitert_ar": "0",
+    "BBY_Rehabilitert": "0"
+}
+{
+    "Pabygg": "",
+    "BBY_Nr": "10",
+    "BBY_Grunnflate": "0.0",
+    "Konstruksjon": "",
+    "Verneverdig": "0",
+    "BBY_Byggear": "1953",
+    "BBY_Sarskilt_brannobjekt": "0",
+    "BBY_Ref_Nr": "80085901  ",
+    "BBO_Nr": "800108",
+    "BBY_Bruttoareal": "0.0",
+    "KjellerLoftUnder": "0 / 0 / 0",
+    "Bygningsadresse": "Tusentrippen 5",
+    "GardBrSNr": "46 / 106 / 999999",
+    "Bygningsnavn": "Marienlyst Flerbrukshall",
+    "Kommune": "Oslo",
+    "Bygningstype": "",
+    "BBY_Ferdigattest": "1753-01-01 00:00:00.0",
+    "BBY_Etasjer": "0.0",
+    "BBY_Rehabilitert_ar": "0",
+    "BBY_Rehabilitert": "0"
+}

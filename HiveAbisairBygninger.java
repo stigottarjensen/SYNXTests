@@ -11,27 +11,28 @@ import org.json.*;
 import java.sql.*;
 
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class HiveAbisairBygninger {
 
     private static SSLSocketFactory sslsf;
 
-    private String JSONText = "";
-    // private JSONObject rtw;
-    // private JSONObject payload;
-    // private boolean xml = false;
     private Properties pr = new Properties();
+    private static final AtomicBoolean abContinue = new AtomicBoolean(true);
 
-    private void Write2File(String path, JSONObject payload) throws IOException {
-        PrintWriter writer = new PrintWriter(new FileWriter(path));
-        Properties p = Property.toProperties(payload);
-        PrintWriter pw = new PrintWriter(writer);
-        p.forEach((k, v) -> {
-            String s = (String) v;
-            String t = (String) k;
-            if (t.trim().length() > 0)
-                pw.println(k + " :  " + s);
-        });
+    private void Write2File(String path, JSONObject payload, boolean jsonFormat) throws IOException {
+        PrintWriter pw = new PrintWriter(new FileWriter(path, true));
+        if (jsonFormat) {
+            pw.println(payload.toString(4));
+        } else {
+            Properties p = Property.toProperties(payload);
+            p.forEach((k, v) -> {
+                String s = (String) v;
+                String t = (String) k;
+                if (t.trim().length() > 0)
+                    pw.println(k + " :  " + s);
+            });
+        }
         pw.close();
     }
 
@@ -65,88 +66,104 @@ public class HiveAbisairBygninger {
             System.out.println(js);
             PostUrl(prop, "1", js, jsonPackage);
         }
+        return "";
     }
 
-    private JSONObject parseJSON(String jsonText) throws Exception {
+    private JSONObject getRTW(String jsonText) throws Exception {
         JSONObject jso = new JSONObject(jsonText);
-        return JSONObject(jso.get("RTW").toString());
+        return new JSONObject(jso.get("RTW").toString());
+    }
+
+    private JSONObject getPayload(String jsonText) throws Exception {
+        JSONObject jso = new JSONObject(jsonText);
+        return new JSONObject(jso.get("PAYLOAD").toString());
     }
 
     // curl -k https://stig.cioty.com -H "Synx-Cat: 4" -d
     // "token=aToken_124b34e931dd12fa57b28be8d56e6dff371cafe3570ab847e49f87012ff2eca0&objectid=1&payload=hello"
     private String PostUrl(Properties prop, String synxcat, JSONObject queryresult, String jsonPackage) {
 
-        StringBuilder ret = new StringBuilder();
-        try {
-            String key = synxcat.equals("4") ? "receiver_" : "sender_";
+        while (abContinue.get() && synxcat.equals("4")) {
+            StringBuilder ret = new StringBuilder();
+            try {
+                String key = synxcat.equals("4") ? "receiver_" : "sender_";
 
-            String uri = prop.getProperty("httpUrl")
-                    + prop.getProperty("path");
-            if (!uri.toLowerCase().startsWith("https://"))
-                uri = "https://" + uri;
+                String uri = prop.getProperty("httpUrl")
+                        + prop.getProperty("path");
+                if (!uri.toLowerCase().startsWith("https://"))
+                    uri = "https://" + uri;
 
-            URI Uri = new URI(uri);
-            URL url = Uri.toURL();
-            HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
-            conn.setSSLSocketFactory(sslsf);
-            StringBuilder sb = new StringBuilder();
-            if (synxcat.equals("1")) {
-                JSONObject rtw = parseJSON(jsonPackage);
-                rtw.put("PAYLOAD", queryresult);
-                Iterator<String> it = rtw.keys();
-                while (it.hasNext()) {
-                    String name = it.next();
-                    String content = rtw.get(name).toString();
-                    sb.append("&" + name + "=" + URLEncoder.encode(content, "UTF-8"));
+                URI Uri = new URI(uri);
+                URL url = Uri.toURL();
+                HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
+                conn.setSSLSocketFactory(sslsf);
+                StringBuilder sb = new StringBuilder();
+                if (synxcat.equals("1")) {
+                    JSONObject rtw = getRTW(jsonPackage);
+                    rtw.put("PAYLOAD", queryresult);
+                    Iterator<String> it = rtw.keys();
+                    while (it.hasNext()) {
+                        String name = it.next();
+                        String content = rtw.get(name).toString();
+                        sb.append("&" + name + "=" + URLEncoder.encode(content, "UTF-8"));
+                    }
                 }
-            }
-            if (synxcat.equals("4"))
-                sb.append("&format=json");
-            String urlEncoded = "token=" + prop.getProperty(key + "token") + "&objectid="
-                    + prop.getProperty(key + "objectid") + sb;
-            conn.setRequestMethod("POST");
-            conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
-            conn.setRequestProperty("Synx-Cat", synxcat);
-            conn.setRequestProperty("Content-Length", urlEncoded.length() + "");
-            if (synxcat.equals("4")) {
-                conn.setRequestProperty("Connection", "Keep-Alive");
-                conn.setRequestProperty("Keep-Alive", "timeout=1200,max=250");// 1200 sek, max 250 connections
-            }
-            conn.setDoOutput(true);
-            conn.setDoInput(true);
-            OutputStreamWriter osw = new OutputStreamWriter(conn.getOutputStream());
-
-            osw.write(urlEncoded);
-
-            osw.flush();
-            osw.close();
-
-            InputStream is = conn.getInputStream();
-            BufferedReader br = new BufferedReader(new InputStreamReader(is));
-            String line = null;
-            sb.setLength(0);
-            while ((line = br.readLine()) != null) {
-                if (line.trim().length() > 2) {
-                    sb.append(line + "\n");
-                    line = line.trim();
-                    ret.append("......");
-                    ret.append(line);
-                    System.out.println("..... " + line);
+                if (synxcat.equals("4"))
+                    sb.append("&format=json");
+                String urlEncoded = "token=" + prop.getProperty(key + "token") + "&objectid="
+                        + prop.getProperty(key + "objectid") + sb;
+                conn.setRequestMethod("POST");
+                conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
+                conn.setRequestProperty("Synx-Cat", synxcat);
+                conn.setRequestProperty("Content-Length", urlEncoded.length() + "");
+                if (synxcat.equals("4")) {
+                    conn.setRequestProperty("Connection", "Keep-Alive");
+                    // conn.setRequestProperty("Keep-Alive", "timeout=12000,max=25000");// 1200 sek,
+                    // max 250 connections
                 }
-            }
-            line = sb.toString();
-            if (line == null || line.trim().length() < 1)
-                line = "***Empty response***";
-            ret.append(line);
-            conn.disconnect();
+                conn.setDoOutput(true);
+                conn.setDoInput(true);
+                OutputStreamWriter osw = new OutputStreamWriter(conn.getOutputStream());
 
-        } catch (Exception e) {
-            e.printStackTrace();
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            ret.append(sw.toString());
+                osw.write(urlEncoded);
+
+                osw.flush();
+                osw.close();
+
+                InputStream is = conn.getInputStream();
+                BufferedReader br = new BufferedReader(new InputStreamReader(is));
+                String line = null;
+                sb.setLength(0);
+                while ((line = br.readLine()) != null) {
+                    if (line.trim().length() > 2) {
+                        sb.append(line + "\n");
+                        line = line.trim();
+                        ret.append("......");
+                        ret.append(line);
+                        if (synxcat.equals("4")) {
+                            System.out.println("##################################");
+                            JSONObject rtw = getRTW(line);
+                            JSONObject payload = getPayload(rtw.toString());
+                            Write2File("./testtest.txt", payload, true);
+                            System.out.println(payload);
+                        }
+                    }
+                }
+                line = sb.toString();
+                if (line == null || line.trim().length() < 1)
+                    line = "***Empty response***";
+                ret.append(line);
+                conn.disconnect();
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                StringWriter sw = new StringWriter();
+                e.printStackTrace(new PrintWriter(sw));
+                ret.append(sw.toString());
+            }
         }
-        return ret.toString();
+
+        return "";
     }
 
     private static int strToInt(String input, int def) {
