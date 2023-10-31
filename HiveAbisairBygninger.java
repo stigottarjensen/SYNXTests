@@ -36,7 +36,7 @@ public class HiveAbisairBygninger {
         pw.close();
     }
 
-    private String GetBygninger(Properties prop, String jsonPackage) throws Exception {
+    private String GetBygninger(String synxcat, Properties prop, String jsonPackage) throws Exception {
         BufferedReader fr = new BufferedReader(new FileReader("abisair_bygninger.sql"));
         StringBuilder sb = new StringBuilder();
         String l;
@@ -64,7 +64,10 @@ public class HiveAbisairBygninger {
                 js.put(columns[i], rs.getString(i + 1));
             }
             System.out.println(js);
-            PostUrl(prop, "1", js, jsonPackage);
+            if (synxcat.equals("1"))
+                PostUrl(prop, "1", js, jsonPackage);
+            if (synxcat.equals("4"))
+
         }
         return "";
     }
@@ -81,7 +84,7 @@ public class HiveAbisairBygninger {
 
     // curl -k https://stig.cioty.com -H "Synx-Cat: 4" -d
     // "token=aToken_124b34e931dd12fa57b28be8d56e6dff371cafe3570ab847e49f87012ff2eca0&objectid=1&payload=hello"
-    private String PostUrl(Properties prop, String synxcat, JSONObject queryresult, String jsonPackage) {
+    private String PostUrl(Properties prop, String synxcat, JSONObject payload, String jsonPackage) {
 
         while (abContinue.get() && synxcat.equals("4")) {
             StringBuilder ret = new StringBuilder();
@@ -100,7 +103,7 @@ public class HiveAbisairBygninger {
                 StringBuilder sb = new StringBuilder();
                 if (synxcat.equals("1")) {
                     JSONObject rtw = getRTW(jsonPackage);
-                    rtw.put("PAYLOAD", queryresult);
+                    rtw.put("PAYLOAD", payload);
                     Iterator<String> it = rtw.keys();
                     while (it.hasNext()) {
                         String name = it.next();
@@ -143,9 +146,12 @@ public class HiveAbisairBygninger {
                         if (synxcat.equals("4")) {
                             System.out.println("##################################");
                             JSONObject rtw = getRTW(line);
-                            JSONObject payload = getPayload(rtw.toString());
-                            Write2File("./testtest.txt", payload, true);
-                            System.out.println(payload);
+                            JSONObject sy4payload = getPayload(rtw.toString());
+                            if (sy4payload.get("TEMA").equals("queryresult"))
+                                Write2File("./testtest.txt", sy4payload, true);
+                            if (sy4payload.get("TEMA").equals("queryrequest")) 
+                                GetBygninger(synxcat, prop, sy4payload);
+                            System.out.println(sy4payload);
                         }
                     }
                 }
@@ -199,7 +205,7 @@ public class HiveAbisairBygninger {
                     sb.append(line.trim());
                 }
                 // hiveAbis.JSONText = sb.toString();
-                String s = hiveAbis.GetBygninger(prop, sb.toString());
+                String s = hiveAbis.GetBygninger("1", prop, sb.toString());
             }
 
         } catch (Exception e) {
