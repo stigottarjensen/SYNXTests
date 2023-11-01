@@ -7,9 +7,7 @@ import java.net.http.*;
 import java.time.Duration;
 import java.util.*;
 import org.json.*;
-
 import java.sql.*;
-
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -36,8 +34,16 @@ public class HiveAbisairBygninger {
         pw.close();
     }
 
+    private String SQLWhere(JSONObject payload) {
+        JSONArray list
+
+    }
+
     private String GetBygninger(String synxcat, Properties prop, String jsonPackage) throws Exception {
-        BufferedReader fr = new BufferedReader(new FileReader("abisair_bygninger.sql"));
+        System.out.println(jsonPackage);
+        JSONObject jsObj = new JSONObject(jsonPackage);
+        String sqlFile = jsObj.get("topic");
+        BufferedReader fr = new BufferedReader(new FileReader(sqlFile+".sql"));
         StringBuilder sb = new StringBuilder();
         String l;
         while ((l = fr.readLine()) != null)
@@ -50,26 +56,43 @@ public class HiveAbisairBygninger {
                 pr.getProperty("dbName") + ";encrypt=true;trustServerCertificate=true;",
                 pr.getProperty("dbUser"),
                 pr.getProperty("dbPassword"));
-        Statement st = con.createStatement();
-        ResultSet rs = st.executeQuery(sb.toString());
+        PreparedStatement pst = con.prepareStatement(sql);
+
+        ResultSet rs = pst.executeQuery();
         ResultSetMetaData rsmd = rs.getMetaData();
         String[] columns = new String[rsmd.getColumnCount()];
         for (int i = 0; i < columns.length; i++)
             columns[i] = rsmd.getColumnLabel(i + 1);
         int c = 0;
-
+        ArrayList<JSONObject> jsList = new ArrayList<>();
         while (rs.next()) {
             JSONObject js = new JSONObject();
             for (int i = 0; i < columns.length; i++) {
                 js.put(columns[i], rs.getString(i + 1));
             }
             System.out.println(js);
-            if (synxcat.equals("1"))
-                PostUrl(prop, "1", js, jsonPackage);
-            if (synxcat.equals("4"))
-
+            System.out.println(++c + " ##################################");
+            jsList.add(js);
         }
+        rs.close();
+        jsList.forEach((js) -> {
+            try {
+                if (synxcat.equals("1")) {
+                    PostUrl(prop, "1", js, jsonPackage);
+                }
+                if (synxcat.equals("4")) {
+                    Write2File("./fragetbygninger.txt", js, true);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
         return "";
+    }
+
+    private JSONObject getJsonElement(String name, String jsonText) throws Exception {
+        JSONObject jso = new JSONObject(jsonText);
+        return new JSONObject(jso.get(name).toString());
     }
 
     private JSONObject getRTW(String jsonText) throws Exception {
@@ -86,7 +109,10 @@ public class HiveAbisairBygninger {
     // "token=aToken_124b34e931dd12fa57b28be8d56e6dff371cafe3570ab847e49f87012ff2eca0&objectid=1&payload=hello"
     private String PostUrl(Properties prop, String synxcat, JSONObject payload, String jsonPackage) {
 
-        while (abContinue.get() && synxcat.equals("4")) {
+        int cnt = 0;
+        while (abContinue.get() && synxcat.equals("4") || cnt == 0) {
+            if (synxcat.equals("1"))
+                cnt = 1;
             StringBuilder ret = new StringBuilder();
             try {
                 String key = synxcat.equals("4") ? "receiver_" : "sender_";
@@ -129,7 +155,9 @@ public class HiveAbisairBygninger {
                 OutputStreamWriter osw = new OutputStreamWriter(conn.getOutputStream());
 
                 osw.write(urlEncoded);
-
+                System.out.println();
+                System.out.println(urlEncoded);
+                System.out.println();
                 osw.flush();
                 osw.close();
 
@@ -137,20 +165,23 @@ public class HiveAbisairBygninger {
                 BufferedReader br = new BufferedReader(new InputStreamReader(is));
                 String line = null;
                 sb.setLength(0);
+                int ii = 0, jj = 0;
                 while ((line = br.readLine()) != null) {
                     if (line.trim().length() > 2) {
                         sb.append(line + "\n");
                         line = line.trim();
                         ret.append("......");
                         ret.append(line);
+                        jj++;
                         if (synxcat.equals("4")) {
-                            System.out.println("##################################");
+                            System.out.println(jj + " " + (++ii) + " ##################################");
+
                             JSONObject rtw = getRTW(line);
                             JSONObject sy4payload = getPayload(rtw.toString());
-                            if (sy4payload.get("TEMA").equals("queryresult"))
+                            if (rtw.get("TEMA").equals("queryresult"))
                                 Write2File("./testtest.txt", sy4payload, true);
-                            if (sy4payload.get("TEMA").equals("queryrequest")) 
-                                GetBygninger(synxcat, prop, sy4payload);
+                            if (rtw.get("TEMA").equals("queryrequest"))
+                                GetBygninger(synxcat, prop, sy4payload.toString());
                             System.out.println(sy4payload);
                         }
                     }
@@ -204,8 +235,14 @@ public class HiveAbisairBygninger {
                 while ((line = br.readLine()) != null) {
                     sb.append(line.trim());
                 }
-                // hiveAbis.JSONText = sb.toString();
-                String s = hiveAbis.GetBygninger("1", prop, sb.toString());
+                JSONObject rtw = hiveAbis.getJsonElement("RTW",sb.toString());
+                String tema = rtw.get("TEMA").toString();
+                if (tema.equals("queryrequest")) {
+                    JSONObject payload = new JSONObject(rtw.get("PAYLOAD").toString());
+                     hiveAbis.PostUrl(prop, "1", payload, sb.toString());
+                }
+                else
+                 hiveAbis.GetBygninger("1", prop, sb.toString());
             }
 
         } catch (Exception e) {
