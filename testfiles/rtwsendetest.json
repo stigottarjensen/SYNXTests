@@ -7,18 +7,29 @@
         "REFID": "uuid",
         "PAYLOAD": {
             "topic": "bygning",
-            "list": [
+            "filters": [
                 {
-                    "field": "bygningstype",
+                    "field": "bygning_navn",
+                    "values": [
+                        "Fernanda Nissen"
+                    ],
+                    "type": "like"
+                },
+                {
+                    "field": "bygning_bygningstype",
                     "values": [
                         "Skole",
                         "Grunnskole"
-                    ]
+                    ],
+                    "type": "in"
                 },
                 {
-                    "field": "grunnflate",
-                    "min": "10",
-                    "max": "9000"
+                    "field": "bygning_grunnflate",
+                    "values": [
+                        10,
+                        9000
+                    ],
+                    "type": "between"
                 }
             ]
         }

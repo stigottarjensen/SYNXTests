@@ -20,6 +20,6 @@ SELECT top(20) [BBY_Nr]
       ,[BBY_Rehabilitert_ar]
   FROM [Abisair].[dbo].[BBY_Bygning] 
   WHERE
-        bygning_navn LIKE '%?%' AND 
-        bygning_bygningstype IN (?,?,?,?,?,?,?) AND
-        bygning_grunnflate BEETWEEN ? AND ?
+        [bygning_navn] 
+        [bygning_bygningstype] 
+        [bygning_grunnflate]

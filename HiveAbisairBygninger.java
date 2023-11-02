@@ -7,6 +7,9 @@ import java.net.http.*;
 import java.time.Duration;
 import java.util.*;
 import org.json.*;
+
+import com.apple.laf.ClientPropertyApplicator.Property;
+
 import java.sql.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -34,22 +37,70 @@ public class HiveAbisairBygninger {
         pw.close();
     }
 
-    private String SQLWhere(JSONObject payload) {
-        JSONArray list
+    private JSONObject get_JSONObject() {
+        return null;
+    }
 
+    private record QueryParams(List<String> sqlWhere, List<String> params) {
+    }
+
+    private QueryParams SQLWhere(JSONObject payload) {
+        JSONArray filters = payload.getJSONArray("filters");
+        StringBuilder sb = new StringBuilder();
+        List<String> sqlWhereList = new ArrayList<>();
+        int size = filters.length();
+        List<String> params = new ArrayList<>();
+
+        for (int i = 0; i < size; i++) {
+            JSONObject js = filters.getJSONObject(i);
+            String field = js.getString("field");
+            String type = js.getString("type");
+            JSONArray values = js.getJSONArray("values");
+
+            switch (type) {
+                case "like":
+                    sqlWhereList.add("[" + field + "] LIKE '%?%' AND ");
+                    params.add(values.get(0));
+                    break;
+                case "in":
+                sb.setLength(0);
+                    sb.append("[" + field + "] IN ( ");
+                    for (int j = 0; j < values.length(); j++) {
+                        params.add(values.get(j));
+                        sb.append("?");
+                        if (j + 1 < values.length())
+                            sb.append(",");
+                    }
+                    sb.append(") AND ");
+                    sqlWhereList.add(sb.toString());
+                    break;
+                case "between":
+                    sqlWhereList.add("[" + field + "] BETWEEN ? AND ? AND ");
+                    params.add(values.get(0));
+                    params.add(values.get(1));
+                    break;
+            }
+            sb.append(" 1=1 ");
+        }
+        return new QueryParams(sqlWhereList, params);
     }
 
     private String GetBygninger(String synxcat, Properties prop, String jsonPackage) throws Exception {
         System.out.println(jsonPackage);
         JSONObject jsObj = new JSONObject(jsonPackage);
         String sqlFile = jsObj.get("topic");
-        BufferedReader fr = new BufferedReader(new FileReader(sqlFile+".sql"));
+        QueryParams qp = SQLWhere(jsObj);
+        BufferedReader fr = new BufferedReader(new FileReader(sqlFile + ".sql"));
         StringBuilder sb = new StringBuilder();
         String l;
-        while ((l = fr.readLine()) != null)
+        while (!(l = fr.readLine()).trim().equals("WHERE")) {
             sb.append(l);
+        }
+        sb.append(" WHERE ");
+        while ((l = fr.readLine()) != null)
+            if (qp.sqlWhere.contains(l))
 
-        pr.loadFromXML(new FileInputStream("ABISAIRParams.xml"));
+                pr.loadFromXML(new FileInputStream("ABISAIRParams.xml"));
         Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
         Connection con = DriverManager.getConnection("jdbc:sqlserver://" + pr.getProperty("dbServer") + ":" +
                 pr.getProperty("dbPort") + ";databaseName=" +
@@ -235,14 +286,13 @@ public class HiveAbisairBygninger {
                 while ((line = br.readLine()) != null) {
                     sb.append(line.trim());
                 }
-                JSONObject rtw = hiveAbis.getJsonElement("RTW",sb.toString());
+                JSONObject rtw = hiveAbis.getJsonElement("RTW", sb.toString());
                 String tema = rtw.get("TEMA").toString();
                 if (tema.equals("queryrequest")) {
                     JSONObject payload = new JSONObject(rtw.get("PAYLOAD").toString());
-                     hiveAbis.PostUrl(prop, "1", payload, sb.toString());
-                }
-                else
-                 hiveAbis.GetBygninger("1", prop, sb.toString());
+                    hiveAbis.PostUrl(prop, "1", payload, sb.toString());
+                } else
+                    hiveAbis.GetBygninger("1", prop, sb.toString());
             }
 
         } catch (Exception e) {
