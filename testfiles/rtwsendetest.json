@@ -9,14 +9,16 @@
             "topic": "bygning",
             "filters": [
                 {
-                    "field": "bygning_navn",
+                    "id": 1,
+                    "field": "BBY_Navn",
                     "values": [
                         "Fernanda Nissen"
                     ],
                     "type": "like"
                 },
                 {
-                    "field": "bygning_bygningstype",
+                    "id": 2,
+                    "field": "BBY_Bygningstype",
                     "values": [
                         "Skole",
                         "Grunnskole"
@@ -24,14 +26,16 @@
                     "type": "in"
                 },
                 {
-                    "field": "bygning_grunnflate",
+                    "id": 3,
+                    "field": "BBY_Grunnflate",
                     "values": [
-                        10,
-                        9000
+                        4000,
+                        900000
                     ],
                     "type": "between"
                 }
-            ]
+            ],
+            "template" : "1 | (2 & 3)"
         }
     }
 }

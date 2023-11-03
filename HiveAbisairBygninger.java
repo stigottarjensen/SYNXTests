@@ -7,10 +7,9 @@ import java.net.http.*;
 import java.time.Duration;
 import java.util.*;
 import org.json.*;
-
-import com.apple.laf.ClientPropertyApplicator.Property;
-
+import java.text.*;
 import java.sql.*;
+import java.text.StringCharacterIterator;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -41,73 +40,95 @@ public class HiveAbisairBygninger {
         return null;
     }
 
-    private record QueryParams(List<String> sqlWhere, List<String> params) {
+    private record QueryParams(Map<Integer, String> sqlWhere, List<String> params) {
     }
 
-    private QueryParams SQLWhere(JSONObject payload) {
+    private QueryParams SQLWhere(JSONObject payload, String selectSql) {
         JSONArray filters = payload.getJSONArray("filters");
         StringBuilder sb = new StringBuilder();
-        List<String> sqlWhereList = new ArrayList<>();
+        Map<Integer, String> sqlWhereList = new HashMap<>();
         int size = filters.length();
         List<String> params = new ArrayList<>();
 
         for (int i = 0; i < size; i++) {
             JSONObject js = filters.getJSONObject(i);
             String field = js.getString("field");
+            int id = js.getInt("id");
+            if (!selectSql.contains(field))
+                continue;
             String type = js.getString("type");
             JSONArray values = js.getJSONArray("values");
 
             switch (type) {
                 case "like":
-                    sqlWhereList.add("[" + field + "] LIKE '%?%' AND ");
-                    params.add(values.get(0));
+                    sqlWhereList.put(id, "[" + field + "] LIKE ? ");
+                    params.add("%"+values.get(0).toString()+"%");
                     break;
                 case "in":
-                sb.setLength(0);
+                    sb.setLength(0);
                     sb.append("[" + field + "] IN ( ");
                     for (int j = 0; j < values.length(); j++) {
-                        params.add(values.get(j));
+                        params.add(values.get(j).toString());
                         sb.append("?");
                         if (j + 1 < values.length())
                             sb.append(",");
                     }
-                    sb.append(") AND ");
-                    sqlWhereList.add(sb.toString());
+                    sb.append(") ");
+                    sqlWhereList.put(id, sb.toString());
                     break;
                 case "between":
-                    sqlWhereList.add("[" + field + "] BETWEEN ? AND ? AND ");
-                    params.add(values.get(0));
-                    params.add(values.get(1));
+                    sqlWhereList.put(id, "[" + field + "] BETWEEN ? AND ? ");
+                    params.add(values.get(0).toString());
+                    params.add(values.get(1).toString());
                     break;
             }
-            sb.append(" 1=1 ");
         }
         return new QueryParams(sqlWhereList, params);
     }
 
+    String legalTemplateCharacters = "0123456789 ()&|";
+
     private String GetBygninger(String synxcat, Properties prop, String jsonPackage) throws Exception {
         System.out.println(jsonPackage);
         JSONObject jsObj = new JSONObject(jsonPackage);
-        String sqlFile = jsObj.get("topic");
-        QueryParams qp = SQLWhere(jsObj);
+        String sqlFile = jsObj.get("topic").toString();
+        String template = jsObj.get("template").toString();
+        StringCharacterIterator sci = new StringCharacterIterator(template);
+        char ch;
+        while((ch = sci.next()) != CharacterIterator.DONE) {
+            if (!legalTemplateCharacters.contains(ch+""))
+                throw new Exception("Illegal character in template: "+ch);
+        }
+
         BufferedReader fr = new BufferedReader(new FileReader(sqlFile + ".sql"));
         StringBuilder sb = new StringBuilder();
         String l;
-        while (!(l = fr.readLine()).trim().equals("WHERE")) {
+        while ((l = fr.readLine()) != null) {
             sb.append(l);
         }
-        sb.append(" WHERE ");
-        while ((l = fr.readLine()) != null)
-            if (qp.sqlWhere.contains(l))
-
-                pr.loadFromXML(new FileInputStream("ABISAIRParams.xml"));
+        QueryParams qp = SQLWhere(jsObj, sb.toString());
+        if (qp.sqlWhere.size() > 0) {
+            sb.append(" WHERE ");
+            for (Map.Entry<Integer, String> me: qp.sqlWhere.entrySet()) {
+                template = template.replace(me.getKey()+"", me.getValue());
+            }
+            template = template.replace("|", "OR");
+            template = template.replace("&", "AND");
+        }
+        sb.append(template);
+        pr.loadFromXML(new FileInputStream("ABISAIRParams.xml"));
         Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
         Connection con = DriverManager.getConnection("jdbc:sqlserver://" + pr.getProperty("dbServer") + ":" +
                 pr.getProperty("dbPort") + ";databaseName=" +
                 pr.getProperty("dbName") + ";encrypt=true;trustServerCertificate=true;",
                 pr.getProperty("dbUser"),
                 pr.getProperty("dbPassword"));
-        PreparedStatement pst = con.prepareStatement(sql);
+        System.out.println(sb);
+         System.out.println(qp.params);
+        PreparedStatement pst = con.prepareStatement(sb.toString());
+         for (int c=0; c<qp.params.size(); c++) {
+            pst.setString(c+1, qp.params.get(c));
+         }
 
         ResultSet rs = pst.executeQuery();
         ResultSetMetaData rsmd = rs.getMetaData();
