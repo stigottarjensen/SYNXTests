@@ -62,7 +62,7 @@ public class HiveAbisairBygninger {
             switch (type) {
                 case "like":
                     sqlWhereList.put(id, "[" + field + "] LIKE ? ");
-                    params.add("%"+values.get(0).toString()+"%");
+                    params.add("%" + values.get(0).toString() + "%");
                     break;
                 case "in":
                     sb.setLength(0);
@@ -95,9 +95,9 @@ public class HiveAbisairBygninger {
         String template = jsObj.get("template").toString();
         StringCharacterIterator sci = new StringCharacterIterator(template);
         char ch;
-        while((ch = sci.next()) != CharacterIterator.DONE) {
-            if (!legalTemplateCharacters.contains(ch+""))
-                throw new Exception("Illegal character in template: "+ch);
+        while ((ch = sci.next()) != CharacterIterator.DONE) {
+            if (!legalTemplateCharacters.contains(ch + ""))
+                throw new Exception("Illegal character in template: " + ch);
         }
 
         BufferedReader fr = new BufferedReader(new FileReader(sqlFile + ".sql"));
@@ -109,8 +109,8 @@ public class HiveAbisairBygninger {
         QueryParams qp = SQLWhere(jsObj, sb.toString());
         if (qp.sqlWhere.size() > 0) {
             sb.append(" WHERE ");
-            for (Map.Entry<Integer, String> me: qp.sqlWhere.entrySet()) {
-                template = template.replace(me.getKey()+"", me.getValue());
+            for (Map.Entry<Integer, String> me : qp.sqlWhere.entrySet()) {
+                template = template.replace(me.getKey() + "", me.getValue());
             }
             template = template.replace("|", "OR");
             template = template.replace("&", "AND");
@@ -124,11 +124,11 @@ public class HiveAbisairBygninger {
                 pr.getProperty("dbUser"),
                 pr.getProperty("dbPassword"));
         System.out.println(sb);
-         System.out.println(qp.params);
+        System.out.println(qp.params);
         PreparedStatement pst = con.prepareStatement(sb.toString());
-         for (int c=0; c<qp.params.size(); c++) {
-            pst.setString(c+1, qp.params.get(c));
-         }
+        for (int c = 0; c < qp.params.size(); c++) {
+            pst.setString(c + 1, qp.params.get(c));
+        }
 
         ResultSet rs = pst.executeQuery();
         ResultSetMetaData rsmd = rs.getMetaData();
@@ -140,7 +140,8 @@ public class HiveAbisairBygninger {
         while (rs.next()) {
             JSONObject js = new JSONObject();
             for (int i = 0; i < columns.length; i++) {
-                js.put(columns[i], rs.getString(i + 1));
+                String content = rs.getString(i + 1);
+                js.put(columns[i], content == null ? "" : content.trim());
             }
             System.out.println(js);
             System.out.println(++c + " ##################################");

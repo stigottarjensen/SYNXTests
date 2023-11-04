@@ -6,11 +6,11 @@
         "TEMA": "queryrequest",
         "REFID": "uuid",
         "PAYLOAD": {
-            "topic": "bygning",
+            "topic": "view_bygning",
             "filters": [
                 {
                     "id": 1,
-                    "field": "BBY_Navn",
+                    "field": "bygning_navn",
                     "values": [
                         "Fernanda Nissen"
                     ],
@@ -18,7 +18,7 @@
                 },
                 {
                     "id": 2,
-                    "field": "BBY_Bygningstype",
+                    "field": "bygning_bygningstype",
                     "values": [
                         "Skole",
                         "Grunnskole"
@@ -27,7 +27,7 @@
                 },
                 {
                     "id": 3,
-                    "field": "BBY_Grunnflate",
+                    "field": "bygning_grunnflate",
                     "values": [
                         4000,
                         900000
