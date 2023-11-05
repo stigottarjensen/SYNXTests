@@ -27,15 +27,23 @@
                 },
                 {
                     "id": 3,
-                    "field": "bygning_grunnflate",
+                    "field": "bygning_ferdigattest",
                     "values": [
-                        4000,
-                        900000
+                        "1995-01-01",
+                        "1999-01-01"
                     ],
                     "type": "between"
+                },
+                {
+                    "id": 4,
+                    "field": "bygning_ref_nr",
+                    "values": [
+                        "60055402"
+                    ],
+                    "type": "like"
                 }
             ],
-            "template" : "1 | (2 & 3)"
+            "template" : "1 | (2 & 3) | 4"
         }
     }
 }

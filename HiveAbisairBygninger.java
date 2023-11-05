@@ -65,6 +65,11 @@ public class HiveAbisairBygninger {
             JSONArray values = js.getJSONArray("values");
 
             switch (type) {
+                case "equal":
+                case "=":
+                    sqlWhereList.put(id, "[" + field + "] = ? ");
+                    params.add("%" + values.get(0).toString() + "%");
+                    break;
                 case "like":
                     sqlWhereList.put(id, "[" + field + "] LIKE ? ");
                     params.add("%" + values.get(0).toString() + "%");
@@ -88,15 +93,18 @@ public class HiveAbisairBygninger {
                     break;
             }
         }
-        Map<String, String> UUIDWhereList = new HashMap<>();
+        Map<String, String> ScrambledWhereList = new HashMap<>();
+        final StringBuilder whereT = new StringBuilder(whereTemplate);
         sqlWhereList.forEach((key, value) -> {
-            String uuidString = UUID.randomUUID().toString();
-            whereTemplate = whereTemplate.replace(key.toString(), uuidString);
-            UUIDWhereList.put(uuidString, value);
+            String scrambledId = "[[[" + key + "]]]";
+            String wt = whereT.toString().replace(key.toString(), scrambledId);
+            whereT.setLength(0);
+            whereT.append(wt);
+            System.out.println(whereT);
+            ScrambledWhereList.put(scrambledId, value);
         });
-        whereTemplate = whereTemplate.replace("|", "OR");
-        whereTemplate = whereTemplate.replace("&", "AND");
-        return new QueryParams(UUIDWhereList, params, whereTemplate);
+
+        return new QueryParams(ScrambledWhereList, params, whereT.toString());
     }
 
     String legalTemplateCharacters = "0123456789 ()&|";
@@ -119,11 +127,13 @@ public class HiveAbisairBygninger {
         while ((l = fr.readLine()) != null) {
             sb.append(l);
         }
-        QueryParams qp = SQLWhere(jsObj, sb.toString());
+        QueryParams qp = SQLWhere(jsObj, sb.toString(), template);
+        template = qp.whereTemplate;
+
         if (qp.sqlWhere.size() > 0) {
             sb.append(" WHERE ");
-            for (Map.Entry<Integer, String> me : qp.sqlWhere.entrySet()) {
-                template = template.replace(me.getKey() + "", me.getValue());
+            for (Map.Entry<String, String> me : qp.sqlWhere.entrySet()) {
+                template = template.replace(me.getKey(), me.getValue());
             }
             template = template.replace("|", "OR");
             template = template.replace("&", "AND");
@@ -136,8 +146,11 @@ public class HiveAbisairBygninger {
                 pr.getProperty("dbName") + ";encrypt=true;trustServerCertificate=true;",
                 pr.getProperty("dbUser"),
                 pr.getProperty("dbPassword"));
+        System.out.println(
+                "--------------------------------------------------------------------------------------------");
         System.out.println(sb);
-        System.out.println(qp.params);
+        System.out.println(
+                "--------------------------------------------------------------------------------------------");
         PreparedStatement pst = con.prepareStatement(sb.toString());
         for (int c = 0; c < qp.params.size(); c++) {
             pst.setString(c + 1, qp.params.get(c));
@@ -167,7 +180,7 @@ public class HiveAbisairBygninger {
                     PostUrl(prop, "1", js, jsonPackage);
                 }
                 if (synxcat.equals("4")) {
-                    Write2File("./fragetbygninger.txt", js, true);
+                    Write2File("./fbygninger.txt", js, true);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
