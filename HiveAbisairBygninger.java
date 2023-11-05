@@ -40,13 +40,18 @@ public class HiveAbisairBygninger {
         return null;
     }
 
-    private record QueryParams(Map<Integer, String> sqlWhere, List<String> params) {
+    private record QueryParams(Map<String, String> sqlWhere, List<String> params, String whereTemplate) {
     }
 
-    private QueryParams SQLWhere(JSONObject payload, String selectSql) {
+    private QueryParams SQLWhere(JSONObject payload, String selectSql, String whereTemplate) {
         JSONArray filters = payload.getJSONArray("filters");
         StringBuilder sb = new StringBuilder();
-        Map<Integer, String> sqlWhereList = new HashMap<>();
+        SortedMap<Integer, String> sqlWhereList = new TreeMap<>(new Comparator<Integer>() {
+            public int compare(Integer a, Integer b) {
+                return b.intValue() - a.intValue();
+            }
+        });
+
         int size = filters.length();
         List<String> params = new ArrayList<>();
 
@@ -83,7 +88,15 @@ public class HiveAbisairBygninger {
                     break;
             }
         }
-        return new QueryParams(sqlWhereList, params);
+        Map<String, String> UUIDWhereList = new HashMap<>();
+        sqlWhereList.forEach((key, value) -> {
+            String uuidString = UUID.randomUUID().toString();
+            whereTemplate = whereTemplate.replace(key.toString(), uuidString);
+            UUIDWhereList.put(uuidString, value);
+        });
+        whereTemplate = whereTemplate.replace("|", "OR");
+        whereTemplate = whereTemplate.replace("&", "AND");
+        return new QueryParams(UUIDWhereList, params, whereTemplate);
     }
 
     String legalTemplateCharacters = "0123456789 ()&|";
