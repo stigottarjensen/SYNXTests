@@ -1,1 +1,1 @@
-java -cp .:./jar/json.jar:./jar/json2.jar:./mssql.jar HiveAbisairBygninger.java 4
+java -cp .:./jar/json.jar:./jar/json2.jar:./mssql.jar HiveAbisair.java 4

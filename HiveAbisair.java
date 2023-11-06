@@ -6,14 +6,14 @@ import javax.net.ssl.*;
 import java.net.http.*;
 import java.time.Duration;
 import java.util.*;
+import java.util.Date;
 import org.json.*;
 import java.text.*;
 import java.sql.*;
-import java.text.StringCharacterIterator;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class HiveAbisairBygninger {
+public class HiveAbisair {
 
     private static SSLSocketFactory sslsf;
 
@@ -34,10 +34,6 @@ public class HiveAbisairBygninger {
             });
         }
         pw.close();
-    }
-
-    private JSONObject get_JSONObject() {
-        return null;
     }
 
     private record QueryParams(Map<String, String> sqlWhere, List<String> params, String whereTemplate) {
@@ -109,7 +105,7 @@ public class HiveAbisairBygninger {
 
     String legalTemplateCharacters = "0123456789 ()&|";
 
-    private String GetBygninger(String synxcat, Properties prop, String jsonPackage) throws Exception {
+    private String GetFromDB(String synxcat, Properties prop, String jsonPackage) throws Exception {
         System.out.println(jsonPackage);
         JSONObject jsObj = new JSONObject(jsonPackage);
         String sqlFile = jsObj.get("topic").toString();
@@ -146,11 +142,6 @@ public class HiveAbisairBygninger {
                 pr.getProperty("dbName") + ";encrypt=true;trustServerCertificate=true;",
                 pr.getProperty("dbUser"),
                 pr.getProperty("dbPassword"));
-        System.out.println(
-                "--------------------------------------------------------------------------------------------");
-        System.out.println(sb);
-        System.out.println(
-                "--------------------------------------------------------------------------------------------");
         PreparedStatement pst = con.prepareStatement(sb.toString());
         for (int c = 0; c < qp.params.size(); c++) {
             pst.setString(c + 1, qp.params.get(c));
@@ -169,8 +160,6 @@ public class HiveAbisairBygninger {
                 String content = rs.getString(i + 1);
                 js.put(columns[i], content == null ? "" : content.trim());
             }
-            System.out.println(js);
-            System.out.println(++c + " ##################################");
             jsList.add(js);
         }
         rs.close();
@@ -180,13 +169,19 @@ public class HiveAbisairBygninger {
                     PostUrl(prop, "1", js, jsonPackage);
                 }
                 if (synxcat.equals("4")) {
-                    Write2File("./fbygninger.txt", js, true);
+                    Write2File("./" + sqlFile +"-"+timeStamp()+ ".txt", js, true);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
         });
         return "";
+    }
+
+    private String timeStamp() {
+        java.util.Date date = Calendar.getInstance().getTime();
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd-hh-mm-ss");
+        return dateFormat.format(date);
     }
 
     private JSONObject getJsonElement(String name, String jsonText) throws Exception {
@@ -273,15 +268,15 @@ public class HiveAbisairBygninger {
                         ret.append(line);
                         jj++;
                         if (synxcat.equals("4")) {
-                            System.out.println(jj + " " + (++ii) + " ##################################");
+                            System.out.println(jj + " " + (++ii));
 
                             JSONObject rtw = getRTW(line);
                             JSONObject sy4payload = getPayload(rtw.toString());
                             if (rtw.get("TEMA").equals("queryresult"))
                                 Write2File("./testtest.txt", sy4payload, true);
                             if (rtw.get("TEMA").equals("queryrequest"))
-                                GetBygninger(synxcat, prop, sy4payload.toString());
-                            System.out.println(sy4payload);
+                                GetFromDB(synxcat, prop, sy4payload.toString());
+                            System.out.println("---"+sy4payload+"---");
                         }
                     }
                 }
@@ -319,7 +314,7 @@ public class HiveAbisairBygninger {
             if (!SynxCat.equals("1"))
                 SynxCat = "4";
 
-            HiveAbisairBygninger hiveAbis = new HiveAbisairBygninger();
+            HiveAbisair hiveAbis = new HiveAbisair();
             FileInputStream fInput = new FileInputStream(fileName);
             Properties prop = new Properties();
             prop.load(fInput);
@@ -340,7 +335,7 @@ public class HiveAbisairBygninger {
                     JSONObject payload = new JSONObject(rtw.get("PAYLOAD").toString());
                     hiveAbis.PostUrl(prop, "1", payload, sb.toString());
                 } else
-                    hiveAbis.GetBygninger("1", prop, sb.toString());
+                    hiveAbis.GetFromDB("1", prop, sb.toString());
             }
 
         } catch (Exception e) {
