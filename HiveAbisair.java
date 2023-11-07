@@ -106,7 +106,6 @@ public class HiveAbisair {
     String legalTemplateCharacters = "0123456789 ()&|";
 
     private String GetFromDB(String synxcat, Properties prop, String jsonPackage) throws Exception {
-        System.out.println(jsonPackage);
         JSONObject jsObj = new JSONObject(jsonPackage);
         String sqlFile = jsObj.get("topic").toString();
         String template = jsObj.get("template").toString();

@@ -1,0 +1,24 @@
+{
+    "RTW": {
+        "TIMESTAMP": "2023-05-17 12:34:56",
+        "SENTFROM": "The Stig",
+        "MOTTAKER": "Chessmaster Levang",
+        "TEMA": "queryrequest",
+        "REFID": "uuid",
+        "PAYLOAD": {
+            "topic": "view_bygning_objekt_felt_verdi",
+            "filters": [
+                {
+                    "id": 1,
+                    "field": "bygning_navn",
+                    "values": [
+                        "Fernanda Nissen"
+                    ],
+                    "type": "like"
+                }
+            ],
+            "template" : "1",
+            "pivot":["Plassering","Etasje","Rom nummer"]
+        }
+    }
+}
