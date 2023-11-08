@@ -109,6 +109,12 @@ public class HiveAbisair {
         JSONObject jsObj = new JSONObject(jsonPackage);
         String sqlFile = jsObj.get("topic").toString();
         String template = jsObj.get("template").toString();
+        List<Object> listPivotFields;
+        try {
+            listPivotFields = jsObj.getJSONArray("pivotfields").toList();
+        } catch (JSONException jse) {
+            listPivotFields = null;
+        }
         StringCharacterIterator sci = new StringCharacterIterator(template);
         char ch;
         while ((ch = sci.next()) != CharacterIterator.DONE) {
@@ -117,23 +123,29 @@ public class HiveAbisair {
         }
 
         BufferedReader fr = new BufferedReader(new FileReader(sqlFile + ".sql"));
-        StringBuilder sb = new StringBuilder();
+        StringBuilder mainSql = new StringBuilder();
         String l;
-        while ((l = fr.readLine()) != null) {
-            sb.append(l);
-        }
-        QueryParams qp = SQLWhere(jsObj, sb.toString(), template);
-        template = qp.whereTemplate;
+        boolean isPivotsql = false;
+        boolean isMainsql = true;
+        StringBuilder pivotSql = new StringBuilder();
 
-        if (qp.sqlWhere.size() > 0) {
-            sb.append(" WHERE ");
-            for (Map.Entry<String, String> me : qp.sqlWhere.entrySet()) {
-                template = template.replace(me.getKey(), me.getValue());
+        while ((l = fr.readLine()) != null) {
+            if (l.contains("--pivotfields sql")) {
+                isPivotsql = true;
+                isMainsql = false;
+                continue;
             }
-            template = template.replace("|", "OR");
-            template = template.replace("&", "AND");
+            if (l.contains("--main sql")) {
+                isPivotsql = false;
+                isMainsql = true;
+                continue;
+            }
+            if (isPivotsql)
+                pivotSql.append(l);
+            if (isMainsql)
+                mainSql.append(l);
         }
-        sb.append(template);
+
         pr.loadFromXML(new FileInputStream("ABISAIRParams.xml"));
         Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
         Connection con = DriverManager.getConnection("jdbc:sqlserver://" + pr.getProperty("dbServer") + ":" +
@@ -141,7 +153,50 @@ public class HiveAbisair {
                 pr.getProperty("dbName") + ";encrypt=true;trustServerCertificate=true;",
                 pr.getProperty("dbUser"),
                 pr.getProperty("dbPassword"));
-        PreparedStatement pst = con.prepareStatement(sb.toString());
+
+        StringBuilder pivotFields = new StringBuilder();
+        if (pivotSql.length() > 2) {
+            Statement st = con.createStatement();
+            ResultSet prs = st.executeQuery(pivotSql.toString());
+            while (prs.next()) {
+                String s = prs.getString("pivotfields");
+                System.out.println(s);
+                if (listPivotFields == null || listPivotFields.contains(s)) {
+                    if (pivotFields.length() == 0)
+                        pivotFields.append("[" + s + "]");
+                    else
+                        pivotFields.append(",[" + s + "]");
+                }
+                System.out.println(pivotFields);
+            }
+            st.close();
+        }
+
+        QueryParams qp = SQLWhere(jsObj, mainSql.toString(), template);
+        template = qp.whereTemplate;
+
+        if (qp.sqlWhere.size() > 0) {
+
+            for (Map.Entry<String, String> me : qp.sqlWhere.entrySet()) {
+                template = template.replace(me.getKey(), me.getValue());
+            }
+            template = template.replace("|", "OR");
+            template = template.replace("&", "AND");
+        }
+        String runSql = "";
+        if (pivotFields.length() < 2) {
+            mainSql.append(" WHERE ");
+            mainSql.append(template);
+            runSql = mainSql.toString();
+        } else {
+            runSql = mainSql.toString();
+            runSql = runSql.replace("<<where>>", " WHERE "+template);
+            runSql = runSql.replace("<<pivot1>>", " ,"+pivotFields);
+            runSql = runSql.replace("<<pivot2>>", pivotFields);
+        }
+        System.out.println(runSql);
+
+        PreparedStatement pst = con.prepareStatement(runSql);
         for (int c = 0; c < qp.params.size(); c++) {
             pst.setString(c + 1, qp.params.get(c));
         }
@@ -162,13 +217,14 @@ public class HiveAbisair {
             jsList.add(js);
         }
         rs.close();
+        System.out.println(jsList);
         jsList.forEach((js) -> {
             try {
                 if (synxcat.equals("1")) {
                     PostUrl(prop, "1", js, jsonPackage);
                 }
                 if (synxcat.equals("4")) {
-                    Write2File("./" + sqlFile +"-"+timeStamp()+ ".txt", js, true);
+                    Write2File("./" + sqlFile + "-" + timeStamp() + ".txt", js, true);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -275,7 +331,7 @@ public class HiveAbisair {
                                 Write2File("./testtest.txt", sy4payload, true);
                             if (rtw.get("TEMA").equals("queryrequest"))
                                 GetFromDB(synxcat, prop, sy4payload.toString());
-                            System.out.println("---"+sy4payload+"---");
+                            System.out.println("---" + sy4payload + "---");
                         }
                     }
                 }

@@ -12,13 +12,13 @@
                     "id": 1,
                     "field": "bygning_navn",
                     "values": [
-                        "Fernanda Nissen"
+                        "a"
                     ],
                     "type": "like"
                 }
             ],
             "template" : "1",
-            "pivot":["Plassering","Etasje","Rom nummer"]
+            "pivotfields":["Plassering","Etasje","Rom nummer"]
         }
     }
 }
