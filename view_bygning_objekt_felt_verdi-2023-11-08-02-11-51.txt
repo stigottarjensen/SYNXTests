@@ -1,0 +1,144 @@
+{
+    "eiendom": "Bjørndal skole",
+    "Etasje": "01",
+    "Plassering": "Garderobe fritidshus inng a",
+    "Rom nummer": "04",
+    "objekt_navn": "BS Brannslanger",
+    "bygning_navn": "Bjørndal skole. Aktivitets skolen. Bygg 7"
+}
+{
+    "eiendom": "Bjørndal skole",
+    "Etasje": "01",
+    "Plassering": "Fritidshus kjøkken",
+    "Rom nummer": "03",
+    "objekt_navn": "HS Håndslukker",
+    "bygning_navn": "Bjørndal skole. Aktivitets skolen. Bygg 7"
+}
+{
+    "eiendom": "Bjørndal skole",
+    "Etasje": "01",
+    "Plassering": "Korridor GYM bygning v wc",
+    "Rom nummer": "01",
+    "objekt_navn": "BS Brannslanger",
+    "bygning_navn": "Bjørndal skole. Gymbygning"
+}
+{
+    "eiendom": "Bjørndal skole",
+    "Etasje": "01",
+    "Plassering": "Ventilasjon gymsal pak hvit port",
+    "Rom nummer": "04",
+    "objekt_navn": "HS Håndslukker",
+    "bygning_navn": "Bjørndal skole. Gymbygning"
+}
+{
+    "eiendom": "Bjørndal skole",
+    "Etasje": "02",
+    "Plassering": "Korridor ved sløyd",
+    "Rom nummer": "06",
+    "objekt_navn": "BS Brannslanger",
+    "bygning_navn": "Bjørndal skole. Hovedbygning. Bygg 8"
+}
+{
+    "eiendom": "Bjørndal skole",
+    "Etasje": "03",
+    "Plassering": "Ventilasjonrom",
+    "Rom nummer": "10",
+    "objekt_navn": "HS Håndslukker",
+    "bygning_navn": "Bjørndal skole. Hovedbygning. Bygg 8"
+}
+{
+    "eiendom": "Bjørndal skole",
+    "Etasje": "01",
+    "Plassering": "Garderobe bygg 2-3",
+    "Rom nummer": "02",
+    "objekt_navn": "BS Brannslanger",
+    "bygning_navn": "Bjørndal skole. Klassehus 1/2/3. Bygg 1"
+}
+{
+    "eiendom": "Bjørndal skole",
+    "Etasje": "01",
+    "Plassering": "Ventilasjon bygg 2-3v inng",
+    "Rom nummer": "03",
+    "objekt_navn": "HS Håndslukker",
+    "bygning_navn": "Bjørndal skole. Klassehus 1/2/3. Bygg 1"
+}
+{
+    "eiendom": "Bjørndal skole",
+    "Etasje": "01",
+    "Plassering": "Garderobe bygg 11-12",
+    "Rom nummer": "02",
+    "objekt_navn": "BS Brannslanger",
+    "bygning_navn": "Bjørndal skole. Klassehus 10/11/12. Bygg 4"
+}
+{
+    "eiendom": "Bjørndal skole",
+    "Etasje": "01",
+    "Plassering": "Ventilasjon v inng til bygg11-12",
+    "Rom nummer": "03",
+    "objekt_navn": "HS Håndslukker",
+    "bygning_navn": "Bjørndal skole. Klassehus 10/11/12. Bygg 4"
+}
+{
+    "eiendom": "Bjørndal skole",
+    "Etasje": "01",
+    "Plassering": "Garderobe bygg 15",
+    "Rom nummer": "03",
+    "objekt_navn": "BS Brannslanger",
+    "bygning_navn": "Bjørndal skole. Klassehus 13/14/15. Bygg 5"
+}
+{
+    "eiendom": "Bjørndal skole",
+    "Etasje": "01",
+    "Plassering": "Bygg 13-14 ventilasjon høyre v inng",
+    "Rom nummer": "02",
+    "objekt_navn": "HS Håndslukker",
+    "bygning_navn": "Bjørndal skole. Klassehus 13/14/15. Bygg 5"
+}
+{
+    "eiendom": "Bjørndal skole",
+    "Etasje": "01",
+    "Plassering": "Garderobe i bygg nr 16",
+    "Rom nummer": "02",
+    "objekt_navn": "BS Brannslanger",
+    "bygning_navn": "Bjørndal skole. Klassehus 16/17/18. Bygg 6"
+}
+{
+    "eiendom": "Bjørndal skole",
+    "Etasje": "01",
+    "Plassering": "Bøttekott bygg 21 v inng",
+    "Rom nummer": "02",
+    "objekt_navn": "BS Brannslanger",
+    "bygning_navn": "Bjørndal skole. Klassehus 19/20/21. Bygg 10"
+}
+{
+    "eiendom": "Bjørndal skole",
+    "Etasje": "01",
+    "Plassering": "Garderobe bygg nr 6",
+    "Rom nummer": "03",
+    "objekt_navn": "BS Brannslanger",
+    "bygning_navn": "Bjørndal skole. Klassehus 4/5/6. Bygg 2"
+}
+{
+    "eiendom": "Bjørndal skole",
+    "Etasje": "01",
+    "Plassering": "Ventilasjon bygg 4-5 v inng",
+    "Rom nummer": "01",
+    "objekt_navn": "HS Håndslukker",
+    "bygning_navn": "Bjørndal skole. Klassehus 4/5/6. Bygg 2"
+}
+{
+    "eiendom": "Bjørndal skole",
+    "Etasje": "01",
+    "Plassering": "Garderobe bygg nr 9",
+    "Rom nummer": "03",
+    "objekt_navn": "BS Brannslanger",
+    "bygning_navn": "Bjørndal skole. Klassehus 7/8/9"
+}
+{
+    "eiendom": "Bjørndal skole",
+    "Etasje": "01",
+    "Plassering": "Ventilasjonrom bygg 7-8 v inng",
+    "Rom nummer": "02",
+    "objekt_navn": "HS Håndslukker",
+    "bygning_navn": "Bjørndal skole. Klassehus 7/8/9"
+}

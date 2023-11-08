@@ -1,9 +1,0 @@
-{
-    "RTW": {
-        "TEMA": "ThisIsIt",
-        "MOTTAKER": "Chessmaster Levang",
-        "TIMESTAMP": "2023-05-17 12:34:56",
-        "SENTFROM": "The Stig",
-        "PAYLOAD": "{\"Pabygg\":\"\",\"BBY_Nr\":\"3800143\",\"BBY_Grunnflate\":\"0.0\",\"Konstruksjon\":\"Tomt/mark\",\"Verneverdig\":\"0\",\"BBY_Byggear\":\"0\",\"BBY_Sarskilt_brannobjekt\":\"0\",\"BBY_Ref_Nr\":\"          \",\"BBO_Nr\":\"800143\",\"BBY_Bruttoareal\":\"0.0\",\"KjellerLoftUnder\":\"0 / 0 / 0\",\"Bygningsadresse\":\"Asbjørnsens vei 3\",\"GardBrSNr\":\"72 / 18 / 999999\",\"Bygningsnavn\":\"Tomt/mark\",\"Kommune\":\"Oslo\",\"Bygningstype\":\"Tomt/mark\",\"BBY_Ferdigattest\":\"1753-01-01 00:00:00.0\",\"BBY_Etasjer\":\"0.0\",\"BBY_Rehabilitert_ar\":\"0\",\"BBY_Rehabilitert\":\"0\"}"
-    }
-}

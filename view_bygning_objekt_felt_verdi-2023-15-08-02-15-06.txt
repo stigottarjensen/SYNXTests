@@ -1,0 +1,600 @@
+{
+    "eiendom": "Bestum idrettshall",
+    "Etasje": "",
+    "Plassering": "U2 KORRIDOR VED GARDEROBE",
+    "Rom nummer": "",
+    "objekt_navn": "BS Brannslanger",
+    "bygning_navn": "Bestum idrettshall"
+}
+{
+    "eiendom": "Bestum idrettshall",
+    "Etasje": "",
+    "Plassering": "U1 SKOLE KJØKKEN",
+    "Rom nummer": "",
+    "objekt_navn": "HS Håndslukker",
+    "bygning_navn": "Bestum idrettshall"
+}
+{
+    "eiendom": "Bestum skole",
+    "Etasje": "",
+    "Plassering": "U VENTILASJON ROM",
+    "Rom nummer": "",
+    "objekt_navn": "BS Brannslanger",
+    "bygning_navn": "Bestum skole. Bygg A"
+}
+{
+    "eiendom": "Bestum skole",
+    "Etasje": "",
+    "Plassering": "U VARMESENTRAL",
+    "Rom nummer": "",
+    "objekt_navn": "HS Håndslukker",
+    "bygning_navn": "Bestum skole. Bygg A"
+}
+{
+    "eiendom": "Bestum skole",
+    "Etasje": "",
+    "Plassering": "U KORRIDOR VED TILFLUKTSROM",
+    "Rom nummer": "",
+    "objekt_navn": "BS Brannslanger",
+    "bygning_navn": "Bestum skole. Bygg B"
+}
+{
+    "eiendom": "Bestum skole",
+    "Etasje": "",
+    "Plassering": "U VENTILASJON ROM B036",
+    "Rom nummer": "",
+    "objekt_navn": "HS Håndslukker",
+    "bygning_navn": "Bestum skole. Bygg B"
+}
+{
+    "eiendom": "Lilleaker skole",
+    "Etasje": "B",
+    "Plassering": "KORRIDOR VED GARDEROBE",
+    "Rom nummer": "02",
+    "objekt_navn": "BS Brannslanger",
+    "bygning_navn": "Bygg 2 - Tidli Vaktmesterbolig"
+}
+{
+    "eiendom": "Lilleaker skole",
+    "Etasje": "B",
+    "Plassering": "B U. TRAPP",
+    "Rom nummer": "02",
+    "objekt_navn": "HS Håndslukker",
+    "bygning_navn": "Bygg 2 - Tidli Vaktmesterbolig"
+}
+{
+    "eiendom": "Etterstad videregående skole",
+    "Etasje": "02",
+    "Plassering": "Bygg B ved Korridor gymsal",
+    "Rom nummer": "13",
+    "objekt_navn": "BS Brannslanger",
+    "bygning_navn": "Etterstad videregående skole. Bygg B"
+}
+{
+    "eiendom": "Etterstad videregående skole",
+    "Etasje": "02",
+    "Plassering": "Bygg B Ventilasjonrom Korridor",
+    "Rom nummer": "14",
+    "objekt_navn": "HS Håndslukker",
+    "bygning_navn": "Etterstad videregående skole. Bygg B"
+}
+{
+    "eiendom": "Etterstad videregående skole",
+    "Etasje": "02",
+    "Plassering": "Bygg C ventilasjon/varmesentral rom C U02",
+    "Rom nummer": "05",
+    "objekt_navn": "BS Brannslanger",
+    "bygning_navn": "Etterstad videregående skole. Bygg C"
+}
+{
+    "eiendom": "Etterstad videregående skole",
+    "Etasje": "02",
+    "Plassering": "Gang auditorium C-102",
+    "Rom nummer": "06",
+    "objekt_navn": "HS Håndslukker",
+    "bygning_navn": "Etterstad videregående skole. Bygg C"
+}
+{
+    "eiendom": "Etterstad videregående skole",
+    "Etasje": "06",
+    "Plassering": "Gang ved vaskerom 413 og heis",
+    "Rom nummer": "01",
+    "objekt_navn": "BS Brannslanger",
+    "bygning_navn": "Etterstad videregående skole. Bygning D. Høybygget"
+}
+{
+    "eiendom": "Etterstad videregående skole",
+    "Etasje": "06",
+    "Plassering": "Ventilasjonrom 112  itrapp",
+    "Rom nummer": "08",
+    "objekt_navn": "HS Håndslukker",
+    "bygning_navn": "Etterstad videregående skole. Bygning D. Høybygget"
+}
+{
+    "eiendom": "Etterstad videregående skole",
+    "Etasje": "02",
+    "Plassering": "Kjeller Bygg A Korridor ved El skap A-K04",
+    "Rom nummer": "06",
+    "objekt_navn": "BS Brannslanger",
+    "bygning_navn": "Etterstad videregående skole. Hovedbygning. Bygg A"
+}
+{
+    "eiendom": "Etterstad videregående skole",
+    "Etasje": "02",
+    "Plassering": "Kjeller Bygg A Ventilasjon rom A-K09",
+    "Rom nummer": "10",
+    "objekt_navn": "HS Håndslukker",
+    "bygning_navn": "Etterstad videregående skole. Hovedbygning. Bygg A"
+}
+{
+    "eiendom": "Foss videregående skole",
+    "Etasje": "02",
+    "Plassering": "trappeløp v kopi",
+    "Rom nummer": "02",
+    "objekt_navn": "HS Håndslukker",
+    "bygning_navn": "Foss videregående skole. Vaktmesterbolig"
+}
+{
+    "eiendom": "Haugenstua idrettshall",
+    "Etasje": "",
+    "Plassering": "01 Gymsal ved ballrom",
+    "Rom nummer": "",
+    "objekt_navn": "BS Brannslanger",
+    "bygning_navn": "Haugenstua idrettshall"
+}
+{
+    "eiendom": "Haugenstua idrettshall",
+    "Etasje": "",
+    "Plassering": "01 Korridor ved kiosk",
+    "Rom nummer": "",
+    "objekt_navn": "HS Håndslukker",
+    "bygning_navn": "Haugenstua idrettshall"
+}
+{
+    "eiendom": "Haugenstua skole",
+    "Etasje": "",
+    "Plassering": "03 Korridor ved garderobe 3023",
+    "Rom nummer": "",
+    "objekt_navn": "BS Brannslanger",
+    "bygning_navn": "Haugenstua skole. Skolebygg 2016"
+}
+{
+    "eiendom": "Haugenstua skole",
+    "Etasje": "",
+    "Plassering": "04 Ventilasjonsrom ved vask",
+    "Rom nummer": "",
+    "objekt_navn": "HS Håndslukker",
+    "bygning_navn": "Haugenstua skole. Skolebygg 2016"
+}
+{
+    "eiendom": "Haugenstua skoles barnehage",
+    "Etasje": "",
+    "Plassering": "01 Korridor ved spiserom",
+    "Rom nummer": "",
+    "objekt_navn": "BS Brannslanger",
+    "bygning_navn": "Haugenstua skoles barnehage"
+}
+{
+    "eiendom": "Haugenstua skoles barnehage",
+    "Etasje": "",
+    "Plassering": "01 Korridor ved spiserom",
+    "Rom nummer": "",
+    "objekt_navn": "HS Håndslukker",
+    "bygning_navn": "Haugenstua skoles barnehage"
+}
+{
+    "eiendom": "Majorstuen skole",
+    "Etasje": "04",
+    "Plassering": "Verksted keramikk u1146",
+    "Rom nummer": "11",
+    "objekt_navn": "BS Brannslanger",
+    "bygning_navn": "Majorstuen skole"
+}
+{
+    "eiendom": "Majorstuen skole",
+    "Etasje": "03",
+    "Plassering": "Varmesentral u1076/bak kantine",
+    "Rom nummer": "13",
+    "objekt_navn": "HS Håndslukker",
+    "bygning_navn": "Majorstuen skole"
+}
+{
+    "eiendom": "Majorstuen skole",
+    "Etasje": "00",
+    "Plassering": "Korridor ventilasjon kjeller eget hus nær bom",
+    "Rom nummer": "01",
+    "objekt_navn": "BS Brannslanger",
+    "bygning_navn": "Majorstuen skole. Teknisk sentral"
+}
+{
+    "eiendom": "Majorstuen skole",
+    "Etasje": "01",
+    "Plassering": "Trapp til kjeller eget bygg ved bom innkjøring",
+    "Rom nummer": "01",
+    "objekt_navn": "HS Håndslukker",
+    "bygning_navn": "Majorstuen skole. Teknisk sentral"
+}
+{
+    "eiendom": "Majorstuen skole",
+    "Etasje": "01",
+    "Plassering": "Søppelskur ved parkering",
+    "Rom nummer": "01",
+    "objekt_navn": "HS Håndslukker",
+    "bygning_navn": "Majorstuen skole. Uværskur"
+}
+{
+    "eiendom": "Nordstrand skole",
+    "Etasje": "04",
+    "Plassering": "korridor v/inngang",
+    "Rom nummer": "19",
+    "objekt_navn": "BS Brannslanger",
+    "bygning_navn": "Nordstrand skole. Bygg B"
+}
+{
+    "eiendom": "Nordstrand skole",
+    "Etasje": "04",
+    "Plassering": "ventilasjon, inngang fra gymsal",
+    "Rom nummer": "16",
+    "objekt_navn": "HS Håndslukker",
+    "bygning_navn": "Nordstrand skole. Bygg B"
+}
+{
+    "eiendom": "Nordstrand skole",
+    "Etasje": "Kj",
+    "Plassering": "korridor v/klasserom 3",
+    "Rom nummer": "10",
+    "objekt_navn": "BS Brannslanger",
+    "bygning_navn": "Nordstrand skole. Hovedbygning A"
+}
+{
+    "eiendom": "Nordstrand skole",
+    "Etasje": "Kj",
+    "Plassering": "ventilasjon i gang v/ skolekjøkken",
+    "Rom nummer": "09",
+    "objekt_navn": "HS Håndslukker",
+    "bygning_navn": "Nordstrand skole. Hovedbygning A"
+}
+{
+    "eiendom": "Sedsvoll skole",
+    "Etasje": "01",
+    "Plassering": "stue v inngang kjøkken",
+    "Rom nummer": "01",
+    "objekt_navn": "HS Håndslukker",
+    "bygning_navn": "Sedsvoll skole. Sedsvoll 2. Rødstua"
+}
+{
+    "eiendom": "Sedsvoll skole",
+    "Etasje": "01",
+    "Plassering": "verksted",
+    "Rom nummer": "03",
+    "objekt_navn": "HS Håndslukker",
+    "bygning_navn": "Sedsvoll skole. Sedsvoll 2. Verkstedbygning"
+}
+{
+    "eiendom": "Sedsvoll skole",
+    "Etasje": "01",
+    "Plassering": "trailbod verksted",
+    "Rom nummer": "01",
+    "objekt_navn": "HS Håndslukker",
+    "bygning_navn": "Sedsvoll skole. Sedsvoll 3. Trialverksted"
+}
+{
+    "eiendom": "Sollerudstranda skole",
+    "Etasje": "",
+    "Plassering": "01 VED KJØKKEN",
+    "Rom nummer": "",
+    "objekt_navn": "HS Håndslukker",
+    "bygning_navn": "Sollerudstranda skole. Barnehage"
+}
+{
+    "eiendom": "Sollerudstranda skole Nordmarka",
+    "Etasje": "",
+    "Plassering": "VERKSTED UTE",
+    "Rom nummer": "",
+    "objekt_navn": "HS Håndslukker",
+    "bygning_navn": "Sollerudstranda skole. Bygg 1. Avd. Nordmarka"
+}
+{
+    "eiendom": "Sollerudstranda skole",
+    "Etasje": "",
+    "Plassering": "01 VENTILASJON",
+    "Rom nummer": "",
+    "objekt_navn": "BS Brannslanger",
+    "bygning_navn": "Sollerudstranda skole. Bygg 1. Maritim avd."
+}
+{
+    "eiendom": "Sollerudstranda skole",
+    "Etasje": "",
+    "Plassering": "01 VED INNGANGEN",
+    "Rom nummer": "",
+    "objekt_navn": "HS Håndslukker",
+    "bygning_navn": "Sollerudstranda skole. Bygg 1. Maritim avd."
+}
+{
+    "eiendom": "Sollerudstranda skole",
+    "Etasje": "",
+    "Plassering": "BYGG 10 GARASJE",
+    "Rom nummer": "",
+    "objekt_navn": "BS Brannslanger",
+    "bygning_navn": "Sollerudstranda skole. Bygg 12. Hovedbygg Frantzef"
+}
+{
+    "eiendom": "Sollerudstranda skole",
+    "Etasje": "",
+    "Plassering": "KJ VED FYRROM",
+    "Rom nummer": "",
+    "objekt_navn": "HS Håndslukker",
+    "bygning_navn": "Sollerudstranda skole. Bygg 12. Hovedbygg Frantzef"
+}
+{
+    "eiendom": "Sollerudstranda skole",
+    "Etasje": "",
+    "Plassering": "BYGG 1301. SNEKKER",
+    "Rom nummer": "",
+    "objekt_navn": "BS Brannslanger",
+    "bygning_navn": "Sollerudstranda skole. Bygg 13. Kystkult. Senter"
+}
+{
+    "eiendom": "Sollerudstranda skole",
+    "Etasje": "",
+    "Plassering": "BYGG 1301. VED INNGANGEN BRANNSENTRAL",
+    "Rom nummer": "",
+    "objekt_navn": "HS Håndslukker",
+    "bygning_navn": "Sollerudstranda skole. Bygg 13. Kystkult. Senter"
+}
+{
+    "eiendom": "Sollerudstranda skole",
+    "Etasje": "",
+    "Plassering": "01 VERKSTED",
+    "Rom nummer": "",
+    "objekt_navn": "BS Brannslanger",
+    "bygning_navn": "Sollerudstranda skole. Bygg 2. Dyrafjell"
+}
+{
+    "eiendom": "Sollerudstranda skole",
+    "Etasje": "",
+    "Plassering": "01 VERKSTED",
+    "Rom nummer": "",
+    "objekt_navn": "HS Håndslukker",
+    "bygning_navn": "Sollerudstranda skole. Bygg 2. Dyrafjell"
+}
+{
+    "eiendom": "Sollerudstranda skole",
+    "Etasje": "",
+    "Plassering": "01 VERKSTED",
+    "Rom nummer": "",
+    "objekt_navn": "BS Brannslanger",
+    "bygning_navn": "Sollerudstranda skole. Bygg 3. Maritim avd."
+}
+{
+    "eiendom": "Sollerudstranda skole",
+    "Etasje": "",
+    "Plassering": "01 VERKSTED",
+    "Rom nummer": "",
+    "objekt_navn": "HS Håndslukker",
+    "bygning_navn": "Sollerudstranda skole. Bygg 3. Maritim avd."
+}
+{
+    "eiendom": "Sollerudstranda skole",
+    "Etasje": "",
+    "Plassering": "01 VAKTROM",
+    "Rom nummer": "",
+    "objekt_navn": "BS Brannslanger",
+    "bygning_navn": "Sollerudstranda skole. Bygg 4. Maritim avd."
+}
+{
+    "eiendom": "Sollerudstranda skole",
+    "Etasje": "",
+    "Plassering": "01 VED INNGANGEN",
+    "Rom nummer": "",
+    "objekt_navn": "HS Håndslukker",
+    "bygning_navn": "Sollerudstranda skole. Bygg 4. Maritim avd."
+}
+{
+    "eiendom": "Sollerudstranda skole",
+    "Etasje": "",
+    "Plassering": "Verksted reserve",
+    "Rom nummer": "",
+    "objekt_navn": "HS Håndslukker",
+    "bygning_navn": "Sollerudstranda skole. Bygg 5. Hovedbygg Sollerud"
+}
+{
+    "eiendom": "Stasjonsfjellet skole",
+    "Etasje": "",
+    "Plassering": "C U. etg. V/tilfluktsrom.",
+    "Rom nummer": "",
+    "objekt_navn": "BS Brannslanger",
+    "bygning_navn": "Stasjonsfjellet skole. Bygg A, B, C"
+}
+{
+    "eiendom": "Stasjonsfjellet skole",
+    "Etasje": "",
+    "Plassering": "C U. etg. Vaktmester",
+    "Rom nummer": "",
+    "objekt_navn": "HS Håndslukker",
+    "bygning_navn": "Stasjonsfjellet skole. Bygg A, B, C"
+}
+{
+    "eiendom": "Stasjonsfjellet skole",
+    "Etasje": "01",
+    "Plassering": "v/inngang",
+    "Rom nummer": "03",
+    "objekt_navn": "BS Brannslanger",
+    "bygning_navn": "Stasjonsfjellet skole. Bygg D"
+}
+{
+    "eiendom": "Stasjonsfjellet skole",
+    "Etasje": "01",
+    "Plassering": "Teknisk rom D-105",
+    "Rom nummer": "03",
+    "objekt_navn": "HS Håndslukker",
+    "bygning_navn": "Stasjonsfjellet skole. Bygg D"
+}
+{
+    "eiendom": "Stovner skole",
+    "Etasje": "M0",
+    "Plassering": "Korridor ved møterom",
+    "Rom nummer": "08",
+    "objekt_navn": "BS Brannslanger",
+    "bygning_navn": "Stovner skole. Hovedbygning."
+}
+{
+    "eiendom": "Stovner skole",
+    "Etasje": "M0",
+    "Plassering": "Ventilasjonrom ute v oppg B",
+    "Rom nummer": "08",
+    "objekt_navn": "HS Håndslukker",
+    "bygning_navn": "Stovner skole. Hovedbygning."
+}
+{
+    "eiendom": "Svendstuen skole",
+    "Etasje": "05",
+    "Plassering": "Trapp V hovedinngang",
+    "Rom nummer": "09",
+    "objekt_navn": "BS Brannslanger",
+    "bygning_navn": "Svendstuen skole. Hovedbygg"
+}
+{
+    "eiendom": "Svendstuen skole",
+    "Etasje": "03",
+    "Plassering": "Tekstil/naturfag",
+    "Rom nummer": "08",
+    "objekt_navn": "HS Håndslukker",
+    "bygning_navn": "Svendstuen skole. Hovedbygg"
+}
+{
+    "eiendom": "Svendstuen skole",
+    "Etasje": "01",
+    "Plassering": "Felles V helsesøster",
+    "Rom nummer": "01",
+    "objekt_navn": "BS Brannslanger",
+    "bygning_navn": "Svendstuen skole. Hytta"
+}
+{
+    "eiendom": "Trosterud skole",
+    "Etasje": "",
+    "Plassering": "02 Bøttekott",
+    "Rom nummer": "",
+    "objekt_navn": "BS Brannslanger",
+    "bygning_navn": "Trosterud skole. Admin. bygning"
+}
+{
+    "eiendom": "Trosterud skole",
+    "Etasje": "",
+    "Plassering": "02 Personalrom",
+    "Rom nummer": "",
+    "objekt_navn": "HS Håndslukker",
+    "bygning_navn": "Trosterud skole. Admin. bygning"
+}
+{
+    "eiendom": "Trosterud skole",
+    "Etasje": "",
+    "Plassering": "SFO",
+    "Rom nummer": "",
+    "objekt_navn": "BS Brannslanger",
+    "bygning_navn": "Trosterud skole. Fritidshjemmet"
+}
+{
+    "eiendom": "Trosterud skole",
+    "Etasje": "",
+    "Plassering": "SFO Kjøkken",
+    "Rom nummer": "",
+    "objekt_navn": "HS Håndslukker",
+    "bygning_navn": "Trosterud skole. Fritidshjemmet"
+}
+{
+    "eiendom": "Trosterud skole",
+    "Etasje": "",
+    "Plassering": "01 Ved inngang g",
+    "Rom nummer": "",
+    "objekt_navn": "BS Brannslanger",
+    "bygning_navn": "Trosterud skole. Helsebygningen"
+}
+{
+    "eiendom": "Trosterud skole",
+    "Etasje": "",
+    "Plassering": "01 Kjøkken inng h",
+    "Rom nummer": "",
+    "objekt_navn": "HS Håndslukker",
+    "bygning_navn": "Trosterud skole. Helsebygningen"
+}
+{
+    "eiendom": "Trosterud skole",
+    "Etasje": "",
+    "Plassering": "02 Garderobe 7 klasse",
+    "Rom nummer": "",
+    "objekt_navn": "BS Brannslanger",
+    "bygning_navn": "Trosterud skole. Klasseromsbygget"
+}
+{
+    "eiendom": "Trosterud skole",
+    "Etasje": "",
+    "Plassering": "02 Garderobe",
+    "Rom nummer": "",
+    "objekt_navn": "BS Brannslanger",
+    "bygning_navn": "Trosterud skole. Spesialbygg"
+}
+{
+    "eiendom": "Trosterud skole",
+    "Etasje": "",
+    "Plassering": "02 Ventilasjonsrom",
+    "Rom nummer": "",
+    "objekt_navn": "HS Håndslukker",
+    "bygning_navn": "Trosterud skole. Spesialbygg"
+}
+{
+    "eiendom": "Østensjø skole",
+    "Etasje": "03",
+    "Plassering": "trappegang v/aktivitesskolen inngang B I garderobe",
+    "Rom nummer": "07",
+    "objekt_navn": "BS Brannslanger",
+    "bygning_navn": "Østensjø skole. Bygg 1"
+}
+{
+    "eiendom": "Østensjø skole",
+    "Etasje": "Kj",
+    "Plassering": "festsalen",
+    "Rom nummer": "10",
+    "objekt_navn": "HS Håndslukker",
+    "bygning_navn": "Østensjø skole. Bygg 1"
+}
+{
+    "eiendom": "Østensjø skole",
+    "Etasje": "03",
+    "Plassering": "trappegang",
+    "Rom nummer": "06",
+    "objekt_navn": "BS Brannslanger",
+    "bygning_navn": "Østensjø skole. Bygg 2"
+}
+{
+    "eiendom": "Østensjø skole",
+    "Etasje": "Kj",
+    "Plassering": "sløyd",
+    "Rom nummer": "07",
+    "objekt_navn": "HS Håndslukker",
+    "bygning_navn": "Østensjø skole. Bygg 2"
+}
+{
+    "eiendom": "Østensjø skole",
+    "Etasje": "Kj",
+    "Plassering": "korridor v/gymsal",
+    "Rom nummer": "03",
+    "objekt_navn": "BS Brannslanger",
+    "bygning_navn": "Østensjø skole. Bygg 4"
+}
+{
+    "eiendom": "Østensjø skole",
+    "Etasje": "Kj",
+    "Plassering": "v/ kjøkken sfo",
+    "Rom nummer": "05",
+    "objekt_navn": "HS Håndslukker",
+    "bygning_navn": "Østensjø skole. Bygg 4"
+}
+{
+    "eiendom": "Østensjø skole",
+    "Etasje": "02",
+    "Plassering": "i gang v/trapp",
+    "Rom nummer": "02",
+    "objekt_navn": "HS Håndslukker",
+    "bygning_navn": "Østensjø skole. Bygg 6"
+}

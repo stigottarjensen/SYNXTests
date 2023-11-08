@@ -4,10 +4,18 @@ import java.net.*;
 import javax.net.SocketFactory;
 import javax.net.ssl.*;
 import java.net.http.*;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardWatchEventKinds;
+import java.nio.file.WatchEvent;
+import java.nio.file.WatchKey;
+import java.nio.file.WatchService;
 import java.time.Duration;
 import java.util.*;
 import java.util.Date;
 import org.json.*;
+
 import java.text.*;
 import java.sql.*;
 import java.util.concurrent.*;
@@ -190,8 +198,8 @@ public class HiveAbisair {
             runSql = mainSql.toString();
         } else {
             runSql = mainSql.toString();
-            runSql = runSql.replace("<<where>>", " WHERE "+template);
-            runSql = runSql.replace("<<pivot1>>", " ,"+pivotFields);
+            runSql = runSql.replace("<<where>>", " WHERE " + template);
+            runSql = runSql.replace("<<pivot1>>", " ," + pivotFields);
             runSql = runSql.replace("<<pivot2>>", pivotFields);
         }
         System.out.println(runSql);
@@ -217,14 +225,15 @@ public class HiveAbisair {
             jsList.add(js);
         }
         rs.close();
-        System.out.println(jsList);
+
+        String now = timeStamp();
         jsList.forEach((js) -> {
             try {
                 if (synxcat.equals("1")) {
                     PostUrl(prop, "1", js, jsonPackage);
                 }
                 if (synxcat.equals("4")) {
-                    Write2File("./" + sqlFile + "-" + timeStamp() + ".txt", js, true);
+                    Write2File("./" + sqlFile + "-" + now + ".txt", js, true);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -361,6 +370,29 @@ public class HiveAbisair {
     }
 
     public static void main(String[] args) throws Exception {
+
+        WatchService watchService = FileSystems.getDefault().newWatchService();
+
+        Path path = Paths.get("./");
+
+        path.register(
+                watchService,
+                StandardWatchEventKinds.ENTRY_CREATE,
+                StandardWatchEventKinds.ENTRY_DELETE,
+                StandardWatchEventKinds.ENTRY_MODIFY);
+
+        WatchKey key;
+        while ((key = watchService.take()) != null) {
+            for (WatchEvent<?> event : key.pollEvents()) {
+                System.out.println(
+                        "Event kind:" + event.kind()
+                                + ". File affected: " + event.context() + ".");
+            }
+            key.reset();
+        }
+    }
+
+    public static void zmain(String[] args) throws Exception {
         try {
 
             String fileName = "./SenderReceiverTestParams.properties";
