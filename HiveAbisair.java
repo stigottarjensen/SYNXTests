@@ -228,9 +228,9 @@ public class HiveAbisair {
         String now = timeStamp();
         jsList.forEach((js) -> {
             try {
-                if (synxcat.equals("1")) {
-                    PostUrl(prop, "1", js, jsonPackage);
-                }
+                // if (synxcat.equals("1")) {
+                //     PostUrl(prop, "1", js, jsonPackage);
+                // }
                 if (synxcat.equals("4")) {
                     Write2File("./" + sqlFile + "-" + now + ".txt", js, true);
                 }
@@ -312,9 +312,6 @@ public class HiveAbisair {
                 OutputStreamWriter osw = new OutputStreamWriter(conn.getOutputStream());
 
                 osw.write(urlEncoded);
-                System.out.println();
-                System.out.println(urlEncoded);
-                System.out.println();
                 osw.flush();
                 osw.close();
 
@@ -335,8 +332,8 @@ public class HiveAbisair {
 
                             JSONObject rtw = getRTW(line);
                             JSONObject sy4payload = getPayload(rtw.toString());
-                            if (rtw.get("TEMA").equals("queryresult"))
-                                Write2File("./testtest.txt", sy4payload, true);
+                            // if (rtw.get("TEMA").equals("queryresult"))
+                            //     Write2File("./testtest.txt", sy4payload, true);
                             if (rtw.get("TEMA").equals("queryrequest"))
                                 GetFromDB(synxcat, prop, sy4payload.toString());
                             System.out.println("---" + sy4payload + "---");

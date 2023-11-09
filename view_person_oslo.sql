@@ -1,0 +1,8 @@
+SELECT [person_nr]
+      ,[person_fornavn]
+      ,[person_etternavn]
+      ,[person_tittel]
+      ,[person_rolle]
+      ,[rolle_tekst]
+      ,[virksomhet]
+  FROM [Abisair].[dbo].[view_person_oslo]

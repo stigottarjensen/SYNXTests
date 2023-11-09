@@ -1,4 +1,4 @@
-SELECT top(2000) 
+SELECT 
 [bygning_nr]
       ,[object_nr]
       ,[bygning_navn]
