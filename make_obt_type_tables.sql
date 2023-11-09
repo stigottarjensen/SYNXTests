@@ -14,4 +14,4 @@ select bygning_navn , rtrim(BBO_Navn) as eiendom, rtrim(OBT_Objekt_Type.OBT_Type
         ) as bygobj pivot 
   (max (vete)
   for OBF_Label IN (<<pivotfields>>)) as pvt
-  order by pvt.bygning_navn, pvt.objekt_tekst
+  order by pvt.objekt_type

@@ -1,0 +1,6 @@
+SELECT [eiendom_nr]
+      ,[eiendom_navn]
+      ,[eiendom_intern_nr]
+      ,[post_nr]
+      ,[post_sted]
+  FROM [Abisair].[dbo].[view_eiendom_oslo]

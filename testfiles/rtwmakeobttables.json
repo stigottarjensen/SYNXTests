@@ -1,0 +1,15 @@
+{
+    "RTW": {
+        "TIMESTAMP": "2023-05-17 12:34:56",
+        "SENTFROM": "The Stig",
+        "MOTTAKER": "Atle, Runar og Øivind",
+        "TEMA": "queryrequest",
+        "REFID": "uuid",
+        "PAYLOAD": {
+            "topic": "make_obt_type_tables",
+            "filters": [
+            ],
+            "template" : ""
+        }
+    }
+}

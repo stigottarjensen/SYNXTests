@@ -1,9 +1,5 @@
 
 import java.io.*;
-import java.net.*;
-import javax.net.SocketFactory;
-import javax.net.ssl.*;
-import java.net.http.*;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -21,9 +17,8 @@ import java.sql.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class HiveAbisair {
+public class AbisairOBTTables {
 
-    private static SSLSocketFactory sslsf;
 
     private Properties pr = new Properties();
     private static final AtomicBoolean abContinue = new AtomicBoolean(true);
@@ -256,99 +251,7 @@ public class HiveAbisair {
         return new JSONObject(jso.get("PAYLOAD").toString());
     }
 
-    // curl -k https://stig.cioty.com -H "Synx-Cat: 4" -d
-    // "token=aToken_124b34e931dd12fa57b28be8d56e6dff371cafe3570ab847e49f87012ff2eca0&objectid=1&payload=hello"
-    private String PostUrl(Properties prop, String synxcat, JSONObject payload, String jsonPackage) {
-
-        int cnt = 0;
-        while (abContinue.get() && synxcat.equals("4") || cnt == 0) {
-            if (synxcat.equals("1"))
-                cnt = 1;
-            StringBuilder ret = new StringBuilder();
-            try {
-                String key = synxcat.equals("4") ? "receiver_" : "sender_";
-
-                String uri = prop.getProperty("httpUrl")
-                        + prop.getProperty("path");
-                if (!uri.toLowerCase().startsWith("https://"))
-                    uri = "https://" + uri;
-
-                URI Uri = new URI(uri);
-                URL url = Uri.toURL();
-                HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
-                conn.setSSLSocketFactory(sslsf);
-                StringBuilder sb = new StringBuilder();
-                if (synxcat.equals("1")) {
-                    JSONObject rtw = getRTW(jsonPackage);
-                    rtw.put("PAYLOAD", payload);
-                    Iterator<String> it = rtw.keys();
-                    while (it.hasNext()) {
-                        String name = it.next();
-                        String content = rtw.get(name).toString();
-                        sb.append("&" + name + "=" + URLEncoder.encode(content, "UTF-8"));
-                    }
-                }
-                if (synxcat.equals("4"))
-                    sb.append("&format=json");
-                String urlEncoded = "token=" + prop.getProperty(key + "token") + "&objectid="
-                        + prop.getProperty(key + "objectid") + sb;
-                conn.setRequestMethod("POST");
-                conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
-                conn.setRequestProperty("Synx-Cat", synxcat);
-                conn.setRequestProperty("Content-Length", urlEncoded.length() + "");
-                if (synxcat.equals("4")) {
-                    conn.setRequestProperty("Connection", "Keep-Alive");
-                    // conn.setRequestProperty("Keep-Alive", "timeout=12000,max=25000");// 1200 sek,
-                    // max 250 connections
-                }
-                conn.setDoOutput(true);
-                conn.setDoInput(true);
-                OutputStreamWriter osw = new OutputStreamWriter(conn.getOutputStream());
-
-                osw.write(urlEncoded);
-                osw.flush();
-                osw.close();
-
-                InputStream is = conn.getInputStream();
-                BufferedReader br = new BufferedReader(new InputStreamReader(is));
-                String line = null;
-                sb.setLength(0);
-                int ii = 0, jj = 0;
-                while ((line = br.readLine()) != null) {
-                    if (line.trim().length() > 2) {
-                        sb.append(line + "\n");
-                        line = line.trim();
-                        ret.append("......");
-                        ret.append(line);
-                        jj++;
-                        if (synxcat.equals("4")) {
-                            System.out.println(jj + " " + (++ii));
-
-                            JSONObject rtw = getRTW(line);
-                            JSONObject sy4payload = getPayload(rtw.toString());
-                            // if (rtw.get("TEMA").equals("queryresult"))
-                            //     Write2File("./testtest.txt", sy4payload, true);
-                            if (rtw.get("TEMA").equals("queryrequest"))
-                                GetFromDB(prop, sy4payload.toString());
-                            System.out.println("---" + sy4payload + "---");
-                        }
-                    }
-                }
-                line = sb.toString();
-                if (line == null || line.trim().length() < 1)
-                    line = "***Empty response***";
-                ret.append(line);
-                conn.disconnect();
-
-            } catch (Exception e) {
-                e.printStackTrace();
-                StringWriter sw = new StringWriter();
-                e.printStackTrace(new PrintWriter(sw));
-                ret.append(sw.toString());
-            }
-        }
-
-        return "";
+   
     }
 
     private static int strToInt(String input, int def) {
@@ -368,7 +271,7 @@ public class HiveAbisair {
             if (!SynxCat.equals("1"))
                 SynxCat = "4";
 
-            HiveAbisair hiveAbis = new HiveAbisair();
+            AbisairOBTTables hiveAbis = new AbisairOBTTables();
             FileInputStream fInput = new FileInputStream(fileName);
             Properties prop = new Properties();
             prop.load(fInput);
