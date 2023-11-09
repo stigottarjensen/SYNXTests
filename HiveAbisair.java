@@ -199,8 +199,7 @@ public class HiveAbisair {
         } else {
             runSql = mainSql.toString();
             runSql = runSql.replace("<<where>>", " WHERE " + template);
-            runSql = runSql.replace("<<pivot1>>", " ," + pivotFields);
-            runSql = runSql.replace("<<pivot2>>", pivotFields);
+            runSql = runSql.replace("<<pivotfields>>", pivotFields);
         }
         System.out.println(runSql);
 
@@ -370,29 +369,6 @@ public class HiveAbisair {
     }
 
     public static void main(String[] args) throws Exception {
-
-        WatchService watchService = FileSystems.getDefault().newWatchService();
-
-        Path path = Paths.get("./");
-
-        path.register(
-                watchService,
-                StandardWatchEventKinds.ENTRY_CREATE,
-                StandardWatchEventKinds.ENTRY_DELETE,
-                StandardWatchEventKinds.ENTRY_MODIFY);
-
-        WatchKey key;
-        while ((key = watchService.take()) != null) {
-            for (WatchEvent<?> event : key.pollEvents()) {
-                System.out.println(
-                        "Event kind:" + event.kind()
-                                + ". File affected: " + event.context() + ".");
-            }
-            key.reset();
-        }
-    }
-
-    public static void zmain(String[] args) throws Exception {
         try {
 
             String fileName = "./SenderReceiverTestParams.properties";
@@ -421,8 +397,9 @@ public class HiveAbisair {
                 if (tema.equals("queryrequest")) {
                     JSONObject payload = new JSONObject(rtw.get("PAYLOAD").toString());
                     hiveAbis.PostUrl(prop, "1", payload, sb.toString());
-                } else
-                    hiveAbis.GetFromDB("1", prop, sb.toString());
+                } 
+                // else
+                //     hiveAbis.GetFromDB("1", prop, sb.toString());
             }
 
         } catch (Exception e) {
@@ -430,4 +407,26 @@ public class HiveAbisair {
         }
     }
 
+    public static void wmain(String[] args) throws Exception {
+
+        WatchService watchService = FileSystems.getDefault().newWatchService();
+
+        Path path = Paths.get("./");
+
+        path.register(
+                watchService,
+                StandardWatchEventKinds.ENTRY_CREATE,
+                StandardWatchEventKinds.ENTRY_DELETE,
+                StandardWatchEventKinds.ENTRY_MODIFY);
+
+        WatchKey key;
+        while ((key = watchService.take()) != null) {
+            for (WatchEvent<?> event : key.pollEvents()) {
+                System.out.println(
+                        "Event kind:" + event.kind()
+                                + ". File affected: " + event.context() + ".");
+            }
+            key.reset();
+        }
+    }
 }

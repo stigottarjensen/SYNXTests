@@ -17,7 +17,8 @@
                     "type": "like"
                 }
             ],
-            "template" : "1"
+            "template" : "1",
+            "pivotfields":["Romnummer","Vann", "Plassering","Type dusj"]
         }
     }
 }

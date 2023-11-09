@@ -1,7 +1,7 @@
 --pivotfields sql
 select distinct trim(OBF_Label) as pivotfields FROM OBF_Objekt_Felt
 --main sql
-select bygning_navn, eiendom, objekt_navn <<pivot1>>
+select bygning_navn, eiendom, objekt_navn, <<pivotfields>>
 from (
 select bygning_navn , rtrim(BBO_Navn) as eiendom, rtrim(OBT_Objekt_Type.OBT_Type)+' '+rtrim(OBT_Tekst) as objekt_navn, OBF_Label, rtrim(OBV_Verdi_Tekst) as vete
     FROM [Abisair].[dbo].[view_bygning]
@@ -13,5 +13,5 @@ select bygning_navn , rtrim(BBO_Navn) as eiendom, rtrim(OBT_Objekt_Type.OBT_Type
         <<where>>
         ) as bygobj pivot 
   (max (vete)
-  for OBF_Label IN (<<pivot2>>)) as pvt
+  for OBF_Label IN (<<pivotfields>>)) as pvt
   order by pvt.bygning_navn, pvt.objekt_navn
