@@ -1,18 +1,16 @@
 
 import java.io.*;
-import java.nio.file.FileSystems;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardWatchEventKinds;
-import java.nio.file.WatchEvent;
-import java.nio.file.WatchKey;
-import java.nio.file.WatchService;
 import java.util.*;
 import java.sql.*;
 
 public class AbisairOBTTables {
 
-    private String GetFromDB() throws Exception {
+    private String createTemplate = "CREATE TABLE [dbo].[<<table_name>>](<<column_list>>) ON [PRIMARY]";
+    private String dropTemplate = "IF  EXISTS (SELECT * FROM sys.objects WHERE [name] LIKE '<<table_name>>' AND [type_desc] LIKE 'USER_TABLE') "
+            + " DROP TABLE [dbo].[<<table_name>>]";
+    private String insertTemplate = "INSERT INTO [<<table_name>>] (<<column_list>>) VALUES (<<value_list>>)";
+
+    private void GetFromDB() throws Exception {
         String sqlFile = "make_obt_type_tables";
 
         BufferedReader fr = new BufferedReader(new FileReader(sqlFile + ".sql"));
@@ -49,21 +47,20 @@ public class AbisairOBTTables {
                 pr.getProperty("dbPassword"));
 
         StringBuilder pivotFields = new StringBuilder();
-        if (pivotSql.length() > 2) {
-            Statement st = con.createStatement();
-            ResultSet prs = st.executeQuery(pivotSql.toString());
-            while (prs.next()) {
-                String s = prs.getString("pivotfields");
-                System.out.println(s);
 
-                if (pivotFields.length() == 0)
-                    pivotFields.append("[" + s + "]");
-                else
-                    pivotFields.append(",[" + s + "]");
+        Statement st = con.createStatement();
+        ResultSet prs = st.executeQuery(pivotSql.toString());
+        while (prs.next()) {
+            String s = prs.getString("pivotfields");
+            System.out.println(s);
 
-            }
-            st.close();
+            if (pivotFields.length() == 0)
+                pivotFields.append("[" + s + "]");
+            else
+                pivotFields.append(",[" + s + "]");
+
         }
+        st.close();
 
         String runSql = "";
 
@@ -75,39 +72,57 @@ public class AbisairOBTTables {
         PreparedStatement pst = con.prepareStatement(runSql);
 
         ResultSet rs = pst.executeQuery();
+        StringBuilder columnList = new StringBuilder();
+        StringBuilder insertColumnList = new StringBuilder();
         ResultSetMetaData rsmd = rs.getMetaData();
         String[] columns = new String[rsmd.getColumnCount()];
         StringBuilder line = new StringBuilder();
         for (int i = 0; i < columns.length; i++) {
             columns[i] = rsmd.getColumnLabel(i + 1);
             line.append(columns[i] + "\t");
+            columnList.append(" [" + columns[i] + "] [varchar] (500) NULL \n");
+            insertColumnList.append(" [" + columns[i] + "]");
+            if (i < columns.length - 1) {
+                columnList.append(",");
+                insertColumnList.append(",");
+            }
         }
-
-        int c = 0;
-        ArrayList<String> rsList = new ArrayList<>();
-        PrintWriter pw = new PrintWriter(new FileWriter("obt.txt"));
-        pw.println(line.toString());
+        String qmarks = " ?,".repeat(columns.length - 1);
+        qmarks = qmarks + " ?";
+        createTemplate = createTemplate.replace("<<column_list>>", columnList.toString());
+        insertTemplate = insertTemplate.replace("<<column_list>>", insertColumnList.toString());
+        insertTemplate = insertTemplate.replace("<<value_list>>", qmarks);
+        String objektType = "";
+        Statement dropSt = con.createStatement();
+        Statement createSt = con.createStatement();
+        PreparedStatement insertPSt = null;
+        ;
         while (rs.next()) {
             line.setLength(0);
+            String obt = rs.getString("objekt_type");
+            obt = obt == null ? "" : obt.trim();
+            if (!obt.equals(objektType)) {
+                String tableName = "INST_" + obt;
+                String createSql = createTemplate.replace("<<table_name>>", tableName);
+                String dropSql = dropTemplate.replace("<<table_name>>", tableName);
+                String insertSql = insertTemplate.replace("<<table_name>>", tableName);
+                con.setAutoCommit(false);
+                dropSt.executeUpdate(dropSql);
+                con.commit();
+                createSt.executeUpdate(createSql);
+                con.commit();
+                con.setAutoCommit(true);
+                insertPSt = con.prepareStatement(insertSql);
+                objektType = obt;
+            }
             for (int i = 0; i < columns.length; i++) {
                 String content = rs.getString(i + 1);
-                line.append(content == null ? "" : content.trim());
-                line.append("\t");
+                content = content == null ? "" : content.trim();
+                insertPSt.setString(i + 1, content);
             }
-            pw.println(line.toString());
+            insertPSt.executeUpdate();
         }
-        pw.close();
-        rs.close();
-
-        return "";
-    }
-
-    private static int strToInt(String input, int def) {
-        try {
-            return Integer.parseInt(input);
-        } catch (Exception e) {
-            return def;
-        }
+        con.close();
     }
 
     public static void main(String[] args) throws Exception {
@@ -119,29 +134,6 @@ public class AbisairOBTTables {
 
         } catch (Exception e) {
             e.printStackTrace();
-        }
-    }
-
-    public static void wmain(String[] args) throws Exception {
-
-        WatchService watchService = FileSystems.getDefault().newWatchService();
-
-        Path path = Paths.get("./");
-
-        path.register(
-                watchService,
-                StandardWatchEventKinds.ENTRY_CREATE,
-                StandardWatchEventKinds.ENTRY_DELETE,
-                StandardWatchEventKinds.ENTRY_MODIFY);
-
-        WatchKey key;
-        while ((key = watchService.take()) != null) {
-            for (WatchEvent<?> event : key.pollEvents()) {
-                System.out.println(
-                        "Event kind:" + event.kind()
-                                + ". File affected: " + event.context() + ".");
-            }
-            key.reset();
         }
     }
 }
