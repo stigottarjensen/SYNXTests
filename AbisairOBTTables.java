@@ -1,14 +1,25 @@
 
 import java.io.*;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardWatchEventKinds;
+import java.nio.file.WatchEvent;
+import java.nio.file.WatchKey;
+import java.nio.file.WatchService;
 import java.util.*;
 import java.sql.*;
+import java.util.concurrent.*;
+import java.time.*;
 
-public class AbisairOBTTables {
+public class AbisairOBTTables implements Runnable {
 
-    private String createTemplate = "CREATE TABLE [dbo].[<<table_name>>](<<column_list>>) ON [PRIMARY]";
+    private String createTemplate = "CREATE TABLE [dbo].[<<table_name>>]( [tid] [datetime2] NULL, <<column_list>>) ON [PRIMARY]";
     private String dropTemplate = "IF  EXISTS (SELECT * FROM sys.objects WHERE [name] LIKE '<<table_name>>' AND [type_desc] LIKE 'USER_TABLE') "
             + " DROP TABLE [dbo].[<<table_name>>]";
-    private String insertTemplate = "INSERT INTO [<<table_name>>] (<<column_list>>) VALUES (<<value_list>>)";
+    private String insertTemplate = "INSERT INTO [<<table_name>>] ([tid], <<column_list>>) VALUES (CURRENT_TIMESTAMP, <<value_list>>)";
+    private static final Semaphore semaphore = new Semaphore(1);
+    private static final ScheduledExecutorService ses = Executors.newSingleThreadScheduledExecutor();
 
     private void GetFromDB() throws Exception {
         String sqlFile = "make_obt_type_tables";
@@ -125,15 +136,47 @@ public class AbisairOBTTables {
         con.close();
     }
 
+    @Override
+    public void run() {
+        if (semaphore.tryAcquire()) {
+            try {
+                GetFromDB();
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                semaphore.release();
+            }
+        }
+    }
+
     public static void main(String[] args) throws Exception {
         try {
 
             AbisairOBTTables OBTAbis = new AbisairOBTTables();
-
+             Clock clock = Clock.tickMinutes(ZoneId.systemDefault());
+             
+            ses.scheduleAtFixedRate(OBTAbis, 0, 0, TimeUnit.MINUTES);
             OBTAbis.GetFromDB();
+            WatchService watchService = FileSystems.getDefault().newWatchService();
+            Path path = Paths.get("./watcher");
+
+            path.register(
+                    watchService,
+                    StandardWatchEventKinds.ENTRY_CREATE);
+
+            WatchKey key;
+            while ((key = watchService.take()) != null) {
+                for (WatchEvent<?> event : key.pollEvents()) {
+                    System.out.println(
+                            "Event kind:" + event.kind()
+                                    + ". File affected: " + event.context() + ".");
+                }
+                key.reset();
+            }
 
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
 }
