@@ -1,16 +1,8 @@
 
 import java.io.*;
-import java.nio.file.FileSystems;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardWatchEventKinds;
-import java.nio.file.WatchEvent;
-import java.nio.file.WatchKey;
-import java.nio.file.WatchService;
 import java.util.*;
 import java.sql.*;
 import java.util.concurrent.*;
-import java.time.*;
 
 public class AbisairOBTTables implements Runnable {
 
@@ -63,22 +55,17 @@ public class AbisairOBTTables implements Runnable {
         ResultSet prs = st.executeQuery(pivotSql.toString());
         while (prs.next()) {
             String s = prs.getString("pivotfields");
-            System.out.println(s);
-
             if (pivotFields.length() == 0)
                 pivotFields.append("[" + s + "]");
             else
                 pivotFields.append(",[" + s + "]");
-
         }
         st.close();
 
         String runSql = "";
-
         runSql = mainSql.toString();
         runSql = runSql.replace("<<where>>", " ");
         runSql = runSql.replace("<<pivotfields>>", pivotFields);
-        System.out.println(runSql);
 
         PreparedStatement pst = con.prepareStatement(runSql);
 
@@ -93,11 +80,13 @@ public class AbisairOBTTables implements Runnable {
             line.append(columns[i] + "\t");
             columnList.append(" [" + columns[i] + "] [varchar] (500) NULL \n");
             insertColumnList.append(" [" + columns[i] + "]");
+            System.out.print(columns[i] + "  ");
             if (i < columns.length - 1) {
                 columnList.append(",");
                 insertColumnList.append(",");
             }
         }
+        System.out.println();
         String qmarks = " ?,".repeat(columns.length - 1);
         qmarks = qmarks + " ?";
         createTemplate = createTemplate.replace("<<column_list>>", columnList.toString());
@@ -107,13 +96,14 @@ public class AbisairOBTTables implements Runnable {
         Statement dropSt = con.createStatement();
         Statement createSt = con.createStatement();
         PreparedStatement insertPSt = null;
-        ;
+
         while (rs.next()) {
             line.setLength(0);
             String obt = rs.getString("objekt_type");
             obt = obt == null ? "" : obt.trim();
             if (!obt.equals(objektType)) {
                 String tableName = "INST_" + obt;
+                System.out.print("  TAB = " + tableName);
                 String createSql = createTemplate.replace("<<table_name>>", tableName);
                 String dropSql = dropTemplate.replace("<<table_name>>", tableName);
                 String insertSql = insertTemplate.replace("<<table_name>>", tableName);
@@ -133,11 +123,16 @@ public class AbisairOBTTables implements Runnable {
             }
             insertPSt.executeUpdate();
         }
+        System.out.println();
         con.close();
     }
 
     @Override
     public void run() {
+        runGetDB();
+    }
+
+    private void runGetDB() {
         if (semaphore.tryAcquire()) {
             try {
                 GetFromDB();
@@ -153,26 +148,26 @@ public class AbisairOBTTables implements Runnable {
         try {
 
             AbisairOBTTables OBTAbis = new AbisairOBTTables();
-             Clock clock = Clock.tickMinutes(ZoneId.systemDefault());
-             
-            ses.scheduleAtFixedRate(OBTAbis, 0, 0, TimeUnit.MINUTES);
-            OBTAbis.GetFromDB();
-            WatchService watchService = FileSystems.getDefault().newWatchService();
-            Path path = Paths.get("./watcher");
-
-            path.register(
-                    watchService,
-                    StandardWatchEventKinds.ENTRY_CREATE);
-
-            WatchKey key;
-            while ((key = watchService.take()) != null) {
-                for (WatchEvent<?> event : key.pollEvents()) {
-                    System.out.println(
-                            "Event kind:" + event.kind()
-                                    + ". File affected: " + event.context() + ".");
-                }
-                key.reset();
-            }
+            Calendar cal = Calendar.getInstance();
+            Calendar time2am = Calendar.getInstance();
+            time2am.set(Calendar.HOUR_OF_DAY, 3);
+            time2am.set(Calendar.MINUTE, 0);
+            time2am.set(Calendar.SECOND, 0);
+            time2am.set(Calendar.MILLISECOND, 0);
+            if (time2am.compareTo(cal) < 0)
+                time2am.add(Calendar.DAY_OF_MONTH, 1);
+            long delay = time2am.getTimeInMillis() - cal.getTimeInMillis();
+            ses.scheduleAtFixedRate(OBTAbis, delay, 24 * 60 * 60 * 1000L, TimeUnit.MILLISECONDS);
+            System.out.println(cal.getTime().toString());
+            Console cons = System.console();
+            String s = "";
+            do {
+                s = cons.readLine("Enter 1 for reload tables now, 2 for quit: ");
+                s = s.trim();
+                if (s.equals("1"))
+                    OBTAbis.runGetDB();
+            } while (!s.equals("2"));
+            ses.close();
 
         } catch (Exception e) {
             e.printStackTrace();
