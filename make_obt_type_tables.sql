@@ -1,9 +1,14 @@
 --pivotfields sql
-select distinct trim(OBF_Label) as pivotfields FROM OBF_Objekt_Felt
+select distinct trim(OBF_Label) as pivotfields, OBT_Type FROM OBF_Objekt_Felt
 --main sql
-select bygning_navn, eiendom, objekt_type, objekt_tekst, <<pivotfields>>
+select bygning_navn, bygnings_id, eiendom, eiendom_intern_nr, objekt_type, objekt_tekst, <<pivotfields>>
 from (
-select bygning_navn , rtrim(BBO_Navn) as eiendom, rtrim(OBT_Objekt_Type.OBT_Type) as objekt_type, rtrim(OBT_Tekst) as objekt_tekst, OBF_Label, rtrim(OBV_Verdi_Tekst) as vete
+select bygning_navn , rtrim(BBO_Navn) as eiendom, 
+        rtrim(OBT_Objekt_Type.OBT_Type) as objekt_type, 
+        rtrim(bygning_ref_nr) as bygnings_id,
+        rtrim(BBO_InternNr) as eiendom_intern_nr,
+        rtrim(OBT_Tekst) as objekt_tekst, OBF_Label, 
+        rtrim(OBV_Verdi_Tekst) as vete
     FROM [Abisair].[dbo].[view_bygning]
         inner join BBO_Brannobjekt on view_bygning.object_nr=BBO_Brannobjekt.BBO_Nr
         inner join OBJ_Objekt on view_bygning.bygning_nr=OBJ_Objekt.BBY_Nr and BBO_Brannobjekt.BBO_Nr=OBJ_Objekt.BBO_Nr

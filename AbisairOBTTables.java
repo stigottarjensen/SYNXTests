@@ -13,6 +13,9 @@ public class AbisairOBTTables implements Runnable {
     private static final Semaphore semaphore = new Semaphore(1);
     private static final ScheduledExecutorService ses = Executors.newSingleThreadScheduledExecutor();
 
+    private record CreateNInsertFields(List<String> columnNames, StringBuilder create, StringBuilder insert, StringBuilder qmarks) {
+    }
+
     private void GetFromDB() throws Exception {
         String sqlFile = "make_obt_type_tables";
 
@@ -49,54 +52,61 @@ public class AbisairOBTTables implements Runnable {
                 pr.getProperty("dbUser"),
                 pr.getProperty("dbPassword"));
 
-        StringBuilder pivotFields = new StringBuilder();
+        // StringBuilder pivotFields = new StringBuilder();
 
+        Map<String, CreateNInsertFields> newTablesFields = new HashMap<>();
         Statement st = con.createStatement();
         ResultSet prs = st.executeQuery(pivotSql.toString());
+        StringBuilder allPivotFields = new StringBuilder();
+        Set<String> labels = new HashSet<>();
+        int allPivotFieldsCounter = 0;
         while (prs.next()) {
-            String s = prs.getString("pivotfields");
-            if (pivotFields.length() == 0)
-                pivotFields.append("[" + s + "]");
-            else
-                pivotFields.append(",[" + s + "]");
+            String pivField = prs.getString("pivotfields");
+            String obt_type = prs.getString("OBT_Type");
+            obt_type = obt_type.trim();
+            CreateNInsertFields pivFields = newTablesFields.get(obt_type);
+            if (pivFields == null) {
+                pivFields = new CreateNInsertFields(new ArrayList<String>(), new StringBuilder(),
+                        new StringBuilder(), new StringBuilder());
+                newTablesFields.put(obt_type, pivFields);
+            }
+            String komma = ",";
+            if (pivFields.create.length() == 0)
+                komma = "";
+            pivFields.columnNames.add(pivField);
+            pivFields.insert.append(komma + "[" + pivField + "]");
+            pivFields.create.append(komma + " [" + pivField + "] [varchar] (500) NULL \n");
+            pivFields.qmarks.append(komma + "?");
+            if (!labels.contains(pivField)) {
+                labels.add(pivField);
+                allPivotFields.append("[" + pivField + "],");
+                allPivotFieldsCounter++;
+            }
         }
+        allPivotFields.deleteCharAt(allPivotFields.length() - 1);
         st.close();
 
         String runSql = "";
         runSql = mainSql.toString();
         runSql = runSql.replace("<<where>>", " ");
-        runSql = runSql.replace("<<pivotfields>>", pivotFields);
-
+        runSql = runSql.replace("<<pivotfields>>", allPivotFields);
         PreparedStatement pst = con.prepareStatement(runSql);
 
         ResultSet rs = pst.executeQuery();
-        StringBuilder columnList = new StringBuilder();
+        StringBuilder createColumnList = new StringBuilder();
         StringBuilder insertColumnList = new StringBuilder();
         ResultSetMetaData rsmd = rs.getMetaData();
-        String[] columns = new String[rsmd.getColumnCount()];
+        String[] columns = new String[rsmd.getColumnCount() - allPivotFieldsCounter];
         StringBuilder line = new StringBuilder();
-        for (int i = 0; i < columns.length; i++) {
-            columns[i] = rsmd.getColumnLabel(i + 1);
-            line.append(columns[i] + "\t");
-            columnList.append(" [" + columns[i] + "] [varchar] (500) NULL \n");
-            insertColumnList.append(" [" + columns[i] + "]");
-            System.out.print(columns[i] + "  ");
-            if (i < columns.length - 1) {
-                columnList.append(",");
-                insertColumnList.append(",");
-            }
+        for (int j = 0; j < columns.length; j++) {
+            columns[j] = rsmd.getColumnName(j + 1);
+            createColumnList.append(" [" + columns[j] + "] [varchar] (500) NULL, \n");
+            insertColumnList.append(" [" + columns[j] + "],");
         }
-        System.out.println();
-        String qmarks = " ?,".repeat(columns.length - 1);
-        qmarks = qmarks + " ?";
-        createTemplate = createTemplate.replace("<<column_list>>", columnList.toString());
-        insertTemplate = insertTemplate.replace("<<column_list>>", insertColumnList.toString());
-        insertTemplate = insertTemplate.replace("<<value_list>>", qmarks);
         String objektType = "";
         Statement dropSt = con.createStatement();
         Statement createSt = con.createStatement();
         PreparedStatement insertPSt = null;
-
         while (rs.next()) {
             line.setLength(0);
             String obt = rs.getString("objekt_type");
@@ -107,6 +117,12 @@ public class AbisairOBTTables implements Runnable {
                 String createSql = createTemplate.replace("<<table_name>>", tableName);
                 String dropSql = dropTemplate.replace("<<table_name>>", tableName);
                 String insertSql = insertTemplate.replace("<<table_name>>", tableName);
+                createSql = createSql.replace("<<column_list>>",
+                        createColumnList.toString() + newTablesFields.get(obt).create);
+                insertSql = insertSql.replace("<<column_list>>",
+                        insertColumnList.toString() + newTablesFields.get(obt).insert);
+                insertSql = insertSql.replace("<<value_list>>",
+                        "?,".repeat(columns.length) + newTablesFields.get(obt).qmarks);
                 con.setAutoCommit(false);
                 dropSt.executeUpdate(dropSql);
                 con.commit();
@@ -117,9 +133,14 @@ public class AbisairOBTTables implements Runnable {
                 objektType = obt;
             }
             for (int i = 0; i < columns.length; i++) {
-                String content = rs.getString(i + 1);
+                String content = rs.getString(columns[i]);
                 content = content == null ? "" : content.trim();
                 insertPSt.setString(i + 1, content);
+            }
+              for (int i = 0; i < newTablesFields.get(obt).columnNames.size(); i++) {
+                String content = rs.getString(newTablesFields.get(obt).columnNames.get(i));
+                content = content == null ? "" : content.trim();
+                insertPSt.setString(i + columns.length + 1, content);
             }
             insertPSt.executeUpdate();
         }
