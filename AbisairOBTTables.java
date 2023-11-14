@@ -52,8 +52,6 @@ public class AbisairOBTTables implements Runnable {
                 pr.getProperty("dbUser"),
                 pr.getProperty("dbPassword"));
 
-        // StringBuilder pivotFields = new StringBuilder();
-
         Map<String, CreateNInsertFields> newTablesFields = new HashMap<>();
         Statement st = con.createStatement();
         ResultSet prs = st.executeQuery(pivotSql.toString());
@@ -167,7 +165,6 @@ public class AbisairOBTTables implements Runnable {
 
     public static void main(String[] args) throws Exception {
         try {
-
             AbisairOBTTables OBTAbis = new AbisairOBTTables();
             Calendar cal = Calendar.getInstance();
             Calendar time2am = Calendar.getInstance();

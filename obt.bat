@@ -1,1 +1,1 @@
-java -cp .:./mssql.jar AbisairOBTTables.java 
+java -cp ".:./mssql.jar" AbisairOBTTables.java 
