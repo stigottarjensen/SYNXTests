@@ -13,7 +13,8 @@ public class AbisairOBTTables implements Runnable {
     private static final Semaphore semaphore = new Semaphore(1);
     private static final ScheduledExecutorService ses = Executors.newSingleThreadScheduledExecutor();
 
-    private record CreateNInsertFields(List<String> columnNames, StringBuilder create, StringBuilder insert, StringBuilder qmarks) {
+    private record CreateNInsertFields(List<String> columnNames, StringBuilder create, StringBuilder insert,
+            StringBuilder qmarks) {
     }
 
     private void GetFromDB() throws Exception {
@@ -45,12 +46,13 @@ public class AbisairOBTTables implements Runnable {
 
         Properties pr = new Properties();
         pr.loadFromXML(new FileInputStream("ABISAIRParams.xml"));
-        Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
-        Connection con = DriverManager.getConnection("jdbc:sqlserver://" + pr.getProperty("dbServer") + ":" +
+        String dbUrl = "jdbc:sqlserver://" + pr.getProperty("dbServer") + ":" +
                 pr.getProperty("dbPort") + ";databaseName=" +
-                pr.getProperty("dbName") + ";encrypt=true;trustServerCertificate=true;",
-                pr.getProperty("dbUser"),
-                pr.getProperty("dbPassword"));
+                pr.getProperty("dbName") + ";encrypt=true;trustServerCertificate=true;integratedSecurity=true;";
+        Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+        System.out.println(dbUrl);
+        Connection con = DriverManager.getConnection(dbUrl);//, pr.getProperty("dbUser"),
+                //pr.getProperty("dbPassword"));
 
         Map<String, CreateNInsertFields> newTablesFields = new HashMap<>();
         Statement st = con.createStatement();
@@ -135,7 +137,7 @@ public class AbisairOBTTables implements Runnable {
                 content = content == null ? "" : content.trim();
                 insertPSt.setString(i + 1, content);
             }
-              for (int i = 0; i < newTablesFields.get(obt).columnNames.size(); i++) {
+            for (int i = 0; i < newTablesFields.get(obt).columnNames.size(); i++) {
                 String content = rs.getString(newTablesFields.get(obt).columnNames.get(i));
                 content = content == null ? "" : content.trim();
                 insertPSt.setString(i + columns.length + 1, content);
