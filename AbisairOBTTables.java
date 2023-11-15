@@ -17,9 +17,11 @@ public class AbisairOBTTables implements Runnable {
             StringBuilder qmarks) {
     }
 
-    private void GetFromDB() throws Exception {
+    private void GetFromDB(String dbAccess) throws Exception {
         String sqlFile = "make_obt_type_tables";
-
+        System.out.println();
+        System.out.println("INST tables reload.... kl. " + Calendar.getInstance().getTime().toString());
+        System.out.println();
         BufferedReader fr = new BufferedReader(new FileReader(sqlFile + ".sql"));
         StringBuilder mainSql = new StringBuilder();
         String l;
@@ -46,14 +48,23 @@ public class AbisairOBTTables implements Runnable {
 
         Properties pr = new Properties();
         pr.loadFromXML(new FileInputStream("ABISAIRParams.xml"));
-        String dbUrl = "jdbc:sqlserver://" + pr.getProperty("dbServer") + ":" +
-                pr.getProperty("dbPort") + ";databaseName=" +
-                pr.getProperty("dbName") + ";encrypt=true;trustServerCertificate=true;integratedSecurity=true;";
         Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
-        System.out.println(dbUrl);
-        Connection con = DriverManager.getConnection(dbUrl);//, pr.getProperty("dbUser"),
-                //pr.getProperty("dbPassword"));
+        String dbUrl = "";
+        Connection con = null;
 
+        if (dbAccess.equals("999")) {
+            dbUrl = "jdbc:sqlserver://" + pr.getProperty("dbServer") + ":" +
+                    pr.getProperty("dbPort") + ";databaseName=" +
+                    pr.getProperty("dbName") +
+                    ";encrypt=true;trustServerCertificate=true;";
+            con = DriverManager.getConnection(dbUrl, pr.getProperty("dbUser"),
+                    pr.getProperty("dbPassword"));
+        } else {
+            dbUrl = "jdbc:sqlserver://" + pr.getProperty("dbServer") + ":" +
+                    pr.getProperty("dbPort") + ";databaseName=" +
+                    pr.getProperty("dbName") + ";integratedSecurity=true;";
+            con = DriverManager.getConnection(dbUrl);
+        }
         Map<String, CreateNInsertFields> newTablesFields = new HashMap<>();
         Statement st = con.createStatement();
         ResultSet prs = st.executeQuery(pivotSql.toString());
@@ -145,18 +156,21 @@ public class AbisairOBTTables implements Runnable {
             insertPSt.executeUpdate();
         }
         System.out.println();
+        System.out.print("Enter 1 for reload tables now, 2 for quit: ");
         con.close();
     }
 
     @Override
     public void run() {
-        runGetDB();
+        runGetDB("1");
     }
 
-    private void runGetDB() {
+    private void runGetDB(String s) {
+        if (!s.equals("1") && !s.equals("999"))
+            return;
         if (semaphore.tryAcquire()) {
             try {
-                GetFromDB();
+                GetFromDB(s);
             } catch (Exception e) {
                 e.printStackTrace();
             } finally {
@@ -178,14 +192,14 @@ public class AbisairOBTTables implements Runnable {
                 time2am.add(Calendar.DAY_OF_MONTH, 1);
             long delay = time2am.getTimeInMillis() - cal.getTimeInMillis();
             ses.scheduleAtFixedRate(OBTAbis, delay, 24 * 60 * 60 * 1000L, TimeUnit.MILLISECONDS);
+            // ses.scheduleAtFixedRate(OBTAbis, 3000L, 25*1000L, TimeUnit.MILLISECONDS);
             System.out.println(cal.getTime().toString());
             Console cons = System.console();
             String s = "";
             do {
                 s = cons.readLine("Enter 1 for reload tables now, 2 for quit: ");
                 s = s.trim();
-                if (s.equals("1"))
-                    OBTAbis.runGetDB();
+                OBTAbis.runGetDB(s);
             } while (!s.equals("2"));
             ses.close();
 
