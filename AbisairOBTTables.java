@@ -17,7 +17,7 @@ public class AbisairOBTTables implements Runnable {
             StringBuilder qmarks) {
     }
 
-    private void GetFromDB(String dbAccess) throws Exception {
+    private void GetFromDB() throws Exception {
         String sqlFile = "make_obt_type_tables";
         System.out.println();
         System.out.println("INST tables reload.... kl. " + Calendar.getInstance().getTime().toString());
@@ -52,7 +52,7 @@ public class AbisairOBTTables implements Runnable {
         String dbUrl = "";
         Connection con = null;
 
-        if (dbAccess.equals("999")) {
+        if (StigMac) {
             dbUrl = "jdbc:sqlserver://" + pr.getProperty("dbServer") + ":" +
                     pr.getProperty("dbPort") + ";databaseName=" +
                     pr.getProperty("dbName") +
@@ -166,11 +166,11 @@ public class AbisairOBTTables implements Runnable {
     }
 
     private void runGetDB(String s) {
-        if (!s.equals("1") && !s.equals("999"))
+        if (!s.equals("1"))
             return;
         if (semaphore.tryAcquire()) {
             try {
-                GetFromDB(s);
+                GetFromDB();
             } catch (Exception e) {
                 e.printStackTrace();
             } finally {
@@ -179,8 +179,14 @@ public class AbisairOBTTables implements Runnable {
         }
     }
 
+    static boolean StigMac = false;
+
     public static void main(String[] args) throws Exception {
         try {
+            Map<String, String> env = System.getenv();
+            if (env.containsKey("USER")) {
+                StigMac = env.get("USER").equals("stigottarjensen");
+            } 
             AbisairOBTTables OBTAbis = new AbisairOBTTables();
             Calendar cal = Calendar.getInstance();
             Calendar time2am = Calendar.getInstance();
@@ -201,11 +207,12 @@ public class AbisairOBTTables implements Runnable {
                 s = s.trim();
                 OBTAbis.runGetDB(s);
             } while (!s.equals("2"));
-            ses.close();
 
         } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            ses.close();
         }
     }
 
-}
+} 
