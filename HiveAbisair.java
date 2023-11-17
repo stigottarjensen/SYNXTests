@@ -115,7 +115,7 @@ public class HiveAbisair {
 
     private String GetFromDB(Properties prop, String jsonPackage) throws Exception {
         JSONObject jsObj = new JSONObject(jsonPackage);
-        String sqlFile = jsObj.get("topic").toString();
+        String sqlFile = jsObj.get("request_name").toString();
         String template = jsObj.get("template").toString();
         List<Object> listPivotFields;
         try {
@@ -328,7 +328,7 @@ public class HiveAbisair {
                             JSONObject sy4payload = getPayload(rtw.toString());
                             // if (rtw.get("TEMA").equals("queryresult"))
                             //     Write2File("./testtest.txt", sy4payload, true);
-                            if (rtw.get("TEMA").equals("queryrequest"))
+                            if (rtw.get("TOPIC").equals("queryrequest"))
                                 GetFromDB(prop, sy4payload.toString());
                             System.out.println("---" + sy4payload + "---");
                         }

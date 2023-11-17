@@ -1,12 +1,12 @@
 {
     "RTW": {
         "TIMESTAMP": "2023-05-17 12:34:56",
-        "SENTFROM": "The Stig",
-        "MOTTAKER": "Chessmaster Levang",
-        "TEMA": "queryrequest",
+        "SENDER": "The Stig",
+        "RECEIVER": "Chessmaster Levang",
+        "TOPIC": "queryrequest",
         "REFID": "uuid",
         "PAYLOAD": {
-            "topic": "view_bygning",
+            "request_name": "view_bygning",
             "filters": [
                 {
                     "id": 1,
@@ -33,17 +33,9 @@
                         "1999-01-01"
                     ],
                     "type": "between"
-                },
-                {
-                    "id": 4,
-                    "field": "bygning_ref_nr",
-                    "values": [
-                        "60055402"
-                    ],
-                    "type": "like"
                 }
             ],
-            "template" : "1 | (2 & 3) | 4"
+            "template" : "1 | (2 & 3)"
         }
     }
 }

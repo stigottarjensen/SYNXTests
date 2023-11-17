@@ -52,19 +52,20 @@ public class AbisairOBTTables implements Runnable {
         String dbUrl = "";
         Connection con = null;
 
-        if (StigMac) {
+        // if (StigMac) {
+        //     dbUrl = "jdbc:sqlserver://" + pr.getProperty("dbServer") + ":" +
+        //             pr.getProperty("dbPort") + ";databaseName=" +
+        //             pr.getProperty("dbName") +
+        //             ";encrypt=true;trustServerCertificate=true;";
+        //     con = DriverManager.getConnection(dbUrl, pr.getProperty("dbUser"),
+        //             pr.getProperty("dbPassword"));
+        // } else {
             dbUrl = "jdbc:sqlserver://" + pr.getProperty("dbServer") + ":" +
                     pr.getProperty("dbPort") + ";databaseName=" +
-                    pr.getProperty("dbName") +
-                    ";encrypt=true;trustServerCertificate=true;";
-            con = DriverManager.getConnection(dbUrl, pr.getProperty("dbUser"),
-                    pr.getProperty("dbPassword"));
-        } else {
-            dbUrl = "jdbc:sqlserver://" + pr.getProperty("dbServer") + ":" +
-                    pr.getProperty("dbPort") + ";databaseName=" +
-                    pr.getProperty("dbName") + ";integratedSecurity=true;";
+                    pr.getProperty("dbName") + ";encrypt=true;trustServerCertificate=true;"
+                    +";integratedSecurity=true;";
             con = DriverManager.getConnection(dbUrl);
-        }
+       //}
         Map<String, CreateNInsertFields> newTablesFields = new HashMap<>();
         Statement st = con.createStatement();
         ResultSet prs = st.executeQuery(pivotSql.toString());
