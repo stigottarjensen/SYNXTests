@@ -84,10 +84,23 @@ public class AbisairOBTTables implements Runnable {
             String komma = ",";
             if (pivFields.create.length() == 0)
                 komma = "";
+            boolean extraCol = pivField.endsWith("_extracolumn");
+            String pivField1 = pivField;
+            String pivField2 = "";
+            if (extraCol) {
+                String[] expivfield = pivField.split("_");
+                pivField1 = expivfield[0];
+                pivField2 = pivField1 + "_tekst";
+            }
             pivFields.columnNames.add(pivField);
-            pivFields.insert.append(komma + "[" + pivField + "]");
-            pivFields.create.append(komma + " [" + pivField + "] [varchar] (500) NULL \n");
+            pivFields.insert.append(komma + "[" + pivField1 + "]");
+            pivFields.create.append(komma + " [" + pivField1 + "] [varchar] (500) NULL \n");
             pivFields.qmarks.append(komma + "?");
+            if (extraCol) {
+                pivFields.insert.append(",[" + pivField2 + "]");
+                pivFields.create.append(" ,[" + pivField2 + "] [varchar] (500) NULL \n");
+                pivFields.qmarks.append(",?");
+            }
             if (!labels.contains(pivField)) {
                 labels.add(pivField);
                 allPivotFields.append("[" + pivField + "],");
@@ -134,6 +147,8 @@ public class AbisairOBTTables implements Runnable {
                         insertColumnList.toString() + newTablesFields.get(obt).insert);
                 insertSql = insertSql.replace("<<value_list>>",
                         "?,".repeat(columns.length) + newTablesFields.get(obt).qmarks);
+                System.out.println(createSql);
+                System.out.println(insertSql);
                 con.setAutoCommit(false);
                 dropSt.executeUpdate(dropSql);
                 con.commit();
@@ -148,10 +163,23 @@ public class AbisairOBTTables implements Runnable {
                 content = content == null ? "" : content.trim();
                 insertPSt.setString(i + 1, content);
             }
+            int colCount=0;
             for (int i = 0; i < newTablesFields.get(obt).columnNames.size(); i++) {
-                String content = rs.getString(newTablesFields.get(obt).columnNames.get(i));
+                String colName = newTablesFields.get(obt).columnNames.get(i);
+                String content = rs.getString(colName);
                 content = content == null ? "" : content.trim();
-                insertPSt.setString(i + columns.length + 1, content);
+                if (colName.endsWith("_extracolumn")) {
+                    String f="", g="";
+                    String[] cont = content.split("@@@@");
+                    if (!content.startsWith("@@@@")&& cont.length>0)
+                        f = cont[0];
+                    if (!content.endsWith("@@@@") && cont.length>1)
+                        g = cont[1];   
+                    insertPSt.setString(colCount + columns.length + 1, f);
+                    insertPSt.setString(++colCount + columns.length + 1, g);
+                }
+                insertPSt.setString(colCount + columns.length + 1, content);
+                colCount++;
             }
             insertPSt.executeUpdate();
         }
@@ -186,7 +214,7 @@ public class AbisairOBTTables implements Runnable {
             Map<String, String> env = System.getenv();
             if (env.containsKey("USER")) {
                 StigMac = env.get("USER").equals("stigottarjensen");
-            } 
+            }
             AbisairOBTTables OBTAbis = new AbisairOBTTables();
             Calendar cal = Calendar.getInstance();
             Calendar time2am = Calendar.getInstance();
@@ -215,4 +243,4 @@ public class AbisairOBTTables implements Runnable {
         }
     }
 
-} 
+}

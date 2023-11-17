@@ -12,7 +12,10 @@ select bygning_navn , rtrim(BBO_Navn) as eiendom,
         rtrim(OBT_Tekst) as objekt_tekst, 
         rtrim(OBF_Label)+ 
             CASE WHEN trim(OBF_Type_Felt)='combobox' THEN '_extracolumn' ELSE '' END AS obflabel, 
-        rtrim(ISNULL(BVV_Tekst,OBV_Verdi_Tekst)) as vete
+        rtrim(OBV_Verdi_Tekst) + 
+            CASE WHEN trim(OBF_Type_Felt)='combobox' 
+                THEN '@@@@'+ rtrim(ISNULL(BVV_Tekst,'')) 
+                    ELSE '' END as vete
     FROM view_bygning
         inner join BBO_Brannobjekt on view_bygning.object_nr=BBO_Brannobjekt.BBO_Nr
         inner join OBJ_Objekt on view_bygning.bygning_nr=OBJ_Objekt.BBY_Nr and BBO_Brannobjekt.BBO_Nr=OBJ_Objekt.BBO_Nr
