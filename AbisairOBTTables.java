@@ -163,22 +163,22 @@ public class AbisairOBTTables implements Runnable {
                 content = content == null ? "" : content.trim();
                 insertPSt.setString(i + 1, content);
             }
-            int colCount=0;
+            int colCount = 0;
             for (int i = 0; i < newTablesFields.get(obt).columnNames.size(); i++) {
                 String colName = newTablesFields.get(obt).columnNames.get(i);
                 String content = rs.getString(colName);
                 content = content == null ? "" : content.trim();
                 if (colName.endsWith("_extracolumn")) {
-                    String f="", g="";
+                    String f = "", g = "";
                     String[] cont = content.split("@@@@");
-                    if (!content.startsWith("@@@@")&& cont.length>0)
+                    if (!content.startsWith("@@@@") && cont.length > 0)
                         f = cont[0];
-                    if (!content.endsWith("@@@@") && cont.length>1)
-                        g = cont[1];   
+                    if (!content.endsWith("@@@@") && cont.length > 1)
+                        g = cont[1];
                     insertPSt.setString(colCount + columns.length + 1, f);
                     insertPSt.setString(++colCount + columns.length + 1, g);
-                }
-                insertPSt.setString(colCount + columns.length + 1, content);
+                } else
+                    insertPSt.setString(colCount + columns.length + 1, content);
                 colCount++;
             }
             insertPSt.executeUpdate();
