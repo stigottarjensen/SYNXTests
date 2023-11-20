@@ -1,0 +1,1 @@
+java -cp .:./jar/json.jar:./jar/json2.jar:./mssql.jar HiveAbisair.java 0

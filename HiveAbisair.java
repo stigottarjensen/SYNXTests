@@ -113,8 +113,8 @@ public class HiveAbisair {
 
     String legalTemplateCharacters = "0123456789 ()&|";
 
-    private String GetFromDB(Properties prop, String jsonPackage) throws Exception {
-        JSONObject jsObj = new JSONObject(jsonPackage);
+    private String GetFromDB(Properties prop, String jsonPackagePayload) throws Exception {
+        JSONObject jsObj = new JSONObject(jsonPackagePayload);
         String sqlFile = jsObj.get("request_name").toString();
         String template = jsObj.get("template").toString();
         List<Object> listPivotFields;
@@ -227,7 +227,7 @@ public class HiveAbisair {
         String now = timeStamp();
         jsList.forEach((js) -> {
             try {
-                 Write2File("./" + sqlFile + "-" + now + ".txt", js, true);
+                Write2File("./" + sqlFile + "-" + now + ".txt", js, true);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -258,7 +258,7 @@ public class HiveAbisair {
 
     // curl -k https://stig.cioty.com -H "Synx-Cat: 4" -d
     // "token=aToken_124b34e931dd12fa57b28be8d56e6dff371cafe3570ab847e49f87012ff2eca0&objectid=1&payload=hello"
-    private String PostUrl(Properties prop, String synxcat, JSONObject payload, String jsonPackage) {
+    private String PostUrl(Properties prop, String synxcat, String jsonPackage) {
 
         int cnt = 0;
         while (abContinue.get() && synxcat.equals("4") || cnt == 0) {
@@ -280,7 +280,6 @@ public class HiveAbisair {
                 StringBuilder sb = new StringBuilder();
                 if (synxcat.equals("1")) {
                     JSONObject rtw = getRTW(jsonPackage);
-                    rtw.put("PAYLOAD", payload);
                     Iterator<String> it = rtw.keys();
                     while (it.hasNext()) {
                         String name = it.next();
@@ -327,7 +326,7 @@ public class HiveAbisair {
                             JSONObject rtw = getRTW(line);
                             JSONObject sy4payload = getPayload(rtw.toString());
                             // if (rtw.get("TEMA").equals("queryresult"))
-                            //     Write2File("./testtest.txt", sy4payload, true);
+                            // Write2File("./testtest.txt", sy4payload, true);
                             if (rtw.get("TOPIC").equals("queryrequest"))
                                 GetFromDB(prop, sy4payload.toString());
                             System.out.println("---" + sy4payload + "---");
@@ -359,38 +358,68 @@ public class HiveAbisair {
         }
     }
 
+    private String getQuery(String jsonFile) {
+        JSONObject payload = null;
+        try {
+            FileReader file = new FileReader(jsonFile);
+            BufferedReader br = new BufferedReader(file);
+            StringBuilder sb = new StringBuilder();
+            String line;
+            while ((line = br.readLine()) != null) {
+                sb.append(line.trim());
+            }
+            JSONObject rtw = hiveAbis.getJsonElement("RTW", sb.toString());
+            String tema = rtw.get("TEMA").toString();
+            if (tema.contains("query") || tema.contains("request")) {
+                payload = new JSONObject(rtw.get("PAYLOAD").toString());
+            }
+        } catch (Exception e) {
+            payload = null;
+        } finally {
+            return payload;
+        }
+    }
+
     public static void main(String[] args) throws Exception {
         try {
 
-            String fileName = "./SenderReceiverTestParams.properties";
-            String SynxCat = args != null && args.length > 0 ? args[0] : "1";
-
-            if (!SynxCat.equals("1"))
-                SynxCat = "4";
+            String propsFile = "./SenderReceiverTestParams.properties";
+            String SynxCat = args != null && args.length > 0 ? args[0] : "0";
 
             HiveAbisair hiveAbis = new HiveAbisair();
-            FileInputStream fInput = new FileInputStream(fileName);
+            FileInputStream fInput = new FileInputStream(propsFile);
             Properties prop = new Properties();
             prop.load(fInput);
-            sslsf = SSLContext.getDefault().getSocketFactory();
+            if (!SynxCat.equals("0"))
+                sslsf = SSLContext.getDefault().getSocketFactory();
             if (SynxCat.equals("4"))
                 hiveAbis.PostUrl(prop, "4", null, null);
-            else {
-                FileReader file = new FileReader(prop.getProperty("inputFilenameJson"));
-                BufferedReader br = new BufferedReader(file);
-                StringBuilder sb = new StringBuilder();
-                String line;
-                while ((line = br.readLine()) != null) {
-                    sb.append(line.trim());
-                }
-                JSONObject rtw = hiveAbis.getJsonElement("RTW", sb.toString());
-                String tema = rtw.get("TEMA").toString();
-                if (tema.equals("queryrequest")) {
-                    JSONObject payload = new JSONObject(rtw.get("PAYLOAD").toString());
+            else if (SynxCat.equals("1")) {
+                JSONObject payload =hiveAbis.getQuery(prop.getProperty("inputFilenameJson"));
+             
+                if (payload != null) 
                     hiveAbis.PostUrl(prop, "1", payload, sb.toString());
-                } 
                 // else
-                //     hiveAbis.GetFromDB("1", prop, sb.toString());
+                // hiveAbis.GetFromDB("1", prop, sb.toString());
+            } else {
+                WatchService watchService = FileSystems.getDefault().newWatchService();
+
+                Path path = Paths.get("./dbfetch");
+
+                path.register(
+                        watchService,
+                        StandardWatchEventKinds.ENTRY_CREATE,
+                        StandardWatchEventKinds.ENTRY_MODIFY);
+
+                WatchKey key;
+                while ((key = watchService.take()) != null) {
+                    for (WatchEvent<?> event : key.pollEvents()) {
+                        System.out.println(
+                                "Event kind:" + event.kind()
+                                        + ". File affected: " + event.context() + ".");
+                    }
+                    key.reset();
+                }
             }
 
         } catch (Exception e) {
