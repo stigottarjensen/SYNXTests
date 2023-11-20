@@ -1,0 +1,41 @@
+{
+    "RTW": {
+        "TIMESTAMP": "2023-05-17 12:34:56",
+        "SENDER": "The Stig",
+        "RECEIVER": "Chessmaster Levang",
+        "TOPIC": "queryrequest",
+        "REFID": "uuid",
+        "PAYLOAD": {
+            "request_name": "view_bygning",
+            "filters": [
+                {
+                    "id": 1,
+                    "field": "bygning_navn",
+                    "values": [
+                        "Fernanda Nissen"
+                    ],
+                    "type": "like"
+                },
+                {
+                    "id": 2,
+                    "field": "bygning_bygningstype",
+                    "values": [
+                        "Skole",
+                        "Grunnskole"
+                    ],
+                    "type": "in"
+                },
+                {
+                    "id": 3,
+                    "field": "bygning_ferdigattest",
+                    "values": [
+                        "1995-01-01",
+                        "1999-01-01"
+                    ],
+                    "type": "between"
+                }
+            ],
+            "template" : "1 | (2 & 3)"
+        }
+    }
+}

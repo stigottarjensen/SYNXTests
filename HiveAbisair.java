@@ -113,13 +113,15 @@ public class HiveAbisair {
 
     String legalTemplateCharacters = "0123456789 ()&|";
 
-    private String GetFromDB(Properties prop, String jsonPackagePayload) throws Exception {
-        JSONObject jsObj = new JSONObject(jsonPackagePayload);
-        String sqlFile = jsObj.get("request_name").toString();
-        String template = jsObj.get("template").toString();
+    private String GetFromDB(Properties prop, String jsonPackage) throws Exception {
+        JSONObject jsObj = new JSONObject(jsonPackage);
+        JSONObject rtw = getRTW(jsonPackage.toString());
+        JSONObject payload = getPayload(rtw.toString());
+        String sqlFile = payload.get("request_name").toString();
+        String template = payload.get("template").toString();
         List<Object> listPivotFields;
         try {
-            listPivotFields = jsObj.getJSONArray("pivotfields").toList();
+            listPivotFields = payload.getJSONArray("pivotfields").toList();
         } catch (JSONException jse) {
             listPivotFields = null;
         }
@@ -179,7 +181,7 @@ public class HiveAbisair {
             st.close();
         }
 
-        QueryParams qp = SQLWhere(jsObj, mainSql.toString(), template);
+        QueryParams qp = SQLWhere(payload, mainSql.toString(), template);
         template = qp.whereTemplate;
 
         if (qp.sqlWhere.size() > 0) {
@@ -359,7 +361,7 @@ public class HiveAbisair {
     }
 
     private String getQuery(String jsonFile) {
-        JSONObject payload = null;
+        String ret = null;
         try {
             FileReader file = new FileReader(jsonFile);
             BufferedReader br = new BufferedReader(file);
@@ -368,15 +370,13 @@ public class HiveAbisair {
             while ((line = br.readLine()) != null) {
                 sb.append(line.trim());
             }
-            JSONObject rtw = hiveAbis.getJsonElement("RTW", sb.toString());
-            String tema = rtw.get("TEMA").toString();
-            if (tema.contains("query") || tema.contains("request")) {
-                payload = new JSONObject(rtw.get("PAYLOAD").toString());
-            }
+            ret = sb.toString();
+            System.out.println(ret);
         } catch (Exception e) {
-            payload = null;
+            e.printStackTrace();
+            ret = null;
         } finally {
-            return payload;
+            return ret;
         }
     }
 
@@ -393,18 +393,18 @@ public class HiveAbisair {
             if (!SynxCat.equals("0"))
                 sslsf = SSLContext.getDefault().getSocketFactory();
             if (SynxCat.equals("4"))
-                hiveAbis.PostUrl(prop, "4", null, null);
+                hiveAbis.PostUrl(prop, "4", null);
             else if (SynxCat.equals("1")) {
-                JSONObject payload =hiveAbis.getQuery(prop.getProperty("inputFilenameJson"));
-             
-                if (payload != null) 
-                    hiveAbis.PostUrl(prop, "1", payload, sb.toString());
+                String jsonText = hiveAbis.getQuery(prop.getProperty("inputFilenameJson"));
+
+                if (jsonText != null)
+                    hiveAbis.PostUrl(prop, "1", jsonText);
                 // else
                 // hiveAbis.GetFromDB("1", prop, sb.toString());
             } else {
                 WatchService watchService = FileSystems.getDefault().newWatchService();
 
-                Path path = Paths.get("./dbfetch");
+                Path path = Paths.get("./dbfetch"); 
 
                 path.register(
                         watchService,
@@ -417,6 +417,7 @@ public class HiveAbisair {
                         System.out.println(
                                 "Event kind:" + event.kind()
                                         + ". File affected: " + event.context() + ".");
+                        String file = hiveAbis.GetFromDB(prop, hiveAbis.getQuery(path.getFileName()+"/"+event.context().toString()));
                     }
                     key.reset();
                 }
@@ -427,26 +428,4 @@ public class HiveAbisair {
         }
     }
 
-    public static void wmain(String[] args) throws Exception {
-
-        WatchService watchService = FileSystems.getDefault().newWatchService();
-
-        Path path = Paths.get("./");
-
-        path.register(
-                watchService,
-                StandardWatchEventKinds.ENTRY_CREATE,
-                StandardWatchEventKinds.ENTRY_DELETE,
-                StandardWatchEventKinds.ENTRY_MODIFY);
-
-        WatchKey key;
-        while ((key = watchService.take()) != null) {
-            for (WatchEvent<?> event : key.pollEvents()) {
-                System.out.println(
-                        "Event kind:" + event.kind()
-                                + ". File affected: " + event.context() + ".");
-            }
-            key.reset();
-        }
-    }
 }

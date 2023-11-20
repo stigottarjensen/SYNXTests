@@ -1,0 +1,31 @@
+{
+    "RTW": {
+        "TIMESTAMP": "2023-05-17 12:34:56",
+        "SENTFROM": "The Stig",
+        "MOTTAKER": "Chessmaster Levang",
+        "TEMA": "queryrequest",
+        "REFID": "uuid",
+        "PAYLOAD": {
+            "topic": "view_person_oslo",
+            "filters": [
+                {
+                    "id": 1,
+                    "field": "person_fornavn",
+                    "values": [
+                        "st"
+                    ],
+                    "type": "like"
+                },
+                {
+                    "id": 2,
+                    "field": "person_etternavn",
+                    "values": [
+                        "jen"
+                    ],
+                    "type": "like"
+                }
+            ],
+            "template" : "1 & 2"
+        }
+    }
+}
