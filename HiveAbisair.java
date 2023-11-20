@@ -4,13 +4,7 @@ import java.net.*;
 import javax.net.SocketFactory;
 import javax.net.ssl.*;
 import java.net.http.*;
-import java.nio.file.FileSystems;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardWatchEventKinds;
-import java.nio.file.WatchEvent;
-import java.nio.file.WatchKey;
-import java.nio.file.WatchService;
+import java.nio.file.*;
 import java.time.Duration;
 import java.util.*;
 import java.util.Date;
@@ -405,7 +399,7 @@ public class HiveAbisair {
                 WatchService watchService = FileSystems.getDefault().newWatchService();
 
                 Path path = Paths.get("./dbfetch"); 
-
+                String folder = path.getFileName();
                 path.register(
                         watchService,
                         StandardWatchEventKinds.ENTRY_CREATE,
@@ -417,7 +411,8 @@ public class HiveAbisair {
                         System.out.println(
                                 "Event kind:" + event.kind()
                                         + ". File affected: " + event.context() + ".");
-                        String file = hiveAbis.GetFromDB(prop, hiveAbis.getQuery(path.getFileName()+"/"+event.context().toString()));
+                        String fileName = event.context().toString();
+                        String file = hiveAbis.GetFromDB(prop, hiveAbis.getQuery(folder+"/"+fileName));
                     }
                     key.reset();
                 }
