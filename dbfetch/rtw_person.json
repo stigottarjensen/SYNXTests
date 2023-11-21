@@ -6,7 +6,7 @@
         "TEMA": "queryrequest",
         "REFID": "uuid",
         "PAYLOAD": {
-            "topic": "view_person_oslo",
+            "request_name": "INST_3350",
             "filters": [
                 {
                     "id": 1,
