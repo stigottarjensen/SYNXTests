@@ -1,12 +1,12 @@
 {
     "RTW": {
         "TIMESTAMP": "2023-05-17 12:34:56",
-        "SENTFROM": "The Stig",
-        "MOTTAKER": "Chessmaster Levang",
-        "TEMA": "queryrequest",
+        "SENDER": "The Stig",
+        "RECEIVER": "Chessmaster Levang",
+        "TOPIC": "queryrequest",
         "REFID": "uuid",
         "PAYLOAD": {
-            "topic": "view_eiendom_oslo",
+            "request_name": "view_eiendom_oslo",
             "filters": [
                 {
                     "id": 1,

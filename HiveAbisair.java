@@ -21,9 +21,14 @@ public class HiveAbisair {
 
     private Properties pr = new Properties();
     private static final AtomicBoolean abContinue = new AtomicBoolean(true);
+    PrintWriter pw = null;
 
     private void Write2File(String path, JSONObject payload, boolean jsonFormat) throws IOException {
-        PrintWriter pw = new PrintWriter(new FileWriter(path, true));
+        if (pw == null) {
+            pw = new PrintWriter(new FileWriter(path, true));
+            pw.println("[");
+        } else
+            pw.println(",");
         if (jsonFormat) {
             pw.println(payload.toString(4));
         } else {
@@ -35,7 +40,6 @@ public class HiveAbisair {
                     pw.println(k + " :  " + s);
             });
         }
-        pw.close();
     }
 
     private record QueryParams(Map<String, String> sqlWhere, List<String> params, String whereTemplate) {
@@ -221,13 +225,17 @@ public class HiveAbisair {
         rs.close();
 
         String now = timeStamp();
-        jsList.forEach((js) -> {
+        for (int i = 0; i < jsList.size(); i++) {
             try {
-                Write2File("./" + sqlFile + "-" + now + ".txt", js, true);
+                Write2File("./dbresult/" + sqlFile + "-" + now + ".json", jsList.get(i), true);
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        });
+        }
+        if (pw != null) {
+            pw.println("]");
+            pw.close();
+        }
         return "";
     }
 
@@ -369,9 +377,8 @@ public class HiveAbisair {
         } catch (Exception e) {
             e.printStackTrace();
             ret = null;
-        } finally {
-            return ret;
         }
+        return ret;
     }
 
     public static void main(String[] args) throws Exception {
@@ -398,8 +405,8 @@ public class HiveAbisair {
             } else {
                 WatchService watchService = FileSystems.getDefault().newWatchService();
 
-                Path path = Paths.get("./dbfetch"); 
-                String folder = path.getFileName();
+                Path path = Paths.get("./dbfetch");
+                String folder = path.getFileName().toString();
                 path.register(
                         watchService,
                         StandardWatchEventKinds.ENTRY_CREATE,
@@ -412,7 +419,13 @@ public class HiveAbisair {
                                 "Event kind:" + event.kind()
                                         + ". File affected: " + event.context() + ".");
                         String fileName = event.context().toString();
-                        String file = hiveAbis.GetFromDB(prop, hiveAbis.getQuery(folder+"/"+fileName));
+                        try {
+                            hiveAbis.GetFromDB(prop, hiveAbis.getQuery(folder + "/" + fileName));
+                            Files.move(Paths.get(folder + "/" + fileName), Paths.get("./dbdone/" + fileName),
+                                    StandardCopyOption.REPLACE_EXISTING);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                     }
                     key.reset();
                 }
