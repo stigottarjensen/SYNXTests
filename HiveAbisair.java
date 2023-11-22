@@ -130,7 +130,7 @@ public class HiveAbisair {
                 throw new Exception("Illegal character in template: " + ch);
         }
 
-        BufferedReader fr = new BufferedReader(new FileReader(sqlFile + ".sql"));
+        BufferedReader fr = new BufferedReader(new FileReader("./dbsql/"+sqlFile + ".sql"));
         StringBuilder mainSql = new StringBuilder();
         String l;
         boolean isPivotsql = false;
@@ -180,7 +180,6 @@ public class HiveAbisair {
             ResultSet prs = st.executeQuery(pivotSql.toString());
             while (prs.next()) {
                 String s = prs.getString("pivotfields");
-                System.out.println(s);
                 if (listPivotFields == null || listPivotFields.contains(s)) {
                     if (pivotFields.length() == 0)
                         pivotFields.append("[" + s + "]");
@@ -192,12 +191,13 @@ public class HiveAbisair {
         }
 
         List<String> instFields = new ArrayList<>();
-        if (instSql.length() > 2) {
+        if (instSql.length() > 2) { 
             Statement st = con.createStatement();
             ResultSet irs = st.executeQuery(instSql.toString());
             while (irs.next()) {
                 String s = irs.getString("installasjon_kode");
-                System.out.println(s);
+                if (!s.startsWith("INST_"))
+                    s = "INST_" + s;
                 instFields.add(s);
             }
             st.close();
@@ -224,9 +224,43 @@ public class HiveAbisair {
             runSql = runSql.replace("<<where>>", " WHERE " + template);
             runSql = runSql.replace("<<pivotfields>>", pivotFields);
         }
-        System.out.println(runSql);
 
-        PreparedStatement pst = con.prepareStatement(runSql);
+        System.out.println(runSql);
+        if (instFields.size() > 0) {
+            for (int a = 0; a < instFields.size(); a++) {
+                String tab = instFields.get(a);
+                String sql = runSql.replace("<<table>>", tab);
+                System.out.println(sql);
+                instFields.set(a, sql);
+            }
+        }
+
+        int loops = Math.max(1, instFields.size());
+        for (int a = 0; a < loops; a++) {
+            String sql = runSql;
+            if (instFields.size() > 0)
+                sql = instFields.get(a);
+            List<JSONObject> jsList = executeSQL(sql, qp, con);
+
+            String now = timeStamp();
+            for (int i = 0; i < jsList.size(); i++) {
+                try {
+                    Write2File("./dbresult/" + sqlFile + "-" + now + ".json", jsList.get(i), true);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        if (pw != null) {
+            pw.println("]");
+            pw.close();
+        }
+        return "";
+    }
+
+    private List<JSONObject> executeSQL(String sql, QueryParams qp, Connection con) throws Exception {
+        PreparedStatement pst = con.prepareStatement(sql);
         for (int c = 0; c < qp.params.size(); c++) {
             pst.setString(c + 1, qp.params.get(c));
         }
@@ -237,7 +271,7 @@ public class HiveAbisair {
         for (int i = 0; i < columns.length; i++)
             columns[i] = rsmd.getColumnLabel(i + 1);
         int c = 0;
-        ArrayList<JSONObject> jsList = new ArrayList<>();
+        List<JSONObject> jsList = new ArrayList<>();
         while (rs.next()) {
             JSONObject js = new JSONObject();
             for (int i = 0; i < columns.length; i++) {
@@ -247,20 +281,7 @@ public class HiveAbisair {
             jsList.add(js);
         }
         rs.close();
-
-        String now = timeStamp();
-        for (int i = 0; i < jsList.size(); i++) {
-            try {
-                Write2File("./dbresult/" + sqlFile + "-" + now + ".json", jsList.get(i), true);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        if (pw != null) {
-            pw.println("]");
-            pw.close();
-        }
-        return "";
+        return jsList;
     }
 
     private String timeStamp() {
@@ -397,7 +418,6 @@ public class HiveAbisair {
                 sb.append(line.trim());
             }
             ret = sb.toString();
-            System.out.println(ret);
         } catch (Exception e) {
             e.printStackTrace();
             ret = null;

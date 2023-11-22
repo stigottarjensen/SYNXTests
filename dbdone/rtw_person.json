@@ -6,18 +6,26 @@
         "TEMA": "queryrequest",
         "REFID": "uuid",
         "PAYLOAD": {
-            "request_name": "installations",
+            "request_name": "view_person_oslo",
             "filters": [
                 {
                     "id": 1,
-                    "field": "bygning_navn",
+                    "field": "person_fornavn",
                     "values": [
                         "st"
                     ],
                     "type": "like"
+                },
+                {
+                    "id": 2,
+                    "field": "person_etternavn",
+                    "values": [
+                        "jen"
+                    ],
+                    "type": "like"
                 }
             ],
-            "template" : "1"
+            "template" : "1 & 2"
         }
     }
 }
