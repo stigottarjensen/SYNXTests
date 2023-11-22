@@ -135,23 +135,35 @@ public class HiveAbisair {
         String l;
         boolean isPivotsql = false;
         boolean isMainsql = true;
+        boolean isInstsql = false;
         StringBuilder pivotSql = new StringBuilder();
+        StringBuilder instSql = new StringBuilder();
 
         while ((l = fr.readLine()) != null) {
             if (l.contains("--pivotfields sql")) {
                 isPivotsql = true;
                 isMainsql = false;
+                isInstsql = false;
                 continue;
             }
             if (l.contains("--main sql")) {
                 isPivotsql = false;
                 isMainsql = true;
+                isInstsql = false;
+                continue;
+            }
+            if (l.contains("--inst sql")) {
+                isPivotsql = false;
+                isMainsql = false;
+                isInstsql = true;
                 continue;
             }
             if (isPivotsql)
                 pivotSql.append(l);
             if (isMainsql)
                 mainSql.append(l);
+            if (isInstsql)
+                instSql.append(l);
         }
 
         pr.loadFromXML(new FileInputStream("ABISAIRParams.xml"));
@@ -175,6 +187,18 @@ public class HiveAbisair {
                     else
                         pivotFields.append(",[" + s + "]");
                 }
+            }
+            st.close();
+        }
+
+        List<String> instFields = new ArrayList<>();
+        if (instSql.length() > 2) {
+            Statement st = con.createStatement();
+            ResultSet irs = st.executeQuery(instSql.toString());
+            while (irs.next()) {
+                String s = irs.getString("installasjon_kode");
+                System.out.println(s);
+                instFields.add(s);
             }
             st.close();
         }
