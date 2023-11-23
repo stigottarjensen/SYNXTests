@@ -45,7 +45,7 @@ public class HiveAbisair {
     private record QueryParams(Map<String, String> sqlWhere, List<String> params, String whereTemplate) {
     }
 
-    private QueryParams SQLWhere(JSONObject payload, String selectSql, String whereTemplate) {
+    private QueryParams SQLWhere(JSONObject payload, String selectSql, String whereTemplate, boolean instTable) {
         JSONArray filters = payload.getJSONArray("filters");
         StringBuilder sb = new StringBuilder();
         SortedMap<Integer, String> sqlWhereList = new TreeMap<>(new Comparator<Integer>() {
@@ -61,7 +61,7 @@ public class HiveAbisair {
             JSONObject js = filters.getJSONObject(i);
             String field = js.getString("field");
             int id = js.getInt("id");
-            if (!selectSql.contains(field))
+            if (!selectSql.contains(field) && !instTable)
                 continue;
             String type = js.getString("type");
             JSONArray values = js.getJSONArray("values");
@@ -130,7 +130,7 @@ public class HiveAbisair {
                 throw new Exception("Illegal character in template: " + ch);
         }
 
-        BufferedReader fr = new BufferedReader(new FileReader("./dbsql/"+sqlFile + ".sql"));
+        BufferedReader fr = new BufferedReader(new FileReader("./dbsql/" + sqlFile + ".sql"));
         StringBuilder mainSql = new StringBuilder();
         String l;
         boolean isPivotsql = false;
@@ -191,7 +191,7 @@ public class HiveAbisair {
         }
 
         List<String> instFields = new ArrayList<>();
-        if (instSql.length() > 2) { 
+        if (instSql.length() > 2) {
             Statement st = con.createStatement();
             ResultSet irs = st.executeQuery(instSql.toString());
             while (irs.next()) {
@@ -203,11 +203,10 @@ public class HiveAbisair {
             st.close();
         }
 
-        QueryParams qp = SQLWhere(payload, mainSql.toString(), template);
+        QueryParams qp = SQLWhere(payload, mainSql.toString(), template, instFields.size() > 0);
         template = qp.whereTemplate;
 
         if (qp.sqlWhere.size() > 0) {
-
             for (Map.Entry<String, String> me : qp.sqlWhere.entrySet()) {
                 template = template.replace(me.getKey(), me.getValue());
             }
@@ -225,37 +224,42 @@ public class HiveAbisair {
             runSql = runSql.replace("<<pivotfields>>", pivotFields);
         }
 
-        System.out.println(runSql);
+        List<String> instSqls = new ArrayList<>();
         if (instFields.size() > 0) {
             for (int a = 0; a < instFields.size(); a++) {
                 String tab = instFields.get(a);
                 String sql = runSql.replace("<<table>>", tab);
-                System.out.println(sql);
-                instFields.set(a, sql);
+                // instFields.set(a, sql);
+                instSqls.add(sql);
             }
         }
 
         int loops = Math.max(1, instFields.size());
         for (int a = 0; a < loops; a++) {
             String sql = runSql;
-            if (instFields.size() > 0)
-                sql = instFields.get(a);
+            if (instSqls.size() > 0)
+                sql = instSqls.get(a);
             List<JSONObject> jsList = executeSQL(sql, qp, con);
 
             String now = timeStamp();
+            String file = "./dbresult/" + sqlFile + (instFields.size() > 0 ? "-" + instFields.get(a) : "") + "-"
+                    + now + ".json";
             for (int i = 0; i < jsList.size(); i++) {
                 try {
-                    Write2File("./dbresult/" + sqlFile + "-" + now + ".json", jsList.get(i), true);
+                    Write2File(file, jsList.get(i), true);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
+            if (jsList.size() > 0)
+                System.out.println(file);
+            if (pw != null) {
+                pw.println("]");
+                pw.close();
+                pw = null;
+            }
         }
-
-        if (pw != null) {
-            pw.println("]");
-            pw.close();
-        }
+        System.out.println("Ferdig");
         return "";
     }
 
