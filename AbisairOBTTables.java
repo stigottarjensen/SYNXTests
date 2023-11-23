@@ -22,7 +22,7 @@ public class AbisairOBTTables implements Runnable {
         System.out.println();
         System.out.println("INST tables reload.... kl. " + Calendar.getInstance().getTime().toString());
         System.out.println();
-        BufferedReader fr = new BufferedReader(new FileReader(sqlFile + ".sql"));
+        BufferedReader fr = new BufferedReader(new FileReader("./dbsql/"+sqlFile + ".sql"));
         StringBuilder mainSql = new StringBuilder();
         String l;
         boolean isPivotsql = false;
@@ -52,20 +52,20 @@ public class AbisairOBTTables implements Runnable {
         String dbUrl = "";
         Connection con = null;
 
-        // if (StigMac) {
-        //     dbUrl = "jdbc:sqlserver://" + pr.getProperty("dbServer") + ":" +
-        //             pr.getProperty("dbPort") + ";databaseName=" +
-        //             pr.getProperty("dbName") +
-        //             ";encrypt=true;trustServerCertificate=true;";
-        //     con = DriverManager.getConnection(dbUrl, pr.getProperty("dbUser"),
-        //             pr.getProperty("dbPassword"));
-        // } else {
+        if (StigMac) {
+            dbUrl = "jdbc:sqlserver://" + pr.getProperty("dbServer") + ":" +
+                    pr.getProperty("dbPort") + ";databaseName=" +
+                    pr.getProperty("dbName") +
+                    ";encrypt=true;trustServerCertificate=true;";
+            con = DriverManager.getConnection(dbUrl, pr.getProperty("dbUser"),
+                    pr.getProperty("dbPassword"));
+        } else {
             dbUrl = "jdbc:sqlserver://" + pr.getProperty("dbServer") + ":" +
                     pr.getProperty("dbPort") + ";databaseName=" +
                     pr.getProperty("dbName") + ";encrypt=true;trustServerCertificate=true;"
                     +";integratedSecurity=true;";
             con = DriverManager.getConnection(dbUrl);
-       //}
+       }
         Map<String, CreateNInsertFields> newTablesFields = new HashMap<>();
         Statement st = con.createStatement();
         ResultSet prs = st.executeQuery(pivotSql.toString());

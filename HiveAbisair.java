@@ -290,7 +290,7 @@ public class HiveAbisair {
 
     private String timeStamp() {
         java.util.Date date = Calendar.getInstance().getTime();
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-hh-mm-ss");
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
         return dateFormat.format(date);
     }
 

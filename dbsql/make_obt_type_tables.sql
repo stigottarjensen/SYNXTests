@@ -1,5 +1,5 @@
 --pivotfields sql
-select distinct trim(OBF_Label)+ 
+select distinct trim(OBF_Label), trim(OBF_Label)+'_'+CAST(OBF_Nr AS VARCHAR) + 
     CASE WHEN trim(OBF_Type_Felt)='combobox' THEN '_extracolumn' ELSE '' END  as pivotfields, 
     OBT_Type FROM OBF_Objekt_Felt
 --main sql
@@ -10,7 +10,7 @@ select bygning_navn , rtrim(BBO_Navn) as eiendom,
         rtrim(bygning_ref_nr) as bygnings_id,
         rtrim(BBO_InternNr) as eiendom_intern_nr,
         rtrim(OBT_Tekst) as objekt_tekst, 
-        rtrim(OBF_Label)+ 
+        rtrim(OBF_Label)+ CAST(OBF_Objekt_Felt.OBF_Nr AS VARCHAR)+
             CASE WHEN trim(OBF_Type_Felt)='combobox' THEN '_extracolumn' ELSE '' END AS obflabel, 
         rtrim(OBV_Verdi_Tekst) + 
             CASE WHEN trim(OBF_Type_Felt)='combobox' 
