@@ -91,6 +91,8 @@ public class AbisairOBTTables implements Runnable {
             if (extraCol) {
                 String[] expivfield = pivField.split("_");
                 pivField1 = expivfield[0];
+                if (expivfield.length>2)
+                    pivField1 = pivField1 + "_"+expivfield[1];
                 pivField2 = pivField1 + "_tekst";
             }
             pivFields.columnNames.add(pivField);
